@@ -8,6 +8,8 @@ buildscript {
     repositories {
         mavenCentral()
         google()
+
+
     }
     dependencies {
         // Note for FTC Teams: Do not modify this yourself.
@@ -21,6 +23,11 @@ allprojects {
     repositories {
         mavenCentral()
         google()
+        jcenter()
+        maven { url 'https://jitpack.io' }
+        // 添加 OpenFTC 仓库
+        maven { url = 'https://maven.brott.dev/' }
+
     }
 }
 
