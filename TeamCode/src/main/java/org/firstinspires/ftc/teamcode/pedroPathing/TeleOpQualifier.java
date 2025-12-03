@@ -108,7 +108,6 @@ private double powerMultiplier = 0.9;
     } //end of run mode
 
 
-
     public void updateIntake() {
 
             // 手柄控制拾取电机
