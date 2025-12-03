@@ -179,7 +179,7 @@ private double powerMultiplier = 0.9;
     }
 
     public static class ShooterPIDFConfig {
-        public static double kP = 30;     // 比例增益0.10.350.651.0655
+        public static double kP = 50;     // 比例增益0.10.350.651.0655
         public static double kI = 0.0;      // 积分增益
         public static double kD = 0.0;      // 微分增益
         public static double kF = 15;      // 前馈增益0.050.08
