@@ -27,10 +27,10 @@ public class TeleOpQualifier extends LinearOpMode {
     private final String LED_COLOR_READY = "GREEN";
     private final String LED_COLOR_ACCELERATING = "YELLOW";
     private final String LED_COLOR_OFF = "RED";
-    private static final double SHOOTER_P = 80.1;
+    private static final double SHOOTER_P = 1.1;
     private static final double SHOOTER_I = 0.0;
     private static final double SHOOTER_D = 0.0;
-    private static final double SHOOTER_F = 20;
+    private static final double SHOOTER_F = 1;
     // RPM = (TPS * 60秒) / 每转ticks数
 //    return (tps * 60.0) / ticksPerRevolution;  28*13.7
     private static final double Close_SHOOTER_TARGET_RPM = 2557;//  400RPM---2,557.33333333333333
@@ -179,7 +179,7 @@ private double powerMultiplier = 0.9;
     }
 
     public static class ShooterPIDFConfig {
-        public static double kP = 50;     // 比例增益0.10.350.651.0655
+        public static double kP = 80;     // 比例增益0.10.350.651.0655
         public static double kI = 0.0;      // 积分增益
         public static double kD = 0.0;      // 微分增益
         public static double kF = 15;      // 前馈增益0.050.08
