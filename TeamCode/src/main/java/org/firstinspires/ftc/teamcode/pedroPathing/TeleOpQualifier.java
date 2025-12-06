@@ -18,7 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 //V1 with pid for xxx  but not odo
 public class TeleOpQualifier extends LinearOpMode {
     // 已有的硬件和常量定义...
-    private static final double VELOCITY_TOLERANCE = 50; // RPM容差，可根据测试调整
+    private static final double VELOCITY_TOLERANCE = 30; // RPM容差，可根据测试调整
     // 状态变量
     private boolean isShooterAtSpeed = false;
     private boolean wasShooterAtSpeed = false; // 用于检测状态变化
@@ -27,21 +27,21 @@ public class TeleOpQualifier extends LinearOpMode {
     private final String LED_COLOR_READY = "GREEN";
     private final String LED_COLOR_ACCELERATING = "YELLOW";
     private final String LED_COLOR_OFF = "RED";
-    private static final double SHOOTER_P = 1.1;
-    private static final double SHOOTER_I = 0.0;
-    private static final double SHOOTER_D = 0.0;
-    private static final double SHOOTER_F = 1;
+
     // RPM = (TPS * 60秒) / 每转ticks数
 //    return (tps * 60.0) / ticksPerRevolution;  28*13.7
     private static final double Close_SHOOTER_TARGET_RPM = 2557;//  400RPM---2,557.33333333333333
-    private static final double Med_SHOOTER_TARGET_RPM = 1598;   ////  250RPM---2,557.33333333333333
-    private static final double Far_SHOOTER_TARGET_RPM = 2237;  //  350RPM---2,557.33333333333333
+    private static final double Med_SHOOTER_TARGET_RPM = 1598;   ////  250RPM---1586.67
+    private static final double Far_SHOOTER_TARGET_RPM = 2237;  //  350RPM---2237
+    //  1000RPM---6346.67
+    //  600RPM---3808
+    //  500RPM---3173.3
     public float DriveTrains_ReducePOWER=0.75f;
     public float DriveTrains_smoothTurn=0.55f;
     HardwareQualifier robot = new HardwareQualifier();
     public String fieldOrRobotCentric = "robot";
 //    public String fieldOrRobotCentric = "field";
-private double powerMultiplier = 0.9;
+    private double powerMultiplier = 0.9;
     boolean move = false;
     int controlMode = 1;
     public float  intakePowerIntake=0.85f;
@@ -51,7 +51,7 @@ private double powerMultiplier = 0.9;
     public float  ShooterMotorShootFar=0.95f;
     public float  ShooterMotorShootMed=-0.8f;
     public float  ShooterMotorShootClose=-0.8f;
-    public float  ShooterMotorHold=-0.4f;
+    public float  ShooterMotorHold=-0.2f;
     public float  ShooterMotorClean=-0.8f;
     public float  ShooterMotorOff=0.0f;
     ButtonHandler dpadDownHandler = new ButtonHandler();
@@ -72,14 +72,12 @@ private double powerMultiplier = 0.9;
     @Override
     public void runOpMode() {
         robot.init(hardwareMap);
+        initShooterPIDF();
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         FtcDashboard Dashboard = FtcDashboard.getInstance();
         Telemetry dashboardTelemetry = Dashboard.getTelemetry();
         // 设置 Dashboard 更新频率
         Dashboard.setTelemetryTransmissionInterval(100); // 100ms 更新一次
-
-
-
 
         waitForStart();
         runtime.reset();
@@ -99,23 +97,21 @@ private double powerMultiplier = 0.9;
             // 5. 添加短暂延迟避免过于频繁的更新
             sleep(20);
 
-
-
-
-
         } //end of while loop
 
     } //end of run mode
 
 
     public void updateIntake() {
-
             // 手柄控制拾取电机
             if (gamepad1.left_trigger > 0.1) {
                 // 吸入
                 robot.IntakeMotor.setPower(intakePowerIntake);
+//                robot.MasterShooterMotorL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//                robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
 //                robot.MasterShooterMotorL.setPower(ShooterMotorHold);
-//                robot.SlaveShooterMotorR.setPower(ShooterMotorHold);
+                robot.SlaveShooterMotorR.setPower(ShooterMotorHold);
                 // Non-blocking delay to prevent rapid mode switching
 
                 telemetry.addData("intakePowerIntake", intakePowerIntake);
@@ -151,11 +147,15 @@ private double powerMultiplier = 0.9;
     }
 
     public void updateShooter() {
-        // 检查射击电机是否达到目标速度
-        checkShooterVelocity();
+
         // 手柄控制发射电机 - 按下右肩键启动射击电机
         if (gamepad1.right_trigger > 0.1) {
-            startShooter();
+            // 检查射击电机是否达到目标速度
+            checkShooterVelocity();
+            if (!robot.MasterShooterMotorL.isBusy()){
+                startShooter();
+            }
+
         }
         // 手动射击触发 - 按下A键射击（仅在速度达标时有效）
         if (gamepad1.right_bumper && isShooterAtSpeed && !fireRequested) {
@@ -178,30 +178,24 @@ private double powerMultiplier = 0.9;
     }
 
     public static class ShooterPIDFConfig {
-        public static double kP = 80;     // 比例增益0.10.350.651.0655
+        public static double kP = 100;     // 比例增益0.10.350.651.0655
         public static double kI = 0.0;      // 积分增益
         public static double kD = 0.0;      // 微分增益
-        public static double kF = 15;      // 前馈增益0.050.08
-        public static double targetRPM =Close_SHOOTER_TARGET_RPM;  // 目标转速
+        public static double kF = 17;      // 前馈增益0.050.08
+//        P: 20–60
+//        I: 0–0.002
+//        D: 0–0.5
+//        F: 10–30
+//        public static double targetRPM =Close_SHOOTER_TARGET_RPM;
+        public static double targetRPM =Med_SHOOTER_TARGET_RPM; // 目标转速
         public static double tolerance = 10;    // 转速容差
     }
-    /**
-     * 启动射击电机
-     */
-//    private void startShooter() {
-//        robot.IntakeMotor.setPower(0); // 确保拾取电机停止
-//        robot.MasterShooterMotorL.setVelocity(Close_SHOOTER_TARGET_RPM);
-//        double MasterShooterMotorLPower = robot.MasterShooterMotorL.getPower();
-//        double SlaveShooterMotorRPower = calculateOptimalSlavePower(MasterShooterMotorLPower);
-//        robot.SlaveShooterMotorR.setPower(SlaveShooterMotorRPower);
-//    }
 
 
     private void initShooterPIDF() {
         // 初始化时调用一次
         if (robot.MasterShooterMotorL instanceof DcMotorEx) {
             DcMotorEx shooter = (DcMotorEx) robot.MasterShooterMotorL;
-
             // 设置运行模式
             shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -223,61 +217,20 @@ private double powerMultiplier = 0.9;
         robot.IntakeMotor.setPower(0);
         if (robot.MasterShooterMotorL instanceof DcMotorEx) {
             DcMotorEx shooter = (DcMotorEx) robot.MasterShooterMotorL;
-
             // 直接使用setVelocity，它会使用已配置的PIDF
             shooter.setVelocity(ShooterPIDFConfig.targetRPM);
 
             // 从电机使用简单功率跟随（可选PIDF）
 //            robot.SlaveShooterMotorR.setPower(shooter.getPower() * 0.95); // 95%跟随
 //
-
             double MasterShooterMotorLPower = robot.MasterShooterMotorL.getPower();
             double SlaveShooterMotorRPower = calculateOptimalSlavePower(MasterShooterMotorLPower);
             robot.SlaveShooterMotorR.setPower(SlaveShooterMotorRPower);
 
-
         }
-  ///////////////////////
 
-//        // ✅ 先设置PIDF参数，再设置速度
-////        applyShooterPIDF();  // 添加这行！
-//        // 设置目标转速（从 Dashboard 调整）
-//        double targetVelocity = ShooterPIDFConfig.targetRPM;
-//
-//        // 使用 velocity 控制（PIDF 自动生效）
-//        if (robot.MasterShooterMotorL instanceof DcMotorEx) {
-//            ((DcMotorEx) robot.MasterShooterMotorL).setVelocity(targetVelocity);
-//        } else {
-//            robot.MasterShooterMotorL.setPower(0.8); // 回退方案
-//        }
-//
-//        // 从电机跟随
-//        double MasterShooterMotorLPower = robot.MasterShooterMotorL.getPower();
-//        double SlaveShooterMotorRPower = calculateOptimalSlavePower(MasterShooterMotorLPower);
-//        robot.SlaveShooterMotorR.setPower(SlaveShooterMotorRPower);
     }
-    ////////////////////////////////////////
-//    private void applyShooterPIDF() {
-//        // 创建 PIDF 系数对象
-//        PIDFCoefficients pidfCoeffs = new PIDFCoefficients(
-//                ShooterPIDFConfig.kP,
-//                ShooterPIDFConfig.kI,
-//                ShooterPIDFConfig.kD,
-//                ShooterPIDFConfig.kF
-//        );
-//
-//        // 应用到主射击电机
-//        if (robot.MasterShooterMotorL instanceof DcMotorEx) {
-//            ((DcMotorEx) robot.MasterShooterMotorL).setPIDFCoefficients(
-//                    DcMotor.RunMode.RUN_USING_ENCODER,
-//                    pidfCoeffs
-//            );
-//        }
-//    }
-/////////////////////////
-    /**
-     * 检查射击电机速度是否达到目标
-     */
+
     /**
      * 检查射击电机速度（使用 Dashboard 调整的容差）
      */
@@ -298,25 +251,6 @@ private double powerMultiplier = 0.9;
             isShooterAtSpeed = false;
         }
     }
-
-
-
-//    private void checkShooterVelocity() {
-//        if (robot.MasterShooterMotorL.isBusy()) {
-//            double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());
-//            double targetVelocity = Close_SHOOTER_TARGET_RPM;
-//
-//            // 检查是否在容差范围内
-//            if (Math.abs(currentVelocity - targetVelocity) <= VELOCITY_TOLERANCE) {
-//                isShooterAtSpeed = true;
-//            } else {
-//                isShooterAtSpeed = false;
-//                fireRequested = false; // 速度下降时取消射击请求
-//            }
-//        } else {
-//            isShooterAtSpeed = false;
-//        }
-//    }
 
 
     /**
@@ -394,12 +328,6 @@ private double powerMultiplier = 0.9;
     }
 
 
-
-
-
-
-
-
     /**
      * 更新LED状态显示
      */
@@ -437,28 +365,13 @@ private double powerMultiplier = 0.9;
         }
     }
 
-
-    /**
-     * 维持射击速度
-     */
-//    private void maintainShooterVelocity(double Set_SHOOTER_TARGET_RPM) {
-//        double  SHOOTER_TARGET_RPM=Set_SHOOTER_TARGET_RPM;
-//        double currentVelocity = robot.MasterShooterMotorL.getVelocity();
-//        double error = SHOOTER_TARGET_RPM - currentVelocity;
-//
-//        // 简单的速度维持（实际应该使用PIDF）
-//        if (Math.abs(error) > 100) { // 如果误差大于100RPM
-//            robot.MasterShooterMotorL.setVelocity(SHOOTER_TARGET_RPM);
-//        }
-//    }
-
     /**
      * 设置射击电机PIDF系数
      */
-    private void setShooterPIDFCoefficients() {
-        PIDFCoefficients pidf = new PIDFCoefficients(SHOOTER_P, SHOOTER_I, SHOOTER_D, SHOOTER_F);
-        robot.MasterShooterMotorL.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
-    }
+//    private void setShooterPIDFCoefficients() {
+//        PIDFCoefficients pidf = new PIDFCoefficients(SHOOTER_P, SHOOTER_I, SHOOTER_D, SHOOTER_F);
+//        robot.MasterShooterMotorL.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+//    }
 
     private double calculateOptimalSlavePower(double masterPower) {
 

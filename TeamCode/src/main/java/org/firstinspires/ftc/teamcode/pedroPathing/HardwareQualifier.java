@@ -81,15 +81,9 @@ public class HardwareQualifier {
 
         IntakeMotor  = hwMap.get(DcMotorEx.class, "IntakeMotor"); //11072025 control hub port 0
         IntakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        IntakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-
-//        ShooterMotor  = hwMap.get(DcMotorEx.class, "ShooterMotor"); //11072025 expansion hub port 2
-//        ShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        ShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         voltageCHub = hwMap.get(VoltageSensor.class, "Control Hub");
-
         voltageExHub = hwMap.get(VoltageSensor.class, "Expansion Hub 2");
 
         setAllPower(0);
