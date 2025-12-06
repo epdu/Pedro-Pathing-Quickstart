@@ -107,10 +107,12 @@ public class TeleOpQualifier extends LinearOpMode {
             if (gamepad1.left_trigger > 0.1) {
                 // 吸入
                 robot.IntakeMotor.setPower(intakePowerIntake);
-//                robot.MasterShooterMotorL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//                robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                robot.MasterShooterMotorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                robot.MasterShooterMotorL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-//                robot.MasterShooterMotorL.setPower(ShooterMotorHold);
+                robot.MasterShooterMotorL.setPower(ShooterMotorHold);
                 robot.SlaveShooterMotorR.setPower(ShooterMotorHold);
                 // Non-blocking delay to prevent rapid mode switching
 
@@ -138,6 +140,8 @@ public class TeleOpQualifier extends LinearOpMode {
             } else {
                 // 停止
                 robot.IntakeMotor.setPower(intakePowerOff);
+                robot.MasterShooterMotorL.setPower(ShooterMotorOff);
+                robot.SlaveShooterMotorR.setPower(ShooterMotorOff);
                 // Non-blocking delay to prevent rapid mode switching
                 telemetry.addData("intakePowerOff", intakePowerOff);
                 telemetry.update();
@@ -224,6 +228,8 @@ public class TeleOpQualifier extends LinearOpMode {
 //            robot.SlaveShooterMotorR.setPower(shooter.getPower() * 0.95); // 95%跟随
 //
             double MasterShooterMotorLPower = robot.MasterShooterMotorL.getPower();
+            robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             double SlaveShooterMotorRPower = calculateOptimalSlavePower(MasterShooterMotorLPower);
             robot.SlaveShooterMotorR.setPower(SlaveShooterMotorRPower);
 
