@@ -14,7 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 @Config  // 添加这个注解，让 Dashboard 可以调整参数
-@TeleOp(name = "A Blue Streak Qualifier V1")
+@TeleOp(name = "A Blue Streak Qualifier V1 1205")
 //V1 with pid for xxx  but not odo
 public class TeleOpQualifier extends LinearOpMode {
     // 已有的硬件和常量定义...
@@ -30,7 +30,7 @@ public class TeleOpQualifier extends LinearOpMode {
 
     // RPM = (TPS * 60秒) / 每转ticks数
 //    return (tps * 60.0) / ticksPerRevolution;  28*13.7
-    private static final double Close_SHOOTER_TARGET_RPM = 2557;//  400RPM---2,557.33333333333333
+    private static final double Close_SHOOTER_TARGET_RPM = 800;//  400RPM---2,557.33333333333333
     private static final double Med_SHOOTER_TARGET_RPM = 1598;   ////  250RPM---1586.67
     private static final double Far_SHOOTER_TARGET_RPM = 2237;  //  350RPM---2237
     //  1000RPM---6346.67
@@ -107,10 +107,6 @@ public class TeleOpQualifier extends LinearOpMode {
             if (gamepad1.left_trigger > 0.1) {
                 // 吸入
                 robot.IntakeMotor.setPower(intakePowerIntake);
-                robot.MasterShooterMotorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                robot.MasterShooterMotorL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
                 robot.MasterShooterMotorL.setPower(ShooterMotorHold);
                 robot.SlaveShooterMotorR.setPower(ShooterMotorHold);
@@ -126,9 +122,6 @@ public class TeleOpQualifier extends LinearOpMode {
             } else if (gamepad1.left_bumper) {
                 // 反转（吐出）
                 robot.IntakeMotor.setPower(intakePowerDump);
-//                robot.MasterShooterMotorL.setPower(ShooterMotorHold);
-//                robot.SlaveShooterMotorR.setPower(ShooterMotorHold);
-                // Non-blocking delay to prevent rapid mode switching
 
                 telemetry.addData("intakePowerDump", intakePowerDump);
                 telemetry.update();
@@ -137,18 +130,16 @@ public class TeleOpQualifier extends LinearOpMode {
                     // Other tasks can be processed here
                 } // 防止快速连击导致模式快速切换
 
-            } else {
+            } else if (gamepad1.y)  {
                 // 停止
-                robot.IntakeMotor.setPower(intakePowerOff);
-                robot.MasterShooterMotorL.setPower(ShooterMotorOff);
-                robot.SlaveShooterMotorR.setPower(ShooterMotorOff);
-                // Non-blocking delay to prevent rapid mode switching
-                telemetry.addData("intakePowerOff", intakePowerOff);
-                telemetry.update();
-                delayTimer.reset();
+                stopIntake();
+
 
             }
     }
+
+
+
 
     public void updateShooter() {
 
@@ -307,6 +298,27 @@ public class TeleOpQualifier extends LinearOpMode {
     }
 
 
+    ///  ///////////
+
+    private void stopIntake() {
+        robot.IntakeMotor.setPower(intakePowerOff);
+        robot.MasterShooterMotorL.setPower(ShooterMotorOff);
+        robot.SlaveShooterMotorR.setPower(ShooterMotorOff);
+        robot.MasterShooterMotorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.MasterShooterMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        // Non-blocking delay to prevent rapid mode switching
+        telemetry.addData("intakePowerOff", intakePowerOff);
+        telemetry.update();
+        delayTimer.reset();
+    }
+
+
+
+    /// ///////////
+
     /**
      * 执行射击序列
      */
@@ -332,7 +344,6 @@ public class TeleOpQualifier extends LinearOpMode {
         telemetry.addData("Shooter", "Fire sequence completed");
         telemetry.update();
     }
-
 
     /**
      * 更新LED状态显示
@@ -504,6 +515,9 @@ public class TeleOpQualifier extends LinearOpMode {
 
 //        }
 ///////////////////End Definition and Initialization of steptestservo()
+
+
+
 
 
 
