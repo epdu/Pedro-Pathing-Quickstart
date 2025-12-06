@@ -186,7 +186,6 @@ public class TeleOpQualifier extends LinearOpMode {
         public static double tolerance = 10;    // 转速容差
     }
 
-
     private void initShooterPIDF() {
         // 初始化时调用一次
         if (robot.MasterShooterMotorL instanceof DcMotorEx) {
