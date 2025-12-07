@@ -36,6 +36,7 @@ public class TeleOpQualifier extends LinearOpMode {
     //  1000RPM---6346.67
     //  600RPM---3808
     //  500RPM---3173.3
+
     public float DriveTrains_ReducePOWER=0.75f;
     public float DriveTrains_smoothTurn=0.55f;
     HardwareQualifier robot = new HardwareQualifier();
