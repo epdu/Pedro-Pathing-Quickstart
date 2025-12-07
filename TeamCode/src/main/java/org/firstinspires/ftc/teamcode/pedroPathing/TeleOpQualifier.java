@@ -31,7 +31,7 @@ public class TeleOpQualifier extends LinearOpMode {
     // RPM = (TPS * 60秒) / 每转ticks数
 //    return (tps * 60.0) / ticksPerRevolution;  28*13.7
     private static final double Close_SHOOTER_TARGET_RPM = 800;//  400RPM---2,557.33333333333333
-    private static final double Med_SHOOTER_TARGET_RPM = 1598;   ////  250RPM---1586.67
+    private static final double Med_SHOOTER_TARGET_RPM = 1000;   //1598 white tri a little bit too far//  250RPM---1586.67
     private static final double Far_SHOOTER_TARGET_RPM = 2237;  //  350RPM---2237
     //  1000RPM---6346.67
     //  600RPM---3808
@@ -54,6 +54,9 @@ public class TeleOpQualifier extends LinearOpMode {
     public float  ShooterMotorHold=-0.2f;
     public float  ShooterMotorClean=-0.8f;
     public float  ShooterMotorOff=0.0f;
+    public static final double HoodArmPositionInit = 0.1;
+    public static final double HoodArmPositionCloseShoot = 0.3;
+    public static final double HoodArmPositionMedShoot = 0.2;
     ButtonHandler dpadDownHandler = new ButtonHandler();
     ButtonHandler dpadUpHandler = new ButtonHandler();
     ButtonHandler dpadLeftHandler = new ButtonHandler();
@@ -92,6 +95,7 @@ public class TeleOpQualifier extends LinearOpMode {
             updateIntake();
             // 3. 更新射击系统
             updateShooter();
+            updateHood();
             // 4. 更新所有遥测数据（重要！）
             telemetry.update();
             // 5. 添加短暂延迟避免过于频繁的更新
@@ -153,13 +157,16 @@ public class TeleOpQualifier extends LinearOpMode {
 
         }
         // 手动射击触发 - 按下A键射击（仅在速度达标时有效）
-        if (gamepad1.right_bumper && isShooterAtSpeed && !fireRequested) {
+//        if (gamepad1.right_bumper && isShooterAtSpeed && !fireRequested)
+        if (gamepad1.right_bumper) {
             fireRequested = true;
             executeFireSequence();
+            robot.IntakeMotor.setPower(intakePowerShoot);
         }
         // 停止射击电机 - 按下B键
         if (gamepad1.b) {
             stopShooter();
+            robot.IntakeMotor.setPower(intakePowerOff);
             fireRequested = false;
         }
 
@@ -206,6 +213,15 @@ public class TeleOpQualifier extends LinearOpMode {
             telemetry.addData("Shooter PIDF", "Initialized");
         }
     }
+
+    private void updateHood() {
+
+        if (gamepad1.x) {
+                    robot.HoodArmL.setPosition(HoodArmPositionCloseShoot);
+                    robot.HoodArmR.setPosition(HoodArmPositionCloseShoot);
+////                    sleep(600);
+                    } // 防止快速连击导致模式快速切换
+ }
 
     private void startShooter() {
         robot.IntakeMotor.setPower(0);
@@ -322,7 +338,7 @@ public class TeleOpQualifier extends LinearOpMode {
      * 执行射击序列
      */
     private void executeFireSequence() {
-        if (!isShooterAtSpeed) return; // 安全检查
+ //       if (!isShooterAtSpeed) return; // 安全检查
         telemetry.addData("Shooter", "FIRING! RPM: %.0f", robot.MasterShooterMotorL.getVelocity());
         telemetry.update();
         // 启动拾取电机将球推入射击器

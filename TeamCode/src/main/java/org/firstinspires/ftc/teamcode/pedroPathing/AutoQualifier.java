@@ -39,7 +39,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
-@Autonomous(name = "April Tag with PP test", group = "Opmode")
+@Autonomous(name = "April Tag with PP", group = "Opmode")
 @Configurable // Panels
 @SuppressWarnings("FieldCanBeLocal") // Stop Android Studio from bugging about variables being predefined
 public class AutoQualifier extends LinearOpMode {
