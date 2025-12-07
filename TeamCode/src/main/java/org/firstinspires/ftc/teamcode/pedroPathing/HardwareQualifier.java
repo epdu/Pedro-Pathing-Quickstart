@@ -97,8 +97,8 @@ public class HardwareQualifier {
 
 //Begin Definition and Initialization of outtake ArmL and ArmR Servos
 
-        HoodArmL = hwMap.get(ServoImplEx.class, "HoodArmL");//expansion hub port 5==>2
-        HoodArmR = hwMap.get(ServoImplEx.class, "HoodArmR");;//expansion hub port 2==>0
+        HoodArmL = hwMap.get(ServoImplEx.class, "HoodArmL");//expansion hub port 2
+        HoodArmR = hwMap.get(ServoImplEx.class, "HoodArmR");;//expansion hub port 2
         HoodArmL.setPwmRange(new PwmControl.PwmRange(500, 2500));
         HoodArmR.setPwmRange(new PwmControl.PwmRange(500, 2500));
         HoodArmR.setDirection(Servo.Direction.REVERSE);
@@ -107,7 +107,7 @@ public class HardwareQualifier {
         ////End Definition and Initialization of outtake ArmL and ArmR Servos
 
         ///////////////////////////////////////GoBildaPinpointDriver//////////////////////////////
-        odo = hwMap.get(GoBildaPinpointDriver.class,"odo"); //expansion hub i2c port 1
+        odo = hwMap.get(GoBildaPinpointDriver.class,"odo"); //control  hub i2c port 1
 //        pinpoint = hwMap.get(GoBildaPinpointDriverRR.class, "pinpoint"); // guess for RR only
          /*
         Set the odometry pod positions relative to the point that the odometry computer tracks around.
