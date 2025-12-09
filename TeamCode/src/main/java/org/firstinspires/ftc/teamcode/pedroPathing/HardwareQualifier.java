@@ -21,10 +21,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 public class HardwareQualifier {
     HardwareMap hwMap =  null;
 
-    public DcMotorEx RFMotor;
-    public DcMotorEx LFMotor;
-    public DcMotorEx RBMotor;
-    public DcMotorEx LBMotor;
+    public DcMotorEx rightFrontMotor;
+    public DcMotorEx leftFrontMotor;
+    public DcMotorEx rightRearMotor;
+    public DcMotorEx leftRearMotor;
     public DcMotorEx MasterShooterMotorL;
     public DcMotorEx SlaveShooterMotorR;
     public Servo blocker;
@@ -50,23 +50,23 @@ public class HardwareQualifier {
         // Save reference to Hardware map
         hwMap = ahwMap;
 
-        LFMotor   = hwMap.get(DcMotorEx.class, "LFMotor");//11072025 control hub port 2
-        RFMotor  = hwMap.get(DcMotorEx.class, "RFMotor"); //11072025 expansiom hub port 0
-        LBMotor   = hwMap.get(DcMotorEx.class, "LBMotor");//11072025 control hub port 1
-        RBMotor  = hwMap.get(DcMotorEx.class, "RBMotor"); //11072025 expansion hub port 1
+        leftFrontMotor   = hwMap.get(DcMotorEx.class, "LFMotor");//11072025 control hub port 2
+        rightFrontMotor  = hwMap.get(DcMotorEx.class, "RFMotor"); //11072025 expansiom hub port 0
+        leftRearMotor   = hwMap.get(DcMotorEx.class, "LBMotor");//11072025 control hub port 1
+        rightRearMotor  = hwMap.get(DcMotorEx.class, "RBMotor"); //11072025 expansion hub port 1
 
-        LBMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        LFMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftRearMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        LFMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        RFMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        LBMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        RBMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftRearMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightRearMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        LFMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        RFMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        LBMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        RBMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftFrontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightFrontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftRearMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightRearMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
 
@@ -169,10 +169,10 @@ public class HardwareQualifier {
 
     }
     public void setMotorPower(double lF, double rF, double lB, double rB){
-        LFMotor.setPower(lF*DriveTrains_POWER);
-        LBMotor.setPower(lB*DriveTrains_POWER);
-        RBMotor.setPower(rB*DriveTrains_POWER);
-        RFMotor.setPower(rF*DriveTrains_POWER);
+        leftFrontMotor.setPower(lF*DriveTrains_POWER);
+        leftRearMotor.setPower(lB*DriveTrains_POWER);
+        rightRearMotor.setPower(rB*DriveTrains_POWER);
+        rightFrontMotor.setPower(rF*DriveTrains_POWER);
     }
     public void setAllPower(double p){
         setMotorPower(p,p,p,p);

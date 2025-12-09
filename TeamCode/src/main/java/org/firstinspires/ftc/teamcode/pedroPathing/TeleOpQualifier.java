@@ -457,10 +457,10 @@ public class TeleOpQualifier extends LinearOpMode {
             double frontRightPower = (rotY - rotX - rx) / denominator;
             double backRightPower = (rotY + rotX - rx) / denominator;
 
-            robot.LFMotor.setPower(frontLeftPower * DriveTrains_ReducePOWER);
-            robot.LBMotor.setPower(backLeftPower * DriveTrains_ReducePOWER);
-            robot.RFMotor.setPower(frontRightPower * DriveTrains_ReducePOWER);
-            robot.RBMotor.setPower(backRightPower * DriveTrains_ReducePOWER);
+            robot.leftFrontMotor.setPower(frontLeftPower * DriveTrains_ReducePOWER);
+            robot.leftRearMotor.setPower(backLeftPower * DriveTrains_ReducePOWER);
+            robot.rightFrontMotor.setPower(frontRightPower * DriveTrains_ReducePOWER);
+            robot.rightRearMotor.setPower(backRightPower * DriveTrains_ReducePOWER);
         }
 
         public void updateDrivetrain_RobotCentric() {
@@ -473,10 +473,10 @@ public class TeleOpQualifier extends LinearOpMode {
             double fr = robot_y + robot_x + robot_rx;
             double br = robot_y - robot_x + robot_rx;
 
-            robot.LFMotor.setPower(fl * DriveTrains_ReducePOWER);
-            robot.LBMotor.setPower(bl * DriveTrains_ReducePOWER);
-            robot.RFMotor.setPower(fr * DriveTrains_ReducePOWER);
-            robot.RBMotor.setPower(br * DriveTrains_ReducePOWER);
+            robot.leftFrontMotor.setPower(fl * DriveTrains_ReducePOWER);
+            robot.leftRearMotor.setPower(bl * DriveTrains_ReducePOWER);
+            robot.rightFrontMotor.setPower(fr * DriveTrains_ReducePOWER);
+            robot.rightRearMotor.setPower(br * DriveTrains_ReducePOWER);
 
         }
 
