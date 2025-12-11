@@ -37,17 +37,6 @@ public class Constants {
             .rightFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightRearMotorDirection(DcMotorSimple.Direction.REVERSE)
             .xVelocity(78.401);
-//public static MecanumConstants driveConstants = new MecanumConstants()
-//        .maxPower(0.8)
-//        .rightFrontMotorName("RFMotor")
-//        .rightRearMotorName("RBMotor")
-//        .leftRearMotorName("LBMotor")
-//        .leftFrontMotorName("LFMotor")
-//        .leftFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
-//        .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
-//        .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
-//        .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
-//        .xVelocity(78.401);
 
     public static PinpointConstants localizerConstants = new PinpointConstants()
             .forwardPodY(-1.9685)
