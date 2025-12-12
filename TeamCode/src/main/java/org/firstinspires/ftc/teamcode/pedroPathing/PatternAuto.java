@@ -31,7 +31,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "Pedro Pathing further zone test", group = "Opmode")
+@Autonomous(name = "Pedro Pathing further zone PPG test", group = "Opmode")
 @Configurable // Panels
 @SuppressWarnings("FieldCanBeLocal") // Stop Android Studio from bugging about variables being predefined
 public class PatternAuto extends LinearOpMode {
@@ -112,12 +112,6 @@ public class PatternAuto extends LinearOpMode {
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startPose);
 
-//        boolean targetFound = false;    // Set to true when an AprilTag target is detected
-//        initAprilTag();
-//
-//        if (USE_WEBCAM) {
-//            setManualExposure(6, 250);  // Use low exposure time to reduce motion blur
-//        }
 
         // Log completed initialization to Panels and driver station (custom log function)
         log("Status", "Initialized");
@@ -137,57 +131,13 @@ public class PatternAuto extends LinearOpMode {
             follower.update();
             panelsTelemetry.update();
             currentPose = follower.getPose(); // Update the current pose
-//            targetFound = false;
-//            desiredTag = null;
 
-//            // Step through the list of detected tags and look for a matching tag
-//            List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-//            for (AprilTagDetection detection : currentDetections) {
-//                // Look to see if we have size info on this tag.
-//                if (detection.metadata != null) {
-//                    //  Check to see if we want to track towards this tag.
-//                    if (detection.id == PPG_TAG_ID) {
-//                        // call lines for the PGP pattern
-//                        buildPathsPPG();
-//                        targetFound = true;
-//                        desiredTag = detection;
-//                        foundID = 21; // This should likely be PPG_TAG_ID or the corresponding state machine ID
-//                        break;  // don't look any further.
-//                    } else if (detection.id == PGP_TAG_ID) {
-//                        // call lines for the PGP pattern
-//                        buildPathsPGP();
-//                        targetFound = true;
-//                        desiredTag = detection;
-//                        foundID = 22; // This should likely be PGP_TAG_ID or the corresponding state machine ID
-//                        break;  // don't look any further.
-//
-//                    } else if (detection.id == GPP_TAG_ID) {
-//                        // call lines for the GPP pattern
-//                        buildPathsGPP();
-//                        targetFound = true;
-//                        desiredTag = detection;
-//                        foundID = 23; // This should likely be GPP_TAG_ID or the corresponding state machine ID
-//                        break;  // don't look any further.
-//                    }
-//                } else {
-//                    // This tag is NOT in the library, so we don't have enough information to track to it.
-//                    telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
-//                }
-//            }
-
-
+            buildPathsPPG();
             updateStateMachinePPG();
+//            buildPathsPGP();
 //            updateStateMachinePGP();
+//            buildPathsGPP();
 //            updateStateMachineGPP();
-
-            // Update the state machine
-//            if (foundID == 21) { // Consider using the TAG_ID constants or a dedicated variable for which path was found
-//                updateStateMachinePPG();
-//            } else if (foundID == 22) {
-//                updateStateMachinePGP();
-//            } else if (foundID == 23) {
-//                updateStateMachineGPP();
-//            }
 
 
             // Log to Panels and driver station (custom log function)
@@ -323,60 +273,5 @@ public class PatternAuto extends LinearOpMode {
     }
 
 
-    /**
-     * start the AprilTag processor.
-     */
-//    private void initAprilTag() {
-//        // Create the AprilTag processor by using a builder.
-//        aprilTag = new AprilTagProcessor.Builder().build();
-//
-//        // Adjust Image Decimation to trade-off detection-range for detection-rate.
-//        aprilTag.setDecimation(2);
-//
-//        // Create the vision portal by using a builder.
-//        if (USE_WEBCAM) {
-//            visionPortal = new VisionPortal.Builder()
-//                    .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-//                    .addProcessor(aprilTag)
-//                    .build();
-//        } else {
-//            visionPortal = new VisionPortal.Builder()
-//                    .setCamera(BuiltinCameraDirection.BACK)
-//                    .addProcessor(aprilTag)
-//                    .build();
-//        }
-//    }
 
-    /*
-     Manually set the camera gain and exposure.
-     This can only be called AFTER calling initAprilTag(), and only works for Webcams;
-    */
-//    private void setManualExposure(int exposureMS, int gain) {
-//        // Wait for the camera to be open, then use the controls
-//
-//        if (visionPortal == null) {
-//            return;
-//        }
-//
-//        // Make sure camera is streaming before we try to set the exposure controls
-////        if (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
-////            telemetry.addData("Camera", "Waiting");
-////            telemetry.update();
-////            while (!isStopRequested() && (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING)) {
-////                sleep(20);
-////            }
-////            telemetry.addData("Camera", "Ready");
-////            telemetry.update();
-////        }
-//        // ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
-//        // if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
-//        //     exposureControl.setMode(ExposureControl.Mode.Manual);
-//        //     sleep(50);
-//        // }
-//        // exposureControl.setExposure((long)exposureMS, TimeUnit.MILLISECONDS);
-//        // sleep(20);
-//        // GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
-//        // gainControl.setGain(gain);
-//        // sleep(20);
-//    }
 }
