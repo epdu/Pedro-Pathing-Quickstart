@@ -51,7 +51,7 @@ public class HardwareQualifier {
         hwMap = ahwMap;
 
         leftFrontMotor   = hwMap.get(DcMotorEx.class, "LFMotor");//11072025 control hub port 2
-        rightFrontMotor  = hwMap.get(DcMotorEx.class, "RFMotor"); //11072025 expansiom hub port 0
+        rightFrontMotor  = hwMap.get(DcMotorEx.class, "RFMotor"); //11072025 expansion hub port 0
         leftRearMotor   = hwMap.get(DcMotorEx.class, "LBMotor");//11072025 control hub port 1
         rightRearMotor  = hwMap.get(DcMotorEx.class, "RBMotor"); //11072025 expansion hub port 1
 
@@ -97,7 +97,7 @@ public class HardwareQualifier {
 
 //Begin Definition and Initialization of outtake ArmL and ArmR Servos
 
-        HoodArmL = hwMap.get(ServoImplEx.class, "HoodArmL");//expansion hub port 2
+        HoodArmL = hwMap.get(ServoImplEx.class, "HoodArmL");//control hub port 2
         HoodArmR = hwMap.get(ServoImplEx.class, "HoodArmR");;//expansion hub port 2
         HoodArmL.setPwmRange(new PwmControl.PwmRange(500, 2500));
         HoodArmR.setPwmRange(new PwmControl.PwmRange(500, 2500));
