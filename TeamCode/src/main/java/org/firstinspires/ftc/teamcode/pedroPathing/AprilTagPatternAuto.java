@@ -39,7 +39,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
-@Autonomous(name = "April Tag with PP test", group = "Opmode")
+@Autonomous(name = "Pedro Pathing further zone test", group = "Opmode")
 @Configurable // Panels
 @SuppressWarnings("FieldCanBeLocal") // Stop Android Studio from bugging about variables being predefined
 public class AprilTagPatternAuto extends LinearOpMode {
@@ -47,11 +47,11 @@ public class AprilTagPatternAuto extends LinearOpMode {
     private final ElapsedTime runtime = new ElapsedTime();
 
     // Initialize poses
-    private final Pose startPose = new Pose(72, 120, Math.toRadians(90)); // Start Pose of our robot.
-    private final Pose scorePose = new Pose(72, 20, Math.toRadians(115)); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
-    private final Pose PPGPose = new Pose(100, 83.5, Math.toRadians(0)); // Highest (First Set) of Artifacts from the Spike Mark.
-    private final Pose PGPPose = new Pose(100, 59.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose GPPPose = new Pose(100, 35.5, Math.toRadians(0)); // Lowest (Third Set) of Artifacts from the Spike Mark.
+    private final Pose startPose = new Pose(96, 24, Math.toRadians(0)); // Start Pose further zone of our robot.
+    private final Pose scorePose = new Pose(96, 96, Math.toRadians(45)); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
+    private final Pose PPGPose = new Pose(100, 83.5, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
+    private final Pose PGPPose = new Pose(100, 59.5, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose GPPPose = new Pose(100, 35.5, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
 
     // Initialize variables for paths
 
@@ -150,48 +150,52 @@ public class AprilTagPatternAuto extends LinearOpMode {
 
             // Step through the list of detected tags and look for a matching tag
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-            for (AprilTagDetection detection : currentDetections) {
-                // Look to see if we have size info on this tag.
-                if (detection.metadata != null) {
-                    //  Check to see if we want to track towards this tag.
-                    if (detection.id == PPG_TAG_ID) {
-                        // call lines for the PGP pattern
-                        buildPathsPPG();
-                        targetFound = true;
-                        desiredTag = detection;
-                        foundID = 21; // This should likely be PPG_TAG_ID or the corresponding state machine ID
-                        break;  // don't look any further.
-                    } else if (detection.id == PGP_TAG_ID) {
-                        // call lines for the PGP pattern
-                        buildPathsPGP();
-                        targetFound = true;
-                        desiredTag = detection;
-                        foundID = 22; // This should likely be PGP_TAG_ID or the corresponding state machine ID
-                        break;  // don't look any further.
+//            for (AprilTagDetection detection : currentDetections) {
+//                // Look to see if we have size info on this tag.
+//                if (detection.metadata != null) {
+//                    //  Check to see if we want to track towards this tag.
+//                    if (detection.id == PPG_TAG_ID) {
+//                        // call lines for the PGP pattern
+//                        buildPathsPPG();
+//                        targetFound = true;
+//                        desiredTag = detection;
+//                        foundID = 21; // This should likely be PPG_TAG_ID or the corresponding state machine ID
+//                        break;  // don't look any further.
+//                    } else if (detection.id == PGP_TAG_ID) {
+//                        // call lines for the PGP pattern
+//                        buildPathsPGP();
+//                        targetFound = true;
+//                        desiredTag = detection;
+//                        foundID = 22; // This should likely be PGP_TAG_ID or the corresponding state machine ID
+//                        break;  // don't look any further.
+//
+//                    } else if (detection.id == GPP_TAG_ID) {
+//                        // call lines for the GPP pattern
+//                        buildPathsGPP();
+//                        targetFound = true;
+//                        desiredTag = detection;
+//                        foundID = 23; // This should likely be GPP_TAG_ID or the corresponding state machine ID
+//                        break;  // don't look any further.
+//                    }
+//                } else {
+//                    // This tag is NOT in the library, so we don't have enough information to track to it.
+//                    telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
+//                }
+//            }
 
-                    } else if (detection.id == GPP_TAG_ID) {
-                        // call lines for the GPP pattern
-                        buildPathsGPP();
-                        targetFound = true;
-                        desiredTag = detection;
-                        foundID = 23; // This should likely be GPP_TAG_ID or the corresponding state machine ID
-                        break;  // don't look any further.
-                    }
-                } else {
-                    // This tag is NOT in the library, so we don't have enough information to track to it.
-                    telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
-                }
-            }
 
+            updateStateMachinePPG();
+//            updateStateMachinePGP();
+//            updateStateMachineGPP();
 
             // Update the state machine
-            if (foundID == 21) { // Consider using the TAG_ID constants or a dedicated variable for which path was found
-                updateStateMachinePPG();
-            } else if (foundID == 22) {
-                updateStateMachinePGP();
-            } else if (foundID == 23) {
-                updateStateMachineGPP();
-            }
+//            if (foundID == 21) { // Consider using the TAG_ID constants or a dedicated variable for which path was found
+//                updateStateMachinePPG();
+//            } else if (foundID == 22) {
+//                updateStateMachinePGP();
+//            } else if (foundID == 23) {
+//                updateStateMachineGPP();
+//            }
 
 
             // Log to Panels and driver station (custom log function)
@@ -363,15 +367,15 @@ public class AprilTagPatternAuto extends LinearOpMode {
         }
 
         // Make sure camera is streaming before we try to set the exposure controls
-        if (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
-            telemetry.addData("Camera", "Waiting");
-            telemetry.update();
-            while (!isStopRequested() && (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING)) {
-                sleep(20);
-            }
-            telemetry.addData("Camera", "Ready");
-            telemetry.update();
-        }
+//        if (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
+//            telemetry.addData("Camera", "Waiting");
+//            telemetry.update();
+//            while (!isStopRequested() && (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING)) {
+//                sleep(20);
+//            }
+//            telemetry.addData("Camera", "Ready");
+//            telemetry.update();
+//        }
         // ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
         // if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
         //     exposureControl.setMode(ExposureControl.Mode.Manual);
