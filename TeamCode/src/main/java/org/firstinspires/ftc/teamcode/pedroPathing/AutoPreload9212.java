@@ -346,8 +346,10 @@ public class AutoPreload9212 extends LinearOpMode {
             follower.update();
             panelsTelemetry.update();
             currentPose = follower.getPose(); // Update the current pose
-
-            statePathUpdate();
+/////////////////////////////////////
+            ///////////////////////////////////
+//            test here
+//            statePathUpdate();
 
             buildPathsPreload();
             updateStateMachinePreload();
