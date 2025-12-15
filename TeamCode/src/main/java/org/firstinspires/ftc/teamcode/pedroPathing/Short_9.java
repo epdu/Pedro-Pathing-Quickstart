@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.auto.red;
+package org.firstinspires.ftc.teamcode.pedroPathing;
 
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.bylazar.telemetry.PanelsTelemetry;
@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.lib.pedropathing.Constants;
+//import org.firstinspires.ftc.teamcode.lib.pedropathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.Feeder.FeederSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.Flywheel.FlywheelSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.Intake.IntakeSubsystem;
