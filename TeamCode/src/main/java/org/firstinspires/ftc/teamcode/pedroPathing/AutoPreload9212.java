@@ -56,10 +56,10 @@ public class AutoPreload9212 extends LinearOpMode {
     // Initialize elapsed timer
     private final ElapsedTime runtime = new ElapsedTime();
     private Timer autoTimer, pathTimer;
-    ShooterSubsystem shooterSubsystem;
-    FlywheelSubsystem flywheelSubsystem;
-    FeederSubsystem feederSubsystem;
-    IntakeSubsystem intakeSubsystem;
+//    ShooterSubsystem shooterSubsystem;
+//    FlywheelSubsystem flywheelSubsystem;
+//    FeederSubsystem feederSubsystem;
+//    IntakeSubsystem intakeSubsystem;
     Vision vision;
     // Initialize poses
     //size of robot 16.25x12.5 inch
