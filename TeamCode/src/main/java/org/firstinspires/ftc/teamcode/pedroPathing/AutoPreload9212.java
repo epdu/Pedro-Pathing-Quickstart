@@ -296,6 +296,7 @@ public class AutoPreload9212 extends LinearOpMode {
 //            feederSubsystem = FeederSubsystem.getInstance(hardwareMap, gamepad1);
             vision = Vision.getInstance(hardwareMap);
 
+
 //            intakeSubsystem.init();
 //            flywheelSubsystem.init();
 //            shooterSubsystem.init();
