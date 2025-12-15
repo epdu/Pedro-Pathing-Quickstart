@@ -290,16 +290,16 @@ public class AutoPreload9212 extends LinearOpMode {
             autoTimer = new Timer();
             follower = Constants.createFollower(hardwareMap);
 
-            intakeSubsystem = IntakeSubsystem.getInstance(hardwareMap, gamepad1);
-            flywheelSubsystem = FlywheelSubsystem.getInstance(hardwareMap, gamepad1);
-            shooterSubsystem = ShooterSubsystem.getInstance(hardwareMap, gamepad1, gamepad2);
-            feederSubsystem = FeederSubsystem.getInstance(hardwareMap, gamepad1);
+//            intakeSubsystem = IntakeSubsystem.getInstance(hardwareMap, gamepad1);
+//            flywheelSubsystem = FlywheelSubsystem.getInstance(hardwareMap, gamepad1);
+//            shooterSubsystem = ShooterSubsystem.getInstance(hardwareMap, gamepad1, gamepad2);
+//            feederSubsystem = FeederSubsystem.getInstance(hardwareMap, gamepad1);
             vision = Vision.getInstance(hardwareMap);
 
-            intakeSubsystem.init();
-            flywheelSubsystem.init();
-            shooterSubsystem.init();
-            feederSubsystem.init();
+//            intakeSubsystem.init();
+//            flywheelSubsystem.init();
+//            shooterSubsystem.init();
+//            feederSubsystem.init();
             vision.init();
 
             buildPaths();
