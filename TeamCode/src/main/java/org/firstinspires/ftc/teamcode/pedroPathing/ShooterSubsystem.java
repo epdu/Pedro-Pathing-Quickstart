@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.Flywheel.FlywheelConstants;
 import org.firstinspires.ftc.teamcode.subsystems.Flywheel.FlywheelSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.Vision.Vision;
+//import org.firstinspires.ftc.teamcode.pedroPathing.Vision;
 
 public class ShooterSubsystem {
     public CRServoImplEx servo;
@@ -20,7 +20,7 @@ public class ShooterSubsystem {
     private TouchSensor touchSensor;
     public PIDController pid;
     private FlywheelSubsystem flywheelSubsystem;
-    private Vision vision;
+//    private Vision vision;
 
     private final HardwareMap hardwareMap;
     private final Gamepad gamepad1;
@@ -61,7 +61,7 @@ public class ShooterSubsystem {
         pid.setTolerance(1);
 
         flywheelSubsystem = FlywheelSubsystem.getInstance();
-        vision = Vision.getInstance();
+//        vision = Vision.getInstance();
 
         tuningPos = 0;
     }
@@ -100,28 +100,28 @@ public class ShooterSubsystem {
      * @param isBack If the default shooter mode (if no tag seen) should be true if far, false if short
      */
     public void shoot(boolean isBack) {
-        if (vision.getDistance().isEmpty() && isBack) {
-            setAngle(ShooterConstants.FAR_ANGLE);
-            flywheelSubsystem.setVelocity(FlywheelConstants.FAR_AUTO_VELOCITY);
+//        if (vision.getDistance().isEmpty() && isBack) {
+//            setAngle(ShooterConstants.FAR_ANGLE);
+//            flywheelSubsystem.setVelocity(FlywheelConstants.FAR_AUTO_VELOCITY);
+//
+//            return;
+//        }
+//
+//        if (vision.getDistance().isEmpty() && !isBack) {
+//            setAngle(ShooterConstants.CLOSE_ANGLE);
+//            flywheelSubsystem.setVelocity(FlywheelConstants.CLOSE_VELOCITY);
+//
+//            return;
+//        }
 
-            return;
-        }
 
-        if (vision.getDistance().isEmpty() && !isBack) {
-            setAngle(ShooterConstants.CLOSE_ANGLE);
-            flywheelSubsystem.setVelocity(FlywheelConstants.CLOSE_VELOCITY);
-
-            return;
-        }
-
-
-        if (vision.getDistance().isEmpty()) return;
-
-        double velocityFromDistance = flywheelSubsystem.findVelocity(vision.getDistance().get());
-        double angleFromDistance = findAngle(vision.getDistance().get());
-
-        setAngle(angleFromDistance);
-        flywheelSubsystem.setVelocity(velocityFromDistance);
+//        if (vision.getDistance().isEmpty()) return;
+//
+//        double velocityFromDistance = flywheelSubsystem.findVelocity(vision.getDistance().get());
+//        double angleFromDistance = findAngle(vision.getDistance().get());
+//
+//        setAngle(angleFromDistance);
+//        flywheelSubsystem.setVelocity(velocityFromDistance);
     }
 
 

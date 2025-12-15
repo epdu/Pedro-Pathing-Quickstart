@@ -17,8 +17,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Feeder.FeederSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.Flywheel.FlywheelSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.Intake.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter.ShooterSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.Vision.Vision;
-import org.firstinspires.ftc.teamcode.util.Alliance;
+//import org.firstinspires.ftc.teamcode.subsystems.Vision.Vision;
+import org.firstinspires.ftc.teamcode.pedroPathing.Alliance;
 
 @Autonomous(name = "Short_9_Red")
 public class Short_9 extends OpMode {
@@ -29,7 +29,7 @@ public class Short_9 extends OpMode {
     FlywheelSubsystem flywheelSubsystem;
     FeederSubsystem feederSubsystem;
     IntakeSubsystem intakeSubsystem;
-    Vision vision;
+//    Vision vision;
 
     public enum PathState {
         DRIVE_START_POS_SHOOT_POS,
@@ -293,13 +293,13 @@ public class Short_9 extends OpMode {
         flywheelSubsystem = FlywheelSubsystem.getInstance(hardwareMap, gamepad1);
         feederSubsystem = FeederSubsystem.getInstance(hardwareMap, gamepad1);
         intakeSubsystem = IntakeSubsystem.getInstance(hardwareMap, gamepad1);
-        vision = Vision.getInstance(hardwareMap);
+//        vision = Vision.getInstance(hardwareMap);
 
         flywheelSubsystem.init();
         shooterSubsystem.init();
         feederSubsystem.init();
         intakeSubsystem.init();
-        vision.init();
+//        vision.init();
 
         buildPaths();
         follower.setStartingPose(startPose);
@@ -307,7 +307,7 @@ public class Short_9 extends OpMode {
 
     @Override
     public void start() {
-        vision.start();
+//        vision.start();
 
         autoTimer.resetTimer();
         setPathState(pathState);
@@ -315,7 +315,7 @@ public class Short_9 extends OpMode {
 
     @Override
     public void loop() {
-        vision.loop();
+//        vision.loop();
 
         follower.update();
         statePathUpdate();
@@ -337,12 +337,12 @@ public class Short_9 extends OpMode {
 
 
         telemetry.addLine("//Vision//");
-        telemetry.addData("LL Valid", vision.llValid);
-        telemetry.addData("Has Tag", vision.hasTag);
-        telemetry.addData("Ta", vision.getTa().orElse(-1.0));
-        telemetry.addData("Tx", vision.getTx().orElse(-1.0));
-        telemetry.addData("Ty", vision.getTy().orElse(-1.0));
-        telemetry.addData("Distance", vision.getDistance().orElse(-1.0));
+//        telemetry.addData("LL Valid", vision.llValid);
+//        telemetry.addData("Has Tag", vision.hasTag);
+//        telemetry.addData("Ta", vision.getTa().orElse(-1.0));
+//        telemetry.addData("Tx", vision.getTx().orElse(-1.0));
+//        telemetry.addData("Ty", vision.getTy().orElse(-1.0));
+//        telemetry.addData("Distance", vision.getDistance().orElse(-1.0));
         telemetry.addLine();
 
         telemetry.addLine("//Odometry//");
