@@ -98,7 +98,6 @@ public class PPtestfirstworks extends LinearOpMode {
         // Put your shooting logic/functions here
     }
 
-
     @Override
     public void runOpMode() {
         // Initialize Panels telemetry
