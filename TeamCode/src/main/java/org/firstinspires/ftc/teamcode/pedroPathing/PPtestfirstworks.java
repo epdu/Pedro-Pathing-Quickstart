@@ -89,7 +89,6 @@ public class PPtestfirstworks extends LinearOpMode {
             panelsTelemetry.debug(caption + ": " + message);
         }
     }
-
     // a place to put your intake and shooting functions
     public void intakeArtifacts() {
         // Put your intake logic/functions here
