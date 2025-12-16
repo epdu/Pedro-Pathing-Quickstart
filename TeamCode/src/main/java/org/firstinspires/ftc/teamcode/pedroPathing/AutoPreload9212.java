@@ -49,7 +49,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.Vision.Vision;
 
-@Autonomous(name = "AutoPreload9212 one preload", group = "Opmode")
+@Autonomous(name = "AutoPreload9212 three preload", group = "Opmode")
 @Configurable // Panels
 @SuppressWarnings("FieldCanBeLocal") // Stop Android Studio from bugging about variables being predefined
 public class AutoPreload9212 extends LinearOpMode {

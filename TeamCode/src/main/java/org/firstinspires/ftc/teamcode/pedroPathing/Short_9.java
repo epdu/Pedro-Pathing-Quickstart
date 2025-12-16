@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Flywheel.FlywheelSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.Intake.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.Vision.Vision;
-import org.firstinspires.ftc.teamcode.util.Alliance;
+import org.firstinspires.ftc.teamcode.pedroPathing.Alliance;
 
 @Autonomous(name = "Short_9_Red")
 public class Short_9 extends OpMode {
@@ -276,7 +276,7 @@ public class Short_9 extends OpMode {
 
     @Override
     public void init() {
-        Robot.alliance = Alliance.RED;
+//        Robot.alliance = Alliance.RED;
         Robot.sendHardwareMap(hardwareMap);
 
         telemetry = new MultipleTelemetry(telemetry, PanelsTelemetry.INSTANCE.getFtcTelemetry());
