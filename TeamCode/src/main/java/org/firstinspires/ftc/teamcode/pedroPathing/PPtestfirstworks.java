@@ -1,4 +1,3 @@
-
 /*
 Hello :D my names mikey and i'm the head of software on team 21721. I was looking at the april tag sample code on the PP (pedro pathing) website and it kinda confused me or just wasn't
 what I needed to do, so I decided to make my own! Before you worry about the code itself u need to know a bit about April tags. April tags are basically just QR codes; in the sense
@@ -19,7 +18,6 @@ designated function and call the function in whichever part of the pathbuilder i
 //package org.firstinspires.ftc.teamcode.examples;
 package org.firstinspires.ftc.teamcode.pedroPathing;
 // FTC SDK
-
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
