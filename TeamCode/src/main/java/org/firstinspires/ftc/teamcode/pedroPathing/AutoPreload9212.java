@@ -40,14 +40,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.pedroPathing.Short_6;
-//import org.firstinspires.ftc.teamcode.auto.red.Short_6;
-//import org.firstinspires.ftc.teamcode.lib.pedropathing.Constants;
-import org.firstinspires.ftc.teamcode.subsystems.Feeder.FeederSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.Flywheel.FlywheelSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.Intake.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.Shooter.ShooterSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.Vision.Vision;
+
+//import org.firstinspires.ftc.teamcode.pedroPathing.Vision;
 
 @Autonomous(name = "AutoPreload9212 three preload", group = "Opmode")
 @Configurable // Panels
@@ -59,11 +53,11 @@ public class AutoPreload9212 extends LinearOpMode {
     // Initialize elapsed timer
     private final ElapsedTime runtime = new ElapsedTime();
     private Timer autoTimer, pathTimer;
-    ShooterSubsystem shooterSubsystem;
-    FlywheelSubsystem flywheelSubsystem;
-    FeederSubsystem feederSubsystem;
-    IntakeSubsystem intakeSubsystem;
-    Vision vision;
+//    ShooterSubsystem shooterSubsystem;
+//    FlywheelSubsystem flywheelSubsystem;
+//    FeederSubsystem feederSubsystem;
+//    IntakeSubsystem intakeSubsystem;
+//    Vision vision;
     private static final double VELOCITY_TOLERANCE = 30; // RPM容差，可根据测试调整
     // 状态变量
     private boolean isShooterAtSpeed = false;
@@ -290,17 +284,18 @@ public class AutoPreload9212 extends LinearOpMode {
             autoTimer = new Timer();
             follower = Constants.createFollower(hardwareMap);
 
-            intakeSubsystem = IntakeSubsystem.getInstance(hardwareMap, gamepad1);
-            flywheelSubsystem = FlywheelSubsystem.getInstance(hardwareMap, gamepad1);
-            shooterSubsystem = ShooterSubsystem.getInstance(hardwareMap, gamepad1, gamepad2);
-            feederSubsystem = FeederSubsystem.getInstance(hardwareMap, gamepad1);
-            vision = Vision.getInstance(hardwareMap);
+//            intakeSubsystem = IntakeSubsystem.getInstance(hardwareMap, gamepad1);
+//            flywheelSubsystem = FlywheelSubsystem.getInstance(hardwareMap, gamepad1);
+//            shooterSubsystem = ShooterSubsystem.getInstance(hardwareMap, gamepad1, gamepad2);
+//            feederSubsystem = FeederSubsystem.getInstance(hardwareMap, gamepad1);
+//            vision = Vision.getInstance(hardwareMap);
 
-            intakeSubsystem.init();
-            flywheelSubsystem.init();
-            shooterSubsystem.init();
-            feederSubsystem.init();
-            vision.init();
+
+//            intakeSubsystem.init();
+//            flywheelSubsystem.init();
+//            shooterSubsystem.init();
+//            feederSubsystem.init();
+//            vision.init();
 
             buildPaths();
             follower.setStartingPose(startPose);
@@ -351,8 +346,10 @@ public class AutoPreload9212 extends LinearOpMode {
             follower.update();
             panelsTelemetry.update();
             currentPose = follower.getPose(); // Update the current pose
-
-            statePathUpdate();
+/////////////////////////////////////
+            ///////////////////////////////////
+//            test here
+//            statePathUpdate();
 
             buildPathsPreload();
             updateStateMachinePreload();
@@ -535,6 +532,7 @@ public class AutoPreload9212 extends LinearOpMode {
 //                .setLinearHeadingInterpolation(GPPPose.getHeading(), scorePose.getHeading())
 //                .build();
 //    }
+
 
     //below is the state machine or each pattern
     public void updateStateMachinePreload() {

@@ -12,7 +12,7 @@
 //import com.qualcomm.robotcore.hardware.IMU;
 //
 //
-//import org.firstinspires.ftc.teamcode.subsystems.Vision.Vision;
+////import org.firstinspires.ftc.teamcode.subsystems.Vision.Vision;
 //
 //public class DriveSubsystem {
 //
@@ -26,7 +26,7 @@
 //    public final HardwareMap hardwareMap;
 //    private final Gamepad gamepad1;
 //
-//    private Vision vision;
+////    private Vision vision;
 //
 //    private static DriveSubsystem instance;
 //
@@ -68,7 +68,7 @@
 //
 //
 //
-//        vision = Vision.getInstance(hardwareMap);
+////        vision = Vision.getInstance(hardwareMap);
 //
 ////        follower = Constants.createFollower(hardwareMap);
 ////        follower.setStartingPose(new Pose());
@@ -79,8 +79,8 @@
 ////    }
 //
 //    public void loop(){
-//        alignPID.setP(DriveConstants.kP);
-//        alignPID.setD(DriveConstants.kD);
+////        alignPID.setP(DriveConstants.kP);
+////        alignPID.setD(DriveConstants.kD);
 //
 //        mecanum.driveFieldCentric(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, imu.getRobotYawPitchRollAngles().getYaw());
 //
