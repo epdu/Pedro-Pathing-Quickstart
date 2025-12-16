@@ -39,8 +39,8 @@ public class PPtestfirstworks extends LinearOpMode {
     private final ElapsedTime runtime = new ElapsedTime();
 
     // Initialize poses
-    private final Pose startPose = new Pose(96, 24, Math.toRadians(0)); // Start Pose further zone of our robot.
-    private final Pose scorePose = new Pose(96, 96, Math.toRadians(45)); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
+    private final Pose startPose = new Pose(96, 6.25, Math.toRadians(0)); // Start Pose further zone of our robot.
+    private final Pose scorePose = new Pose(96, 95, Math.toRadians(45)); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
     private final Pose PPGPose = new Pose(100, 83.5, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
     private final Pose PGPPose = new Pose(100, 59.5, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose GPPPose = new Pose(100, 35.5, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
