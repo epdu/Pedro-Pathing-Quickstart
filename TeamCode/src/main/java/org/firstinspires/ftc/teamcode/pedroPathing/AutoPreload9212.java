@@ -91,6 +91,33 @@ public class AutoPreload9212 extends LinearOpMode {
     public static final double HoodArmPositionInit = 0.1;
     public static final double HoodArmPositionCloseShoot = 0.3;
     public static final double HoodArmPositionMedShoot = 0.2;
+
+
+    // Other variables
+    private Pose currentPose; // Current pose of the robot
+    private Follower follower; // Pedro Pathing follower
+    private TelemetryManager panelsTelemetry; // Panels telemetry
+    private int pathStatePreload;
+    private int pathStatePPG; // Current state machine value
+    private int pathStatePGP; // Current state machine value
+    private int pathStateGPP; // Current state machine value
+
+    public enum PathState {
+        DRIVE_STARTPOS_SHOOTPOS,
+        DRIVE_START_POS_SHOOT_POS,
+        SHOOT_PRELOAD,
+        DRIVE_READY_PICKUP_POS,
+        PICKUP,
+        DRIVE_BACK_SHOOT_POS,
+        SHOOT_PICKUP,
+        DRIVE_OFFLINE,
+        END
+    }
+    private Short_6.PathState pathState;
+    private PathChain driveStartShoot;
+    private PathChain driveReadyPickup;
+    private PathChain driveOffline;
+
     // Initialize poses
     //size of robot 16.25x12.5 inch
     private final Pose startPose = new Pose(92, 6.25, Math.toRadians(0)); // Start Pose further zone of our robot.
@@ -124,30 +151,6 @@ public class AutoPreload9212 extends LinearOpMode {
 //    private AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
 
 
-    // Other variables
-    private Pose currentPose; // Current pose of the robot
-    private Follower follower; // Pedro Pathing follower
-    private TelemetryManager panelsTelemetry; // Panels telemetry
-    private int pathStatePreload;
-    private int pathStatePPG; // Current state machine value
-    private int pathStatePGP; // Current state machine value
-    private int pathStateGPP; // Current state machine value
-
-    public enum PathState {
-        DRIVE_STARTPOS_SHOOTPOS,
-        DRIVE_START_POS_SHOOT_POS,
-        SHOOT_PRELOAD,
-        DRIVE_READY_PICKUP_POS,
-        PICKUP,
-        DRIVE_BACK_SHOOT_POS,
-        SHOOT_PICKUP,
-        DRIVE_OFFLINE,
-        END
-    }
-    private Short_6.PathState pathState;
-    private PathChain driveStartShoot;
-    private PathChain driveReadyPickup;
-    private PathChain driveOffline;
 //    private int foundID; // Current state machine value, dictates which one to run
 
     public void buildPaths() {
