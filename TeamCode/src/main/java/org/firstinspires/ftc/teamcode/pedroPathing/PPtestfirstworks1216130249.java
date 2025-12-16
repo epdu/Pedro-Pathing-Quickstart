@@ -29,32 +29,22 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "Pedro Pathing further zone PPG test works", group = "Opmode")
+@Autonomous(name = "Pedro Pathing further zone PPG test works 1216130249", group = "Opmode")
 @Configurable // Panels
 @SuppressWarnings("FieldCanBeLocal") // Stop Android Studio from bugging about variables being predefined
-public class PPtestfirstworks extends LinearOpMode {
+public class PPtestfirstworks1216130249 extends LinearOpMode {
     // Initialize elapsed timer
     private final ElapsedTime runtime = new ElapsedTime();
     // Initialize poses
     private final Pose startPose = new Pose(96, 6.25, Math.toRadians(0)); // Start Pose further zone of our robot.
     private final Pose scorePose = new Pose(96, 95, Math.toRadians(45)); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
     private final Pose PPGPose = new Pose(100, 83.5, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
-//    private final Pose PGPPose = new Pose(100, 59.5, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
-//    private final Pose GPPPose = new Pose(100, 35.5, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
-    private final Pose scoreEnd = new Pose(92, 92.25, Math.toRadians(0)); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
-    private final Pose readyPickupPosePPG = new Pose(92, 82.25, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
-    private final Pose PGPPose = new Pose(92, 60.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose GPPPose = new Pose(92, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
-    private final Pose PPGDONEPose = new Pose(122, 82.25, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
-    private final Pose PGPDONEPose = new Pose(122, 60.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose GPPPDONEPose = new Pose(122, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
-    //    private final Pose PARKPose = new Pose(120, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
-    private final Pose offlinePose = new Pose(120, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
-    // Initialize variables for paths
+    private final Pose PGPPose = new Pose(100, 59.5, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose GPPPose = new Pose(100, 35.5, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
+
     // Initialize variables for paths
 
     private PathChain grabPPG;
-    private PathChain scorePreload;
     private PathChain scorePPG;
     private PathChain grabPGP;
     private PathChain scorePGP;
@@ -77,7 +67,6 @@ public class PPtestfirstworks extends LinearOpMode {
     private Follower follower; // Pedro Pathing follower
     private TelemetryManager panelsTelemetry; // Panels telemetry
     private int pathStatePPG; // Current state machine value
-    private int pathStatePreload; // Current state machine value
     private int pathStatePGP; // Current state machine value
     private int pathStateGPP; // Current state machine value
 
@@ -124,7 +113,7 @@ public class PPtestfirstworks extends LinearOpMode {
         // Wait for the game to start (driver presses START)
         waitForStart();
         runtime.reset();
-        setpathStatePreload(0);
+
         setpathStatePPG(0);
         setpathStatePGP(0);
         setpathStateGPP(0);
@@ -135,12 +124,8 @@ public class PPtestfirstworks extends LinearOpMode {
             panelsTelemetry.update();
             currentPose = follower.getPose(); // Update the current pose
 
-
-            buildPathsPreload();
-            updateStateMachinePreload();
-
-//            buildPathsPPG();
-//            updateStateMachinePPG();
+            buildPathsPPG();
+            updateStateMachinePPG();
 //            buildPathsPGP();
 //            updateStateMachinePGP();
 //            buildPathsGPP();
@@ -154,22 +139,6 @@ public class PPtestfirstworks extends LinearOpMode {
             log("Heading", currentPose.getHeading());
             telemetry.update(); // Update the driver station after logging
         }
-    }
-
-    public void buildPathsPreload() {
-        // basically just plotting the points for the lines that score the PPG pattern
-
-//
-//        grabPPG = follower.pathBuilder() //
-//                .addPath(new BezierLine(startPose, scorePose))
-//                .setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading())
-//                .build();
-
-        // Move to the scoring pose from the first artifact pickup pose
-        scorePreload = follower.pathBuilder()
-                .addPath(new BezierLine(startPose, scorePose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading())
-                .build();
     }
 
 
@@ -222,26 +191,6 @@ public class PPtestfirstworks extends LinearOpMode {
     }
 
     //below is the state machine or each pattern
-
-    public void updateStateMachinePreload() {
-        switch (pathStatePreload) {
-            case 0:
-                // Move to the scoring position from the start position
-                follower.followPath(scorePreload, .5, true);
-
-                setpathStatePreload(1); // Call the setter method
-                break;
-            case 1:
-                // Wait until we have passed all path constraints
-                if (!follower.isBusy()) {
-
-                    // Move to the first artifact pickup location from the scoring position
-                    follower.followPath(scorePreload, .5, true);
-                    setpathStatePreload(-1); //set it to -1 so it stops the state machine execution
-                }
-                break;
-        }
-    }
 
     public void updateStateMachinePPG() {
         switch (pathStatePPG) {
@@ -303,11 +252,6 @@ public class PPtestfirstworks extends LinearOpMode {
     }
 
     // Setter methods for pathState variables placed at the class level
-
-
-    void setpathStatePreload(int newPathState) {
-        this.pathStatePreload = newPathState;
-    }
     void setpathStatePPG(int newPathState) {
         this.pathStatePPG = newPathState;
     }
