@@ -93,7 +93,6 @@ public class PPtestfirstworks extends LinearOpMode {
     public void intakeArtifacts() {
         // Put your intake logic/functions here
     }
-
     public void shootArtifacts() {
         // Put your shooting logic/functions here
     }
