@@ -31,7 +31,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "Pedro Pathing further zone PPG test", group = "Opmode")
+@Autonomous(name = "Pedro Pathing further zone PPG test works", group = "Opmode")
 @Configurable // Panels
 @SuppressWarnings("FieldCanBeLocal") // Stop Android Studio from bugging about variables being predefined
 public class PPtestfirstworks extends LinearOpMode {

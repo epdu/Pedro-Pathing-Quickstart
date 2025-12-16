@@ -37,7 +37,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 
-@Autonomous(name = "AutoPreload9212 three preload", group = "Opmode")
+@Autonomous(name = "AutoPreload9212 three preload 1216", group = "Opmode")
 @Configurable // Panels
 @SuppressWarnings("FieldCanBeLocal") // Stop Android Studio from bugging about variables being predefined
 public class AutoPreload9212 extends LinearOpMode {
@@ -299,7 +299,7 @@ public class AutoPreload9212 extends LinearOpMode {
 //            feederSubsystem.init();
 //            vision.init();
 
-//            buildPaths();    //still need it or not? 12162025
+            buildPaths();    //still need it or not? 12162025
 //            vision.start();
             autoTimer.resetTimer();
             setPathState(pathState);
