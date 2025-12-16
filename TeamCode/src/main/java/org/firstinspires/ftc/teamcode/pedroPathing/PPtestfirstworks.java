@@ -35,7 +35,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class PPtestfirstworks extends LinearOpMode {
     // Initialize elapsed timer
     private final ElapsedTime runtime = new ElapsedTime();
-
     // Initialize poses
     private final Pose startPose = new Pose(96, 6.25, Math.toRadians(0)); // Start Pose further zone of our robot.
     private final Pose scorePose = new Pose(96, 95, Math.toRadians(45)); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
