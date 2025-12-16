@@ -124,7 +124,6 @@ public class PPtestfirstworks extends LinearOpMode {
         setpathStatePPG(0);
         setpathStatePGP(0);
         setpathStateGPP(0);
-        runtime.reset();
 
         while (opModeIsActive()) {
             // Update Pedro Pathing and Panels every iteration

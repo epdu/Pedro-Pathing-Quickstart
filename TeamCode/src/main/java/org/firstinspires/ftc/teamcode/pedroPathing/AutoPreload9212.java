@@ -15,11 +15,8 @@ say "if the numeric value is 21, then run the GPP pathbuilder" and so on. Right 
 designated function and call the function in whichever part of the pathbuilder it is needed. I hope this helps!
 */
 
-
-//package org.firstinspires.ftc.teamcode.examples;
 package org.firstinspires.ftc.teamcode.pedroPathing;
 // FTC SDK
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.bylazar.configurables.annotations.Configurable;
@@ -38,8 +35,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.teamcode.Robot;
-//import org.firstinspires.ftc.teamcode.pedroPathing.Vision;
+
 
 @Autonomous(name = "AutoPreload9212 three preload", group = "Opmode")
 @Configurable // Panels
@@ -146,7 +142,6 @@ public class AutoPreload9212 extends LinearOpMode {
         DRIVE_BACK_SHOOT_POS,
         SHOOT_PICKUP,
         DRIVE_OFFLINE,
-//        DRIVE_OFFLINE,
         END
     }
     private Short_6.PathState pathState;
@@ -271,8 +266,14 @@ public class AutoPreload9212 extends LinearOpMode {
     public void runOpMode() {
 
         /// ///////////////////////////
-
-            Robot.sendHardwareMap(hardwareMap);
+        robot.init(hardwareMap);
+        initShooterPIDF();
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        FtcDashboard Dashboard = FtcDashboard.getInstance();
+        Telemetry dashboardTelemetry = Dashboard.getTelemetry();
+        // 设置 Dashboard 更新频率
+        Dashboard.setTelemetryTransmissionInterval(100); // 100ms 更新一次
+//            Robot.sendHardwareMap(hardwareMap);
 
             telemetry = new MultipleTelemetry(telemetry, PanelsTelemetry.INSTANCE.getFtcTelemetry());
 
@@ -295,23 +296,7 @@ public class AutoPreload9212 extends LinearOpMode {
 //            feederSubsystem.init();
 //            vision.init();
 
-            buildPaths();
-            follower.setStartingPose(startPose);
-
-
-
-
-        /// //////////////////////////
-
-        robot.init(hardwareMap);
-        initShooterPIDF();
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        FtcDashboard Dashboard = FtcDashboard.getInstance();
-        Telemetry dashboardTelemetry = Dashboard.getTelemetry();
-        // 设置 Dashboard 更新频率
-        Dashboard.setTelemetryTransmissionInterval(100); // 100ms 更新一次
-
-/// //////////////
+//            buildPaths();    //still need it or not? 12162025
 //            vision.start();
             autoTimer.resetTimer();
             setPathState(pathState);
@@ -337,20 +322,27 @@ public class AutoPreload9212 extends LinearOpMode {
 //        setpathStatePPG(0);
 //        setpathStatePGP(0);
 //        setpathStateGPP(0);
-        runtime.reset();
+
 
         while (opModeIsActive()) {
             // Update Pedro Pathing and Panels every iteration
             follower.update();
+
+//            buildPathsPreload();
+
+            statePathUpdate();
+
             panelsTelemetry.update();
             currentPose = follower.getPose(); // Update the current pose
 /////////////////////////////////////
-            ///////////////////////////////////
+///////////////////////////////////
 //            test here
 //            statePathUpdate();
+//            updateStateMachinePreload();
 
-            buildPathsPreload();
-            updateStateMachinePreload();
+
+
+
 //            buildPathsPPG();
 //            updateStateMachinePPG();
 //            buildPathsPGP();
