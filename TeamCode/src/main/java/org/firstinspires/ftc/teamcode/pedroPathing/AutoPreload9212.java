@@ -102,17 +102,17 @@ public class AutoPreload9212 extends LinearOpMode {
     private int pathStatePGP; // Current state machine value
     private int pathStateGPP; // Current state machine value
 
-    public enum PathState {
-        DRIVE_STARTPOS_SHOOTPOS,
-        DRIVE_START_POS_SHOOT_POS,
-        SHOOT_PRELOAD,
-        DRIVE_READY_PICKUP_POS,
-        PICKUP,
-        DRIVE_BACK_SHOOT_POS,
-        SHOOT_PICKUP,
-        DRIVE_OFFLINE,
-        END
-    }
+//    public enum PathState {
+//        DRIVE_STARTPOS_SHOOTPOS,
+//        DRIVE_START_POS_SHOOT_POS,
+//        SHOOT_PRELOAD,
+//        DRIVE_READY_PICKUP_POS,
+//        PICKUP,
+//        DRIVE_BACK_SHOOT_POS,
+//        SHOOT_PICKUP,
+//        DRIVE_OFFLINE,
+//        END
+//    }
     private Short_6.PathState pathState;
     private PathChain driveStartShoot;
     private PathChain driveReadyPickup;

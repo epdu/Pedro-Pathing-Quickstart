@@ -22,6 +22,7 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
@@ -106,6 +107,8 @@ public class PPtestfirstworks extends LinearOpMode {
 
     private PathChain grabPPG;
     private PathChain scorePreload;
+    private PathChain driveReadyFirstPickup;
+    private PathChain driveFirstPickup;
     private PathChain scorePPG;
     private PathChain grabPGP;
     private PathChain scorePGP;
@@ -190,8 +193,8 @@ public class PPtestfirstworks extends LinearOpMode {
             buildPathsPreload();
             updateStateMachinePreload();
 
-//            buildPathsPPG();
-//            updateStateMachinePPG();
+            buildPathsPPG();
+            updateStateMachinePPG();
 //            buildPathsPGP();
 //            updateStateMachinePGP();
 //            buildPathsGPP();
@@ -208,15 +211,7 @@ public class PPtestfirstworks extends LinearOpMode {
     }
 
     public void buildPathsPreload() {
-        // basically just plotting the points for the lines that score the PPG pattern
 
-//
-//        grabPPG = follower.pathBuilder() //
-//                .addPath(new BezierLine(startPose, scorePose))
-//                .setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading())
-//                .build();
-
-        // Move to the scoring pose from the first artifact pickup pose
         scorePreload = follower.pathBuilder()
                 .addPath(new BezierLine(startPose, scorePose))
                 .setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading())
@@ -228,15 +223,20 @@ public class PPtestfirstworks extends LinearOpMode {
         // basically just plotting the points for the lines that score the PPG pattern
 
 
-        grabPPG = follower.pathBuilder() //
-                .addPath(new BezierLine(startPose, PPGPose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), PPGPose.getHeading())
+        driveReadyFirstPickup = follower.pathBuilder() //
+                .addPath(new BezierCurve(scorePose,scoreEnd,readyPickupPosePPG))
+                .setLinearHeadingInterpolation(scorePose.getHeading(), readyPickupPosePPG.getHeading())
+                .build();
+
+        driveFirstPickup= follower.pathBuilder() //
+                .addPath(new BezierCurve(readyPickupPosePPG,PPGDONEPose))
+                .setLinearHeadingInterpolation(readyPickupPosePPG.getHeading(), PPGDONEPose.getHeading())
                 .build();
 
         // Move to the scoring pose from the first artifact pickup pose
         scorePPG = follower.pathBuilder()
-                .addPath(new BezierLine(PPGPose, scorePose))
-                .setLinearHeadingInterpolation(PPGPose.getHeading(), scorePose.getHeading())
+                .addPath(new BezierLine(PPGDONEPose, scorePose))
+                .setLinearHeadingInterpolation(PPGDONEPose.getHeading(), scorePose.getHeading())
                 .build();
     }
 
