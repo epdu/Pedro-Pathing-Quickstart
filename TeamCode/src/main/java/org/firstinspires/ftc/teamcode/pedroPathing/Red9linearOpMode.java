@@ -16,7 +16,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Robot;
@@ -52,7 +51,6 @@ public class Red9linearOpMode extends LinearOpMode {
     //  1000RPM---6346.67
     //  600RPM---3808
     //  500RPM---3173.3
-
     public float DriveTrains_ReducePOWER=0.75f;
     public float DriveTrains_smoothTurn=0.55f;
     public String fieldOrRobotCentric = "robot";
