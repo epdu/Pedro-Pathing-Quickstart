@@ -24,11 +24,13 @@ import org.firstinspires.ftc.teamcode.subsystems.Flywheel.FlywheelSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.Intake.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.pedroPathing.Alliance;
+import static java.lang.Math.abs;
 
 @Autonomous(name = "a Red9long")
 public class Red9Long extends LinearOpMode {
     HardwareQualifier robot = new HardwareQualifier();
     private volatile boolean isRunning = true;
+    private boolean shooterStarted=false;
     ElapsedTime delayTimer = new ElapsedTime();
     // Initialize elapsed timer
     private final ElapsedTime runtime = new ElapsedTime();
@@ -58,7 +60,7 @@ public class Red9Long extends LinearOpMode {
     private double powerMultiplier = 0.9;
     boolean move = false;
     int controlMode = 1;
-    public float  intakePowerIntake=0.85f;
+    public float  intakePowerIntake=0.95f;
     public float  intakePowerShoot=0.9f;
     public float  intakePowerDump=-0.6f;
     public float  intakePowerOff=0.0f;
@@ -227,7 +229,97 @@ public class Red9Long extends LinearOpMode {
         }
     }
 
+//    enum ShootState {
+//        SPIN_UP,
+//        FEEDING,
+//        DONE
+//    }
 
+//    public void autoshoot() {
+//        double currentRPM = Math.abs(robot.MasterShooterMotorL.getVelocity());
+//        double targetRPM = ShooterPIDFConfig.targetRPM;
+//        isShooterAtSpeed = (Math.abs(currentRPM - targetRPM) <= ShooterPIDFConfig.tolerance);
+//
+//        if (!shooterStarted) {
+//            startShooter();
+//            delayTimer.reset();
+//        }
+//
+//        if (isShooterAtSpeed && shooterStarted ) {
+//            robot.IntakeMotor.setPower(intakePowerShoot);
+//            delayTimer.reset();
+//            if (delayTimer.seconds() > 3) {
+//                stopShooter();
+//                delayTimer.reset();
+//            }
+//        }
+//
+//
+//    }
+
+    enum AutoShootState {
+        IDLE,
+        SPINNING_UP,
+        AT_SPEED,
+        FEEDING,
+        DONE
+    }
+
+    private AutoShootState autoShootState = AutoShootState.IDLE;
+
+    public void autoshoot() {
+
+        double currentRPM = Math.abs(robot.MasterShooterMotorL.getVelocity());
+        double targetRPM = ShooterPIDFConfig.targetRPM;
+
+        switch (autoShootState) {
+
+            case IDLE:
+                startShooter();
+                shooterStarted = true;
+                delayTimer.reset();
+                autoShootState = AutoShootState.SPINNING_UP;
+                break;
+
+            case SPINNING_UP:
+                if (Math.abs(currentRPM - targetRPM) <= ShooterPIDFConfig.tolerance) {
+                    delayTimer.reset(); // ⭐ 只在“到速”瞬间 reset
+                    robot.IntakeMotor.setPower(intakePowerShoot);
+                    autoShootState = AutoShootState.FEEDING;
+                }
+                break;
+
+            case FEEDING:
+                if (delayTimer.seconds() >= 3.0) {
+                    stopShooter();
+                    stopIntake();
+                    autoShootState = AutoShootState.DONE;
+                }
+                break;
+
+            case DONE:
+                // 什么都不做，防止重复执行
+                break;
+        }
+    }
+
+
+
+    private void startShooter() {
+        robot.IntakeMotor.setPower(0);
+        if (robot.MasterShooterMotorL instanceof DcMotorEx) {
+            DcMotorEx shooter = (DcMotorEx) robot.MasterShooterMotorL;
+            // 直接使用setVelocity，它会使用已配置的PIDF
+            shooter.setVelocity(TeleOpQualifier.ShooterPIDFConfig.targetRPM);
+            double MasterShooterMotorLPower = robot.MasterShooterMotorL.getPower();
+            robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            double SlaveShooterMotorRPower = calculateOptimalSlavePower(MasterShooterMotorLPower);
+            robot.SlaveShooterMotorR.setPower(SlaveShooterMotorRPower);
+        }
+        shooterStarted=true;
+
+    }
     public void updateShooter() {
 
         // 手柄控制发射电机 - 按下右肩键启动射击电机
@@ -297,25 +389,7 @@ public class Red9Long extends LinearOpMode {
         }
     }
 
-    private void startShooter() {
-        robot.IntakeMotor.setPower(0);
-        if (robot.MasterShooterMotorL instanceof DcMotorEx) {
-            DcMotorEx shooter = (DcMotorEx) robot.MasterShooterMotorL;
-            // 直接使用setVelocity，它会使用已配置的PIDF
-            shooter.setVelocity(TeleOpQualifier.ShooterPIDFConfig.targetRPM);
 
-            // 从电机使用简单功率跟随（可选PIDF）
-//            robot.SlaveShooterMotorR.setPower(shooter.getPower() * 0.95); // 95%跟随
-//
-            double MasterShooterMotorLPower = robot.MasterShooterMotorL.getPower();
-            robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            double SlaveShooterMotorRPower = calculateOptimalSlavePower(MasterShooterMotorLPower);
-            robot.SlaveShooterMotorR.setPower(SlaveShooterMotorRPower);
-
-        }
-
-    }
 
 
 
@@ -393,10 +467,8 @@ public class Red9Long extends LinearOpMode {
         robot.IntakeMotor.setPower(0);
         isShooterAtSpeed = false;
         fireRequested = false;
+        shooterStarted=false;
     }
-
-
-    ///  ///////////
 
     private void stopIntake() {
         robot.IntakeMotor.setPower(intakePowerOff);
@@ -411,6 +483,7 @@ public class Red9Long extends LinearOpMode {
         telemetry.addData("intakePowerOff", intakePowerOff);
         telemetry.update();
         delayTimer.reset();
+        shooterStarted=false;
     }
 
 
@@ -594,7 +667,7 @@ public class Red9Long extends LinearOpMode {
                     while (delayTimer.milliseconds() < 1000 && opModeIsActive()) {
                         // Other tasks can be processed here
                     } //
-                    shoot();
+                    autoshoot();
                     executeFireSequence();
                     robot.IntakeMotor.setPower(intakePowerShoot);
 //                    shooterSubsystem.shoot(false);
