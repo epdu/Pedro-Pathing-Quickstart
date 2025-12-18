@@ -161,6 +161,7 @@ public class HardwareQualifier {
                 RevHubOrientationOnRobot.UsbFacingDirection.UP));
         double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
         imu.initialize(parameters);
+        imu.resetYaw();
 
         redLED = hwMap.get(DigitalChannel.class, "red");            // digital 01
         greenLED = hwMap.get(DigitalChannel.class, "green");         // digital 01

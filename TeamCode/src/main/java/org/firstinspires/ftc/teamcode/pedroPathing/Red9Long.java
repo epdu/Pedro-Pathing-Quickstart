@@ -26,15 +26,14 @@ import org.firstinspires.ftc.teamcode.subsystems.Shooter.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.pedroPathing.Alliance;
 import static java.lang.Math.abs;
 
-@Autonomous(name = "a Red9long")
+@Autonomous(name = "a today Red9long")
 public class Red9Long extends LinearOpMode {
     HardwareQualifier robot = new HardwareQualifier();
     private volatile boolean isRunning = true;
     private boolean shooterStarted=false;
-    ElapsedTime delayTimer = new ElapsedTime();
     // Initialize elapsed timer
     private final ElapsedTime runtime = new ElapsedTime();
-    private Timer autoTimer, pathTimer;
+    private Timer autoTimer, pathTimer,shootTimer;
     private static final double VELOCITY_TOLERANCE = 30; // RPM容差，可根据测试调整
     // 状态变量
     private boolean isShooterAtSpeed = false;
@@ -44,12 +43,15 @@ public class Red9Long extends LinearOpMode {
     private final String LED_COLOR_READY = "GREEN";
     private final String LED_COLOR_ACCELERATING = "YELLOW";
     private final String LED_COLOR_OFF = "RED";
-
-    // RPM = (TPS * 60秒) / 每转ticks数
-//    return (tps * 60.0) / ticksPerRevolution;  28*13.7
-    private static final double Close_SHOOTER_TARGET_RPM = 800;//  400RPM---2,557.33333333333333
-    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
-    private static final double Far_SHOOTER_TARGET_RPM = 2237;  //  350RPM---2237
+//  RPM = (TPS * 60秒) / 每转ticks数
+//  return (tps * 60.0) / ticksPerRevolution;  28*13.7
+//  TPS=RPM/60*ticksPerRevolution=RPM*28*13.7/60；
+    private static final double Close_SHOOTER_TARGET_RPM = 100;//  400RPM---2,557.33333333333333
+    private static final double Med_SHOOTER_TARGET_RPM = 204;   //1598 white tri a little bit too far//  250RPM---1586.67
+    private static final double Far_SHOOTER_TARGET_RPM = 350;  //  350RPM---2237
+//   private static final double Close_SHOOTER_TARGET_RPM = 800;//  400RPM---2,557.33333333333333
+//    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
+//    private static final double Far_SHOOTER_TARGET_RPM = 2237;  //  350RPM---2237
     //  1000RPM---6346.67
     //  600RPM---3808
     //  500RPM---3173.3
@@ -73,8 +75,6 @@ public class Red9Long extends LinearOpMode {
     public static final double HoodArmPositionInit = 0.1;
     public static final double HoodArmPositionCloseShoot = 0.3;
     public static final double HoodArmPositionMedShoot = 0.2;
-
-
     // Other variables
     private Pose currentPose; // Current pose of the robot
     private Follower follower; // Pedro Pathing follower
@@ -83,9 +83,6 @@ public class Red9Long extends LinearOpMode {
     private int pathStatePPG; // Current state machine value
     private int pathStatePGP; // Current state machine value
     private int pathStateGPP; // Current state machine value
-
-    //    private Short_9.PathState pathState;
-//    private Short_6.PathState pathState;
     private PathState pathState;
     ShooterSubsystem shooterSubsystem;
     FlywheelSubsystem flywheelSubsystem;
@@ -125,18 +122,20 @@ public class Red9Long extends LinearOpMode {
 
 
 
-
-
     @Override
     public void runOpMode() {
 
         /* ---------------- INIT ---------------- */
-
         Robot.alliance = Alliance.RED;
         Robot.sendHardwareMap(hardwareMap);
-
         telemetry = new MultipleTelemetry(telemetry, PanelsTelemetry.INSTANCE.getFtcTelemetry());
         robot.init(hardwareMap);
+        robot.imu.resetYaw();
+        robot.MasterShooterMotorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.MasterShooterMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        follower.setStartingPose(startPose);
         initShooterPIDF();
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         FtcDashboard Dashboard = FtcDashboard.getInstance();
@@ -146,6 +145,7 @@ public class Red9Long extends LinearOpMode {
 
         pathTimer = new Timer();
         autoTimer = new Timer();
+        shootTimer= new Timer();
 
         follower = Constants.createFollower(hardwareMap);
 
@@ -161,9 +161,7 @@ public class Red9Long extends LinearOpMode {
 
         buildPaths();
         follower.setStartingPose(startPose);
-
         pathState = PathState.DRIVE_START_POS_SHOOT_POS;
-
         telemetry.addLine("Ready");
         telemetry.update();
 
@@ -171,6 +169,7 @@ public class Red9Long extends LinearOpMode {
         waitForStart();
         autoTimer.resetTimer();
         pathTimer.resetTimer();
+        shootTimer.resetTimer();
 
         /* ---------------- MAIN LOOP ---------------- */
         while (opModeIsActive() && pathState != PathState.END) {
@@ -198,29 +197,17 @@ public class Red9Long extends LinearOpMode {
         if (gamepad1.left_trigger > 0.1) {
             // 吸入
             robot.IntakeMotor.setPower(intakePowerIntake);
-
             robot.MasterShooterMotorL.setPower(ShooterMotorHold);
             robot.SlaveShooterMotorR.setPower(ShooterMotorHold);
-            // Non-blocking delay to prevent rapid mode switching
-
             telemetry.addData("intakePowerIntake", intakePowerIntake);
             telemetry.update();
-            delayTimer.reset();
-            while (delayTimer.milliseconds() < 300 && opModeIsActive()) {
-                // Other tasks can be processed here
-            } // 防止快速连击导致模式快速切换
+
 
         } else if (gamepad1.left_bumper) {
             // 反转（吐出）
             robot.IntakeMotor.setPower(intakePowerDump);
-
             telemetry.addData("intakePowerDump", intakePowerDump);
             telemetry.update();
-            delayTimer.reset();
-            while (delayTimer.milliseconds() < 300 && opModeIsActive()) {
-                // Other tasks can be processed here
-            } // 防止快速连击导致模式快速切换
-
         } else if (gamepad1.y)  {
             // 停止
             stopIntake();
@@ -229,38 +216,10 @@ public class Red9Long extends LinearOpMode {
         }
     }
 
-//    enum ShootState {
-//        SPIN_UP,
-//        FEEDING,
-//        DONE
-//    }
-
-//    public void autoshoot() {
-//        double currentRPM = Math.abs(robot.MasterShooterMotorL.getVelocity());
-//        double targetRPM = ShooterPIDFConfig.targetRPM;
-//        isShooterAtSpeed = (Math.abs(currentRPM - targetRPM) <= ShooterPIDFConfig.tolerance);
-//
-//        if (!shooterStarted) {
-//            startShooter();
-//            delayTimer.reset();
-//        }
-//
-//        if (isShooterAtSpeed && shooterStarted ) {
-//            robot.IntakeMotor.setPower(intakePowerShoot);
-//            delayTimer.reset();
-//            if (delayTimer.seconds() > 3) {
-//                stopShooter();
-//                delayTimer.reset();
-//            }
-//        }
-//
-//
-//    }
 
     enum AutoShootState {
         IDLE,
         SPINNING_UP,
-        AT_SPEED,
         FEEDING,
         DONE
     }
@@ -269,7 +228,7 @@ public class Red9Long extends LinearOpMode {
 
     public void autoshoot() {
 
-        double currentRPM = Math.abs(robot.MasterShooterMotorL.getVelocity());
+        double currentRPM = Math.abs(robot.MasterShooterMotorL.getVelocity())*60/(28*13.7);
         double targetRPM = ShooterPIDFConfig.targetRPM;
 
         switch (autoShootState) {
@@ -277,20 +236,20 @@ public class Red9Long extends LinearOpMode {
             case IDLE:
                 startShooter();
                 shooterStarted = true;
-                delayTimer.reset();
+                shootTimer.resetTimer();
                 autoShootState = AutoShootState.SPINNING_UP;
                 break;
 
             case SPINNING_UP:
                 if (Math.abs(currentRPM - targetRPM) <= ShooterPIDFConfig.tolerance) {
-                    delayTimer.reset(); // ⭐ 只在“到速”瞬间 reset
+                    shootTimer.resetTimer(); // ⭐ 只在“到速”瞬间 reset
                     robot.IntakeMotor.setPower(intakePowerShoot);
                     autoShootState = AutoShootState.FEEDING;
                 }
                 break;
 
             case FEEDING:
-                if (delayTimer.seconds() >= 3.0) {
+                if (shootTimer.getElapsedTimeSeconds()  >= 3.0) {
                     stopShooter();
                     stopIntake();
                     autoShootState = AutoShootState.DONE;
@@ -310,10 +269,9 @@ public class Red9Long extends LinearOpMode {
         if (robot.MasterShooterMotorL instanceof DcMotorEx) {
             DcMotorEx shooter = (DcMotorEx) robot.MasterShooterMotorL;
             // 直接使用setVelocity，它会使用已配置的PIDF
-            shooter.setVelocity(TeleOpQualifier.ShooterPIDFConfig.targetRPM);
+            shooter.setVelocity(TeleOpQualifier.ShooterPIDFConfig.targetRPM*28*13.7/60);
             double MasterShooterMotorLPower = robot.MasterShooterMotorL.getPower();
-            robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
             double SlaveShooterMotorRPower = calculateOptimalSlavePower(MasterShooterMotorLPower);
             robot.SlaveShooterMotorR.setPower(SlaveShooterMotorRPower);
         }
@@ -365,16 +323,13 @@ public class Red9Long extends LinearOpMode {
 //        F: 10–30
 //        public static double targetRPM =Close_SHOOTER_TARGET_RPM;
         public static double targetRPM =Med_SHOOTER_TARGET_RPM; // 目标转速
-        public static double tolerance = 10;    // 转速容差
+        public static double tolerance = 10;    // 转速容差 5RPM---30TPS
     }
 
     private void initShooterPIDF() {
         // 初始化时调用一次
         if (robot.MasterShooterMotorL instanceof DcMotorEx) {
             DcMotorEx shooter = (DcMotorEx) robot.MasterShooterMotorL;
-            // 设置运行模式
-            shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             // 设置PIDF参数
             PIDFCoefficients pidf = new PIDFCoefficients(
@@ -406,7 +361,7 @@ public class Red9Long extends LinearOpMode {
     private void checkShooterVelocity() {
         if (robot.MasterShooterMotorL.isBusy()) {
             double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());
-            double targetVelocity = TeleOpQualifier.ShooterPIDFConfig.targetRPM;
+            double targetVelocity = TeleOpQualifier.ShooterPIDFConfig.targetRPM*28*13.7/60;
             double tolerance = TeleOpQualifier.ShooterPIDFConfig.tolerance;
 
             // 检查是否在容差范围内
@@ -474,15 +429,10 @@ public class Red9Long extends LinearOpMode {
         robot.IntakeMotor.setPower(intakePowerOff);
         robot.MasterShooterMotorL.setPower(ShooterMotorOff);
         robot.SlaveShooterMotorR.setPower(ShooterMotorOff);
-        robot.MasterShooterMotorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.MasterShooterMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
         // Non-blocking delay to prevent rapid mode switching
         telemetry.addData("intakePowerOff", intakePowerOff);
         telemetry.update();
-        delayTimer.reset();
+
         shooterStarted=false;
     }
 
@@ -660,34 +610,20 @@ public class Red9Long extends LinearOpMode {
                 setPathState(PathState.SHOOT_PRELOAD);
                 break;
 
+//                if (!follower.isBusy()) {
+//                    follower.followPath(driveStartShoot, true);
+//                }
+//                if (!follower.isBusy() && follower.atParametricEnd()) {
+//                    setPathState(PathState.SHOOT_PRELOAD);
+//                }
+//                break;
+
             case SHOOT_PRELOAD:
-                if (!follower.isBusy()) {
-                    startShooter();
-                    delayTimer.reset();
-                    while (delayTimer.milliseconds() < 1000 && opModeIsActive()) {
-                        // Other tasks can be processed here
-                    } //
-                    autoshoot();
-                    executeFireSequence();
-                    robot.IntakeMotor.setPower(intakePowerShoot);
-//                    shooterSubsystem.shoot(false);
-//                    feederSubsystem.autoFeed();
-//                    intakeSubsystem.intake();
-                    while (delayTimer.milliseconds() < 1000 && opModeIsActive()) {
-                        // Other tasks can be processed here
-                    } //
-                }
-                if (pathTimer.getElapsedTimeSeconds() > 5) {
-                    stopIntake();
-                    stopShooter();
-//                    flywheelSubsystem.stop();
-//                    feederSubsystem.stop();
-//                    intakeSubsystem.stop();
+                autoshoot();
+
+                if (autoShootState == AutoShootState.DONE) {
                     follower.followPath(driveReadyFirstPickup);
                     setPathState(PathState.DRIVE_READY_FIRST_PICKUP_POS);
-                    while (delayTimer.milliseconds() < 30000 && opModeIsActive()) {
-                        // Other tasks can be processed here
-                    }
                 }
                 break;
 
