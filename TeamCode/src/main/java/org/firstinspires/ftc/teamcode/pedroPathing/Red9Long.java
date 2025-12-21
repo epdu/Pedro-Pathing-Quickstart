@@ -636,23 +636,36 @@ public class Red9Long extends LinearOpMode {
 
     private void statePathUpdate() {
         switch (pathState) {
+
+
             case DRIVE_START_POS_SHOOT_POS:
-            if (!hasPathStarted) {
-                    follower.followPath(driveStartShoot, 0.5, true);
-                    hasPathStarted = true;
-             }
-            if (follower.isBusy()) {
-                hasPathStarted = false;  // 重置标志
-                setPathState(PathState.DRIVE_TO_SHOOT_WAIT);;
-            }
+                follower.followPath(driveStartShoot, 0.5, true);
+                setPathState(PathState.DRIVE_TO_SHOOT_WAIT);
                 break;
+
             case DRIVE_TO_SHOOT_WAIT:
-                telemetry.addData("pathState", pathState);
-                telemetry.update();
                 if (!follower.isBusy()) {
-                    pathState = PathState.SHOOT_PRELOAD;
+                    setPathState(PathState.SHOOT_PRELOAD);
                 }
                 break;
+
+//                case DRIVE_START_POS_SHOOT_POS:
+//            if (!hasPathStarted) {
+//                    follower.followPath(driveStartShoot, 0.5, true);
+//                    hasPathStarted = true;
+//             }
+//            if (follower.isBusy()) {
+//                hasPathStarted = false;  // 重置标志
+//                setPathState(PathState.DRIVE_TO_SHOOT_WAIT);;
+//            }
+//                break;
+//            case DRIVE_TO_SHOOT_WAIT:
+//                telemetry.addData("pathState", pathState);
+//                telemetry.update();
+//                if (!follower.isBusy()) {
+//                    pathState = PathState.SHOOT_PRELOAD;
+//                }
+//                break;
             case SHOOT_PRELOAD:
                 telemetry.addData("pathState", pathState);
                 telemetry.update();
