@@ -83,6 +83,7 @@ public class Red9Long extends LinearOpMode {
     private int pathStatePPG; // Current state machine value
     private int pathStatePGP; // Current state machine value
     private int pathStateGPP; // Current state machine value
+    private boolean hasPathStarted = false;
     private PathState pathState;
     ShooterSubsystem shooterSubsystem;
     FlywheelSubsystem flywheelSubsystem;
@@ -93,6 +94,7 @@ public class Red9Long extends LinearOpMode {
             driveSecondPickup, driveSecondPickupShoot, driveOffline;
     public enum PathState {
         DRIVE_START_POS_SHOOT_POS,
+        DRIVE_TO_SHOOT_WAIT,
         SHOOT_PRELOAD,
         DRIVE_READY_FIRST_PICKUP_POS,
         FIRST_PICKUP,
@@ -130,7 +132,7 @@ public class Red9Long extends LinearOpMode {
         Robot.sendHardwareMap(hardwareMap);
         telemetry = new MultipleTelemetry(telemetry, PanelsTelemetry.INSTANCE.getFtcTelemetry());
         robot.init(hardwareMap);
-        robot.imu.resetYaw();
+//        robot.imu.resetYaw();
         robot.MasterShooterMotorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.MasterShooterMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -153,7 +155,6 @@ public class Red9Long extends LinearOpMode {
 //        flywheelSubsystem = FlywheelSubsystem.getInstance(hardwareMap, gamepad1);
 //        feederSubsystem = FeederSubsystem.getInstance(hardwareMap, gamepad1);
 //        intakeSubsystem = IntakeSubsystem.getInstance(hardwareMap, gamepad1);
-//
 //        shooterSubsystem.init();
 //        flywheelSubsystem.init();
 //        feederSubsystem.init();
@@ -262,7 +263,38 @@ public class Red9Long extends LinearOpMode {
         }
     }
 
-
+//    enum ShooterState { IDLE, SPINUP, FEED, DONE }
+//    ShooterState shooterState = ShooterState.IDLE;
+//
+//    void shooterStart(double rpm) {
+//        targetRPM = rpm;
+//        shooterState = ShooterState.SPINUP;
+//        timer.reset();
+//    }
+//
+//    void shooterUpdate() {
+//        switch (shooterState) {
+//            case SPINUP:
+//                if (atSpeed()) {
+//                    timer.reset();
+//                    intake.feed();
+//                    shooterState = ShooterState.FEED;
+//                }
+//                break;
+//
+//            case FEED:
+//                if (timer.seconds() > 0.6) {
+//                    intake.stop();
+//                    stopShooter();
+//                    shooterState = ShooterState.DONE;
+//                }
+//                break;
+//        }
+//    }
+//
+//    boolean shooterDone() {
+//        return shooterState == ShooterState.DONE;
+//    }
 
     private void startShooter() {
         robot.IntakeMotor.setPower(0);
@@ -604,36 +636,38 @@ public class Red9Long extends LinearOpMode {
 
     private void statePathUpdate() {
         switch (pathState) {
-
             case DRIVE_START_POS_SHOOT_POS:
-                follower.followPath(driveStartShoot, true);
-                setPathState(PathState.SHOOT_PRELOAD);
+            if (!hasPathStarted) {
+                    follower.followPath(driveStartShoot, 0.5, true);
+                    hasPathStarted = true;
+             }
+            if (follower.isBusy()) {
+                hasPathStarted = false;  // 重置标志
+                setPathState(PathState.DRIVE_TO_SHOOT_WAIT);;
+            }
                 break;
-
-//                if (!follower.isBusy()) {
-//                    follower.followPath(driveStartShoot, true);
-//                }
-//                if (!follower.isBusy() && follower.atParametricEnd()) {
-//                    setPathState(PathState.SHOOT_PRELOAD);
-//                }
-//                break;
-
-            case SHOOT_PRELOAD:
-                autoshoot();
-
-                if (autoShootState == AutoShootState.DONE) {
-                    follower.followPath(driveReadyFirstPickup);
-                    setPathState(PathState.DRIVE_READY_FIRST_PICKUP_POS);
+            case DRIVE_TO_SHOOT_WAIT:
+                telemetry.addData("pathState", pathState);
+                telemetry.update();
+                if (!follower.isBusy()) {
+                    pathState = PathState.SHOOT_PRELOAD;
                 }
                 break;
-
+            case SHOOT_PRELOAD:
+                telemetry.addData("pathState", pathState);
+                telemetry.update();
+               autoshoot();
+               if (autoShootState == AutoShootState.DONE) {
+                   follower.followPath(driveReadyFirstPickup, 0.5, true);
+                   setPathState(PathState.DRIVE_READY_FIRST_PICKUP_POS);
+                    }
+               break;
             case DRIVE_READY_FIRST_PICKUP_POS:
                 if (!follower.isBusy()) {
                     follower.followPath(driveFirstPickup, 0.5, true);
                     setPathState(PathState.FIRST_PICKUP);
                 }
                 break;
-
             case FIRST_PICKUP:
                 if (pathTimer.getElapsedTimeSeconds() < 2.5) {
 //                    intakeSubsystem.intake();
@@ -644,27 +678,23 @@ public class Red9Long extends LinearOpMode {
                     setPathState(PathState.DRIVE_BACK_FIRST_SHOOT_POS);
                 }
                 break;
-
             case DRIVE_BACK_FIRST_SHOOT_POS:
                 if (!follower.isBusy()) {
                     setPathState(PathState.SHOOT_FIRST_PICKUP);
                 }
                 break;
-
             case SHOOT_FIRST_PICKUP:
                 if (pathTimer.getElapsedTimeSeconds() > 5) {
                     follower.followPath(driveReadySecondPickup);
                     setPathState(PathState.DRIVE_READY_SECOND_PICKUP);
                 }
                 break;
-
             case DRIVE_READY_SECOND_PICKUP:
                 if (!follower.isBusy()) {
                     follower.followPath(driveSecondPickup, 0.5, true);
                     setPathState(PathState.SECOND_PICKUP);
                 }
                 break;
-
             case SECOND_PICKUP:
                 if (pathTimer.getElapsedTimeSeconds() < 2.5) {
 //                    intakeSubsystem.intake();
@@ -675,13 +705,11 @@ public class Red9Long extends LinearOpMode {
                     setPathState(PathState.DRIVE_BACK_SECOND_PICKUP);
                 }
                 break;
-
             case DRIVE_BACK_SECOND_PICKUP:
                 if (!follower.isBusy()) {
                     setPathState(PathState.SHOOT_SECOND_PICKUP);
                 }
                 break;
-
             case SHOOT_SECOND_PICKUP:
                 if (pathTimer.getElapsedTimeSeconds() > 5) {
                     follower.followPath(driveOffline);
