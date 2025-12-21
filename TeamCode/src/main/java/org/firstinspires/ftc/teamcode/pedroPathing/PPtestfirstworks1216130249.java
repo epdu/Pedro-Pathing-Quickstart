@@ -98,8 +98,7 @@ public class PPtestfirstworks1216130249 extends LinearOpMode {
     }
     @Override
     public void runOpMode() {
-        // Initialize Panels telemetry
-        panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
+
 
         // Initialize Pedro Pathing follower
         follower = Constants.createFollower(hardwareMap);
@@ -112,6 +111,8 @@ public class PPtestfirstworks1216130249 extends LinearOpMode {
 
         // Wait for the game to start (driver presses START)
         waitForStart();
+        // Initialize Panels telemetry
+        panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
         runtime.reset();
 
         setpathStatePPG(0);
@@ -147,15 +148,15 @@ public class PPtestfirstworks1216130249 extends LinearOpMode {
 
 
         grabPPG = follower.pathBuilder() //
-                .addPath(new BezierLine(startPose, PPGPose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), PPGPose.getHeading())
+                .addPath(new BezierLine(startPose, scorePose))
+                .setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading())
                 .build();
 
         // Move to the scoring pose from the first artifact pickup pose
-        scorePPG = follower.pathBuilder()
-                .addPath(new BezierLine(PPGPose, scorePose))
-                .setLinearHeadingInterpolation(PPGPose.getHeading(), scorePose.getHeading())
-                .build();
+//        scorePPG = follower.pathBuilder()
+//                .addPath(new BezierLine(PPGPose, scorePose))
+//                .setLinearHeadingInterpolation(PPGPose.getHeading(), scorePose.getHeading())
+//                .build();
     }
 
     public void buildPathsPGP() {
@@ -196,7 +197,7 @@ public class PPtestfirstworks1216130249 extends LinearOpMode {
         switch (pathStatePPG) {
             case 0:
                 // Move to the scoring position from the start position
-                follower.followPath(grabPPG);
+                follower.followPath(grabPPG, 0.3, true);
                 setpathStatePPG(1); // Call the setter method
                 break;
             case 1:
@@ -204,7 +205,7 @@ public class PPtestfirstworks1216130249 extends LinearOpMode {
                 if (!follower.isBusy()) {
 
                     // Move to the first artifact pickup location from the scoring position
-                    follower.followPath(scorePPG);
+                    follower.followPath(scorePPG, 0.3, true);
                     setpathStatePPG(-1); //set it to -1 so it stops the state machine execution
                 }
                 break;

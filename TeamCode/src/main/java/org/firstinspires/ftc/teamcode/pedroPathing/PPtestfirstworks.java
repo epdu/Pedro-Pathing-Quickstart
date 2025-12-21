@@ -185,8 +185,8 @@ public class PPtestfirstworks extends LinearOpMode {
 
         while (opModeIsActive()) {
             // Update Pedro Pathing and Panels every iteration
-            follower.update();
             panelsTelemetry.update();
+            follower.update();
             currentPose = follower.getPose(); // Update the current pose
 
 
@@ -228,7 +228,7 @@ public class PPtestfirstworks extends LinearOpMode {
                 .setLinearHeadingInterpolation(scorePose.getHeading(), readyPickupPosePPG.getHeading())
                 .build();
 
-        driveFirstPickup= follower.pathBuilder() //
+        grabPPG= follower.pathBuilder() //
                 .addPath(new BezierCurve(readyPickupPosePPG,PPGDONEPose))
                 .setLinearHeadingInterpolation(readyPickupPosePPG.getHeading(), PPGDONEPose.getHeading())
                 .build();

@@ -128,9 +128,12 @@ public class Red9Long extends LinearOpMode {
     public void runOpMode() {
 
         /* ---------------- INIT ---------------- */
+//        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
+
         Robot.alliance = Alliance.RED;
         Robot.sendHardwareMap(hardwareMap);
-        telemetry = new MultipleTelemetry(telemetry, PanelsTelemetry.INSTANCE.getFtcTelemetry());
+
         robot.init(hardwareMap);
 //        robot.imu.resetYaw();
         robot.MasterShooterMotorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -138,8 +141,10 @@ public class Red9Long extends LinearOpMode {
         robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 //        follower.setStartingPose(startPose);
+
+
         initShooterPIDF();
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
         FtcDashboard Dashboard = FtcDashboard.getInstance();
         Telemetry dashboardTelemetry = Dashboard.getTelemetry();
         // 设置 Dashboard 更新频率
@@ -151,6 +156,8 @@ public class Red9Long extends LinearOpMode {
 
         follower = Constants.createFollower(hardwareMap);
 
+        pathState = PathState.DRIVE_START_POS_SHOOT_POS;
+        buildPaths();
 //        shooterSubsystem = ShooterSubsystem.getInstance(hardwareMap, gamepad1, gamepad2);
 //        flywheelSubsystem = FlywheelSubsystem.getInstance(hardwareMap, gamepad1);
 //        feederSubsystem = FeederSubsystem.getInstance(hardwareMap, gamepad1);
@@ -159,22 +166,23 @@ public class Red9Long extends LinearOpMode {
 //        flywheelSubsystem.init();
 //        feederSubsystem.init();
 //        intakeSubsystem.init();
+//        telemetry.addLine("Ready");
+//        telemetry.update();
 
-        buildPaths();
-        follower.setStartingPose(startPose);
-        pathState = PathState.DRIVE_START_POS_SHOOT_POS;
-        telemetry.addLine("Ready");
-        telemetry.update();
+
+
 
         /* ---------------- WAIT ---------------- */
         waitForStart();
+        panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
+//        telemetry = new MultipleTelemetry(telemetry, PanelsTelemetry.INSTANCE.getFtcTelemetry());
         autoTimer.resetTimer();
         pathTimer.resetTimer();
         shootTimer.resetTimer();
-
+        follower.setStartingPose(startPose);
         /* ---------------- MAIN LOOP ---------------- */
         while (opModeIsActive() && pathState != PathState.END) {
-
+            panelsTelemetry.update();
             follower.update();
             statePathUpdate();
 
@@ -636,10 +644,8 @@ public class Red9Long extends LinearOpMode {
 
     private void statePathUpdate() {
         switch (pathState) {
-
-
             case DRIVE_START_POS_SHOOT_POS:
-                follower.followPath(driveStartShoot, 0.5, true);
+                follower.followPath(driveStartShoot, 0.2, true);
                 setPathState(PathState.DRIVE_TO_SHOOT_WAIT);
                 break;
 
