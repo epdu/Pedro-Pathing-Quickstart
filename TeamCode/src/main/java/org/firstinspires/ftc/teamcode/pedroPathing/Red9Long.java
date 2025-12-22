@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
@@ -23,8 +22,6 @@ import org.firstinspires.ftc.teamcode.subsystems.Feeder.FeederSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.Flywheel.FlywheelSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.Intake.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter.ShooterSubsystem;
-import org.firstinspires.ftc.teamcode.pedroPathing.Alliance;
-import static java.lang.Math.abs;
 
 @Autonomous(name = "a today Red9long")
 public class Red9Long extends LinearOpMode {
@@ -273,39 +270,6 @@ public class Red9Long extends LinearOpMode {
         }
     }
 
-//    enum ShooterState { IDLE, SPINUP, FEED, DONE }
-//    ShooterState shooterState = ShooterState.IDLE;
-//
-//    void shooterStart(double rpm) {
-//        targetRPM = rpm;
-//        shooterState = ShooterState.SPINUP;
-//        timer.reset();
-//    }
-//
-//    void shooterUpdate() {
-//        switch (shooterState) {
-//            case SPINUP:
-//                if (atSpeed()) {
-//                    timer.reset();
-//                    intake.feed();
-//                    shooterState = ShooterState.FEED;
-//                }
-//                break;
-//
-//            case FEED:
-//                if (timer.seconds() > 0.6) {
-//                    intake.stop();
-//                    stopShooter();
-//                    shooterState = ShooterState.DONE;
-//                }
-//                break;
-//        }
-//    }
-//
-//    boolean shooterDone() {
-//        return shooterState == ShooterState.DONE;
-//    }
-
     private void startShooter() {
         robot.IntakeMotor.setPower(0);
         if (robot.MasterShooterMotorL instanceof DcMotorEx) {
@@ -320,39 +284,7 @@ public class Red9Long extends LinearOpMode {
         shooterStarted=true;
 
     }
-    public void updateShooter() {
 
-        // 手柄控制发射电机 - 按下右肩键启动射击电机
-        if (gamepad1.right_trigger > 0.1) {
-            // 检查射击电机是否达到目标速度
-            checkShooterVelocity();
-            if (!robot.MasterShooterMotorL.isBusy()){
-                startShooter();
-            }
-
-        }
-        // 手动射击触发 - 按下A键射击（仅在速度达标时有效）
-//        if (gamepad1.right_bumper && isShooterAtSpeed && !fireRequested)
-        if (gamepad1.right_bumper) {
-            fireRequested = true;
-            executeFireSequence();
-            robot.IntakeMotor.setPower(intakePowerShoot);
-        }
-        // 停止射击电机 - 按下B键
-        if (gamepad1.b) {
-            stopShooter();
-            robot.IntakeMotor.setPower(intakePowerOff);
-            fireRequested = false;
-        }
-
-        // 如果射击电机未运行，确保重置状态
-        if (!gamepad1.right_bumper && !robot.MasterShooterMotorL.isBusy()) {
-            isShooterAtSpeed = false;
-            fireRequested = false;
-        }
-        // 更新射击系统遥测数据（关键！）
-        updateShooterTelemetry();
-    }
 
     public static class ShooterPIDFConfig {
         public static double kP = 100;     // 比例增益0.10.350.651.0655
