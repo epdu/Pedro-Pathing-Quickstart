@@ -161,13 +161,13 @@ public class Red9Long extends LinearOpMode {
         robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 //        follower.setStartingPose(startPose);
 
-        limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        telemetry.setMsTransmissionInterval(11);
-        limelight.pipelineSwitch(0);
-        /*
-         * Starts polling for data.
-         */
-        limelight.start();// 需要手动开启吗？
+//        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+//        telemetry.setMsTransmissionInterval(11);
+//        limelight.pipelineSwitch(0);
+//        /*
+//         * Starts polling for data.
+//         */
+//        limelight.start();// 需要手动开启吗？
 
         initShooterPIDF();
 
@@ -219,17 +219,17 @@ public class Red9Long extends LinearOpMode {
             telemetry.addData("Heading", Math.toDegrees(follower.getPose().getHeading()));
             telemetry.update();
 
-            YawPitchRollAngles orientation =robot.imu.getRobotYawPitchRollAngles();
-            limelight.updateRobotOrientation(orientation.getYaw());
-            LLResult llResult= limelight.getLatestResult();
-            if(llResult!=null && llResult.isValid()){
-                Pose3D botPose=llResult.getBotpose_MT2();
-                telemetry.addData("Tx",llResult.getTx());
-                telemetry.addData("Ty",llResult.getTy());
-                telemetry.addData("Ta",llResult.getTa());
-
-
-            }
+//            YawPitchRollAngles orientation =robot.imu.getRobotYawPitchRollAngles();
+//            limelight.updateRobotOrientation(orientation.getYaw());
+//            LLResult llResult= limelight.getLatestResult();
+//            if(llResult!=null && llResult.isValid()){
+//                Pose3D botPose=llResult.getBotpose_MT2();
+//                telemetry.addData("Tx",llResult.getTx());
+//                telemetry.addData("Ty",llResult.getTy());
+//                telemetry.addData("Ta",llResult.getTa());
+//
+//
+//            }
         }
     }
 
