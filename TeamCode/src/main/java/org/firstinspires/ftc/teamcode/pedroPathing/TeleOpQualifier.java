@@ -14,7 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 @Config  // 添加这个注解，让 Dashboard 可以调整参数
-@TeleOp(name = "A Blue Streak Qualifier V1 1205")
+@TeleOp(name = "A Blue Streak Qualifier V1 1228")
 //V1 with pid for xxx  but not odo
 public class TeleOpQualifier extends LinearOpMode {
     // 已有的硬件和常量定义...
@@ -45,7 +45,7 @@ public class TeleOpQualifier extends LinearOpMode {
     private double powerMultiplier = 0.9;
     boolean move = false;
     int controlMode = 1;
-    public float  intakePowerIntake=0.85f;
+    public float  intakePowerIntake=0.98f;
     public float  intakePowerShoot=0.9f;
     public float  intakePowerDump=-0.6f;
     public float  intakePowerOff=0.0f;

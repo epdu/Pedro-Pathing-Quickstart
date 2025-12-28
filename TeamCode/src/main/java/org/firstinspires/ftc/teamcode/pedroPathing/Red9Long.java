@@ -9,6 +9,8 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -17,15 +19,34 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.Feeder.FeederSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.Flywheel.FlywheelSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.Intake.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter.ShooterSubsystem;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.xyzOrientation;
 
-@Autonomous(name = "a today Red9long")
+// 姿态
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+
+// Limelight
+import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.hardware.limelightvision.LLResult;
+
+// 位姿
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+
+@Autonomous(name = "a follow done Red9long")
 public class Red9Long extends LinearOpMode {
     HardwareQualifier robot = new HardwareQualifier();
+   private Limelight3A limelight;
     private volatile boolean isRunning = true;
     private boolean shooterStarted=false;
     // Initialize elapsed timer
@@ -46,7 +67,6 @@ public class Red9Long extends LinearOpMode {
     private static final double Close_SHOOTER_TARGET_RPM = 100;//  400RPM---2,557.33333333333333
 //    private static final double Med_SHOOTER_TARGET_RPM = 204;   //1598 white tri a little bit too far//  250RPM---1586.67
     private static final double Med_SHOOTER_TARGET_RPM = 150;   //1598 white tri a little bit too far//  250RPM---1586.67
-
     private static final double Far_SHOOTER_TARGET_RPM = 350;  //  350RPM---2237
 //   private static final double Close_SHOOTER_TARGET_RPM = 800;//  400RPM---2,557.33333333333333
 //    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
@@ -118,7 +138,7 @@ public class Red9Long extends LinearOpMode {
     private final Pose secondPickupPose = new Pose(122, 60.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose thirdPickupPose = new Pose(122, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     //    private final Pose PARKPose = new Pose(120, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
-    private final Pose offlinePose = new Pose(120, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
+    private final Pose offlinePose = new Pose(110, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     // Initialize variables for paths
 
 
@@ -141,6 +161,13 @@ public class Red9Long extends LinearOpMode {
         robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 //        follower.setStartingPose(startPose);
 
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        telemetry.setMsTransmissionInterval(11);
+        limelight.pipelineSwitch(0);
+        /*
+         * Starts polling for data.
+         */
+        limelight.start();// 需要手动开启吗？
 
         initShooterPIDF();
 
@@ -191,6 +218,18 @@ public class Red9Long extends LinearOpMode {
             telemetry.addData("Y", follower.getPose().getY());
             telemetry.addData("Heading", Math.toDegrees(follower.getPose().getHeading()));
             telemetry.update();
+
+            YawPitchRollAngles orientation =robot.imu.getRobotYawPitchRollAngles();
+            limelight.updateRobotOrientation(orientation.getYaw());
+            LLResult llResult= limelight.getLatestResult();
+            if(llResult!=null && llResult.isValid()){
+                Pose3D botPose=llResult.getBotpose_MT2();
+                telemetry.addData("Tx",llResult.getTx());
+                telemetry.addData("Ty",llResult.getTy());
+                telemetry.addData("Ta",llResult.getTa());
+
+
+            }
         }
     }
 
@@ -200,30 +239,43 @@ public class Red9Long extends LinearOpMode {
     ///
     ///
     ///
-    public void updateIntake() {
-        // 手柄控制拾取电机
-        if (gamepad1.left_trigger > 0.1) {
-            // 吸入
+//    public void updateIntake() {
+//        // 手柄控制拾取电机
+//        if (gamepad1.left_trigger > 0.1) {
+//            // 吸入
+//            robot.IntakeMotor.setPower(intakePowerIntake);
+//            robot.MasterShooterMotorL.setPower(ShooterMotorHold);
+//            robot.SlaveShooterMotorR.setPower(ShooterMotorHold);
+//            telemetry.addData("intakePowerIntake", intakePowerIntake);
+//            telemetry.update();
+//
+//
+//        } else if (gamepad1.left_bumper) {
+//            // 反转（吐出）
+//            robot.IntakeMotor.setPower(intakePowerDump);
+//            telemetry.addData("intakePowerDump", intakePowerDump);
+//            telemetry.update();
+//        } else if (gamepad1.y)  {
+//            // 停止
+//            stopIntake();
+//
+//
+//        }
+//    }
+
+
+//    public static double flywheelSpeed(double goalDist){ return Mathfunctions.clamp(0.0204772 * Math,pow(goalDist, 2)+ 0.643162 * goalDist + 712.90909, lower 0, upper: 1400)+ flywheeloffset;}
+//
+//    public static double hoodAngle(double goalDist){ return MathFunctions.clamp(-2.34831e-7 * Math.pow(goalDist, 3)+ 0.0000936893 * math.pow(goalDist, 2)- 0.0165033*goalDist + 1.25724,lower: 0.11, upper: 0.904)+ hoodoffset;
+//    }
+    public void autoIntake() {
+           // 吸入
             robot.IntakeMotor.setPower(intakePowerIntake);
             robot.MasterShooterMotorL.setPower(ShooterMotorHold);
             robot.SlaveShooterMotorR.setPower(ShooterMotorHold);
             telemetry.addData("intakePowerIntake", intakePowerIntake);
             telemetry.update();
-
-
-        } else if (gamepad1.left_bumper) {
-            // 反转（吐出）
-            robot.IntakeMotor.setPower(intakePowerDump);
-            telemetry.addData("intakePowerDump", intakePowerDump);
-            telemetry.update();
-        } else if (gamepad1.y)  {
-            // 停止
-            stopIntake();
-
-
-        }
     }
-
 
     enum AutoShootState {
         IDLE,
@@ -518,7 +570,6 @@ public class Red9Long extends LinearOpMode {
                 .addPath(new BezierLine(startPose, shootPose))
                 .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
                 .build();
-
         driveReadyFirstPickup = follower.pathBuilder()
                 .addPath(new BezierCurve(shootPose, readyFirstPickupPose))
                 .setLinearHeadingInterpolation(shootPose.getHeading(), readyFirstPickupPose.getHeading())
@@ -527,42 +578,34 @@ public class Red9Long extends LinearOpMode {
 //                .addPath(new BezierCurve(shootPose, firstPickupCP, readyFirstPickupPose))
 //                .setLinearHeadingInterpolation(shootPose.getHeading(), readyFirstPickupPose.getHeading())
 //                .build();
-
         driveFirstPickup = follower.pathBuilder()
                 .addPath(new BezierLine(readyFirstPickupPose, firstPickupPose))
                 .setLinearHeadingInterpolation(readyFirstPickupPose.getHeading(), firstPickupPose.getHeading())
                 .build();
-
         driveFirstPickupShoot = follower.pathBuilder()
                 .addPath(new BezierLine(firstPickupPose, shootPose))
                 .setLinearHeadingInterpolation(firstPickupPose.getHeading(), shootPose.getHeading())
                 .build();
-
         driveReadySecondPickup = follower.pathBuilder()
                 .addPath(new BezierCurve(shootPose, readySecondPickupPose))
                 .setLinearHeadingInterpolation(shootPose.getHeading(), readySecondPickupPose.getHeading())
                 .build();
-
 //        driveReadySecondPickup = follower.pathBuilder()
 //                .addPath(new BezierCurve(shootPose, secondPickupCP, readySecondPickupPose))
 //                .setLinearHeadingInterpolation(shootPose.getHeading(), readySecondPickupPose.getHeading())
 //                .build();
-
         driveSecondPickup = follower.pathBuilder()
                 .addPath(new BezierLine(readySecondPickupPose, secondPickupPose))
                 .setLinearHeadingInterpolation(readySecondPickupPose.getHeading(), secondPickupPose.getHeading())
                 .build();
-
         driveSecondPickupShoot = follower.pathBuilder()
                 .addPath(new BezierCurve(secondPickupPose, shootPose))
                 .setLinearHeadingInterpolation(secondPickupPose.getHeading(), shootPose.getHeading())
                 .build();
-
 //        driveSecondPickupShoot = follower.pathBuilder()
 //                .addPath(new BezierCurve(secondPickupPose, secondPickupCP, shootPose))
 //                .setLinearHeadingInterpolation(secondPickupPose.getHeading(), shootPose.getHeading())
 //                .build();
-
         driveOffline = follower.pathBuilder()
                 .addPath(new BezierLine(shootPose, offlinePose))
                 .setLinearHeadingInterpolation(shootPose.getHeading(), offlinePose.getHeading())
@@ -579,22 +622,18 @@ public class Red9Long extends LinearOpMode {
     private void statePathUpdate() {
         switch (pathState) {
             case DRIVE_START_POS_SHOOT_POS:
-                follower.followPath(driveStartShoot, 0.5, true);
+                follower.followPath(driveStartShoot, 0.8, true);
                 setPathState(PathState.DRIVE_TO_SHOOT_WAIT);
                 break;
-
             case DRIVE_TO_SHOOT_WAIT:
                 if (!follower.isBusy()) {
                     setPathState(PathState.SHOOT_PRELOAD);
                 }
                 break;
-
             case SHOOT_PRELOAD:
-                telemetry.addData("pathState", pathState);
-                telemetry.update();
-               autoshoot();
+             autoshoot();
                if (autoShootState == AutoShootState.DONE) {
-                   follower.followPath(driveReadyFirstPickup, 0.5, true);
+                   follower.followPath(driveReadyFirstPickup, 0.8, true);
                    setPathState(PathState.DRIVE_READY_FIRST_PICKUP_POS);
                     }
                break;
@@ -606,11 +645,12 @@ public class Red9Long extends LinearOpMode {
                 break;
             case FIRST_PICKUP:
                 if (pathTimer.getElapsedTimeSeconds() < 2.5) {
-//                    intakeSubsystem.intake();
-//                    feederSubsystem.feed();
-//                    flywheelSubsystem.setPower(1);
+                      autoIntake();
+
                 } else {
                     follower.followPath(driveFirstPickupShoot);
+                    stopShooter();
+                    stopIntake();
                     setPathState(PathState.DRIVE_BACK_FIRST_SHOOT_POS);
                 }
                 break;
@@ -620,24 +660,26 @@ public class Red9Long extends LinearOpMode {
                 }
                 break;
             case SHOOT_FIRST_PICKUP:
-                if (pathTimer.getElapsedTimeSeconds() > 5) {
-                    follower.followPath(driveReadySecondPickup);
+                autoshoot();
+                if (autoShootState == AutoShootState.DONE) {
+                    follower.followPath(driveReadySecondPickup, 0.8, true);
                     setPathState(PathState.DRIVE_READY_SECOND_PICKUP);
                 }
                 break;
+
             case DRIVE_READY_SECOND_PICKUP:
                 if (!follower.isBusy()) {
-                    follower.followPath(driveSecondPickup, 0.5, true);
+                    follower.followPath(driveSecondPickup, 0.8, true);
                     setPathState(PathState.SECOND_PICKUP);
                 }
                 break;
             case SECOND_PICKUP:
                 if (pathTimer.getElapsedTimeSeconds() < 2.5) {
-//                    intakeSubsystem.intake();
-//                    feederSubsystem.feed();
-//                    flywheelSubsystem.setPower(1);
+                    autoIntake();
                 } else {
                     follower.followPath(driveSecondPickupShoot);
+                    stopShooter();
+                    stopIntake();
                     setPathState(PathState.DRIVE_BACK_SECOND_PICKUP);
                 }
                 break;
@@ -647,11 +689,17 @@ public class Red9Long extends LinearOpMode {
                 }
                 break;
             case SHOOT_SECOND_PICKUP:
-                if (pathTimer.getElapsedTimeSeconds() > 5) {
-                    follower.followPath(driveOffline);
+                autoshoot();
+                if (autoShootState == AutoShootState.DONE) {
+                    follower.followPath(driveOffline, 0.8, true);
                     setPathState(PathState.DRIVE_OFFLINE);
                 }
                 break;
+//                if (pathTimer.getElapsedTimeSeconds() > 5) {
+//                    follower.followPath(driveOffline);
+//                    setPathState(PathState.DRIVE_OFFLINE);
+//                }
+//                break;
 
             case DRIVE_OFFLINE:
                 if (!follower.isBusy()) {
