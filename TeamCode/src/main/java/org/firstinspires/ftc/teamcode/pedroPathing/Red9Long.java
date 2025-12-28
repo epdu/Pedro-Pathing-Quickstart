@@ -43,7 +43,7 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 // 位姿
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
-@Autonomous(name = "a follow done Red9long")
+@Autonomous(name = "a5000 follow done Red9long")
 public class Red9Long extends LinearOpMode {
     HardwareQualifier robot = new HardwareQualifier();
    private Limelight3A limelight;
@@ -62,11 +62,11 @@ public class Red9Long extends LinearOpMode {
     private final String LED_COLOR_ACCELERATING = "YELLOW";
     private final String LED_COLOR_OFF = "RED";
 //  RPM = (TPS * 60秒) / 每转ticks数
-//  return (tps * 60.0) / ticksPerRevolution;  28*13.7
+//  return (tps * 60.0) / ticksPerRevolution;  28*13.7     28*13.7-----28 6000RPM
 //  TPS=RPM/60*ticksPerRevolution=RPM*28*13.7/60；
     private static final double Close_SHOOTER_TARGET_RPM = 100;//  400RPM---2,557.33333333333333
 //    private static final double Med_SHOOTER_TARGET_RPM = 204;   //1598 white tri a little bit too far//  250RPM---1586.67
-    private static final double Med_SHOOTER_TARGET_RPM = 150;   //1598 white tri a little bit too far//  250RPM---1586.67
+    private static final double Med_SHOOTER_TARGET_RPM = 5500;   //1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
     private static final double Far_SHOOTER_TARGET_RPM = 350;  //  350RPM---2237
 //   private static final double Close_SHOOTER_TARGET_RPM = 800;//  400RPM---2,557.33333333333333
 //    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
@@ -85,8 +85,7 @@ public class Red9Long extends LinearOpMode {
     public float  intakePowerShoot=0.9f;
     public float  intakePowerDump=-0.6f;
     public float  intakePowerOff=0.0f;
-    public float  ShooterMotorShootFar=0.95f;
-    public float  ShooterMotorShootMed=-0.8f;
+    public float  ShooterMotorShootFar=0.95f;    public float  ShooterMotorShootMed=-0.8f;
     public float  ShooterMotorShootClose=-0.8f;
     public float  ShooterMotorHold=-0.2f;
     public float  ShooterMotorClean=-0.8f;
@@ -126,8 +125,6 @@ public class Red9Long extends LinearOpMode {
         DRIVE_OFFLINE,
         END
     }
-
-
     private final Pose startPose = new Pose(92, 6.25, Math.toRadians(0)); // Start Pose further zone of our robot.
     private final Pose shootPose = new Pose(92, 92.25, Math.toRadians(45)); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
     private final Pose scoreEnd = new Pose(92, 92.25, Math.toRadians(0)); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
@@ -211,6 +208,7 @@ public class Red9Long extends LinearOpMode {
             panelsTelemetry.update();
             follower.update();
             statePathUpdate();
+            updateShooter();
 
             telemetry.addData("State", pathState);
             telemetry.addData("Path Time", pathTimer.getElapsedTimeSeconds());
@@ -268,6 +266,36 @@ public class Red9Long extends LinearOpMode {
 //
 //    public static double hoodAngle(double goalDist){ return MathFunctions.clamp(-2.34831e-7 * Math.pow(goalDist, 3)+ 0.0000936893 * math.pow(goalDist, 2)- 0.0165033*goalDist + 1.25724,lower: 0.11, upper: 0.904)+ hoodoffset;
 //    }
+    public void updateShooter() {
+
+            checkShooterVelocity();
+            if (!robot.MasterShooterMotorL.isBusy()){
+                startShooter();
+            }
+
+        // 手动射击触发 - 按下A键射击（仅在速度达标时有效）
+//        if (gamepad1.right_bumper && isShooterAtSpeed && !fireRequested)
+        if (gamepad1.right_bumper) {
+            fireRequested = true;
+            executeFireSequence();
+            robot.IntakeMotor.setPower(intakePowerShoot);
+        }
+        // 停止射击电机 - 按下B键
+        if (gamepad1.b) {
+            stopShooter();
+            robot.IntakeMotor.setPower(intakePowerOff);
+            fireRequested = false;
+        }
+
+        // 如果射击电机未运行，确保重置状态
+        if (!gamepad1.right_bumper && !robot.MasterShooterMotorL.isBusy()) {
+            isShooterAtSpeed = false;
+            fireRequested = false;
+        }
+        // 更新射击系统遥测数据（关键！）
+        updateShooterTelemetry();
+    }
+
     public void autoIntake() {
            // 吸入
             robot.IntakeMotor.setPower(intakePowerIntake);
@@ -288,7 +316,7 @@ public class Red9Long extends LinearOpMode {
 
     public void autoshoot() {
 
-        double currentRPM = Math.abs(robot.MasterShooterMotorL.getVelocity())*60/(28*13.7);
+        double currentRPM = (Math.abs(robot.MasterShooterMotorL.getVelocity())*60)/(28);//60/(28*13.7)
         double targetRPM = ShooterPIDFConfig.targetRPM;
 
         switch (autoShootState) {
@@ -309,7 +337,7 @@ public class Red9Long extends LinearOpMode {
                 break;
 
             case FEEDING:
-                if (shootTimer.getElapsedTimeSeconds()  >= 3.0) {
+                if (shootTimer.getElapsedTimeSeconds()  >= 2.0) {
                     stopShooter();
                     stopIntake();
                     autoShootState = AutoShootState.DONE;
@@ -327,11 +355,11 @@ public class Red9Long extends LinearOpMode {
         if (robot.MasterShooterMotorL instanceof DcMotorEx) {
             DcMotorEx shooter = (DcMotorEx) robot.MasterShooterMotorL;
             // 直接使用setVelocity，它会使用已配置的PIDF
-            shooter.setVelocity(TeleOpQualifier.ShooterPIDFConfig.targetRPM*28*13.7/60);
+            shooter.setVelocity((TeleOpQualifier.ShooterPIDFConfig.targetRPM)*28/60);//28*13.7/60)
             double MasterShooterMotorLPower = robot.MasterShooterMotorL.getPower();
-
             double SlaveShooterMotorRPower = calculateOptimalSlavePower(MasterShooterMotorLPower);
             robot.SlaveShooterMotorR.setPower(SlaveShooterMotorRPower);
+
         }
         shooterStarted=true;
 
@@ -349,7 +377,8 @@ public class Red9Long extends LinearOpMode {
 //        F: 10–30
 //        public static double targetRPM =Close_SHOOTER_TARGET_RPM;
         public static double targetRPM =Med_SHOOTER_TARGET_RPM; // 目标转速
-        public static double tolerance = 10;    // 转速容差 5RPM---30TPS
+        public static double tolerance = 50;    // 转速容差 5RPM---30TPS
+
     }
 
     private void initShooterPIDF() {
@@ -387,7 +416,7 @@ public class Red9Long extends LinearOpMode {
     private void checkShooterVelocity() {
         if (robot.MasterShooterMotorL.isBusy()) {
             double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());
-            double targetVelocity = TeleOpQualifier.ShooterPIDFConfig.targetRPM*28*13.7/60;
+            double targetVelocity = (TeleOpQualifier.ShooterPIDFConfig.targetRPM)*28/60; //28*13.7/60
             double tolerance = TeleOpQualifier.ShooterPIDFConfig.tolerance;
 
             // 检查是否在容差范围内
@@ -645,7 +674,7 @@ public class Red9Long extends LinearOpMode {
                 break;
             case FIRST_PICKUP:
                 if (pathTimer.getElapsedTimeSeconds() < 2.5) {
-                      autoIntake();
+            autoIntake();
 
                 } else {
                     follower.followPath(driveFirstPickupShoot);
@@ -660,6 +689,7 @@ public class Red9Long extends LinearOpMode {
                 }
                 break;
             case SHOOT_FIRST_PICKUP:
+                autoShootState = AutoShootState.IDLE;
                 autoshoot();
                 if (autoShootState == AutoShootState.DONE) {
                     follower.followPath(driveReadySecondPickup, 0.8, true);
@@ -689,6 +719,7 @@ public class Red9Long extends LinearOpMode {
                 }
                 break;
             case SHOOT_SECOND_PICKUP:
+                autoShootState = AutoShootState.IDLE;
                 autoshoot();
                 if (autoShootState == AutoShootState.DONE) {
                     follower.followPath(driveOffline, 0.8, true);
