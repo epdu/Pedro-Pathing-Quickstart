@@ -47,7 +47,7 @@ public class TeleOpQualifier extends LinearOpMode {
     private double powerMultiplier = 0.9;
     boolean move = false;
     int controlMode = 1;
-    public float  intakePowerIntake=0.98f;
+    public float  intakePowerIntake=0.99f;
     public float  intakePowerShoot=0.9f;
     public float  intakePowerDump=-0.6f;
     public float  intakePowerOff=0.0f;
