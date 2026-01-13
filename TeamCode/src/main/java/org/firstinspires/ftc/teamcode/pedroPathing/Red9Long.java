@@ -20,30 +20,21 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.subsystems.Feeder.FeederSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.Flywheel.FlywheelSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.Intake.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.Shooter.ShooterSubsystem;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.xyzOrientation;
-
 // 姿态
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-
 // Limelight
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.limelightvision.LLResult;
-
 // 位姿
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-
-@Autonomous(name = "a5000 follow done Red9long")
+@Autonomous(name = "AAA working on turret, tune pidf follow done Red9long")
 public class Red9Long extends LinearOpMode {
     HardwareQualifier robot = new HardwareQualifier();
    private Limelight3A limelight;
@@ -66,7 +57,7 @@ public class Red9Long extends LinearOpMode {
 //  TPS=RPM/60*ticksPerRevolution=RPM*28*13.7/60；
     private static final double Close_SHOOTER_TARGET_RPM = 100;//  400RPM---2,557.33333333333333
 //    private static final double Med_SHOOTER_TARGET_RPM = 204;   //1598 white tri a little bit too far//  250RPM---1586.67
-    private static final double Med_SHOOTER_TARGET_RPM = 5500;   //1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
+    private static final double Med_SHOOTER_TARGET_RPM = 2785;   //1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
     private static final double Far_SHOOTER_TARGET_RPM = 350;  //  350RPM---2237
 //   private static final double Close_SHOOTER_TARGET_RPM = 800;//  400RPM---2,557.33333333333333
 //    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
@@ -85,7 +76,8 @@ public class Red9Long extends LinearOpMode {
     public float  intakePowerShoot=0.9f;
     public float  intakePowerDump=-0.6f;
     public float  intakePowerOff=0.0f;
-    public float  ShooterMotorShootFar=0.95f;    public float  ShooterMotorShootMed=-0.8f;
+    public float  ShooterMotorShootFar=0.95f;
+    public float  ShooterMotorShootMed=-0.8f;
     public float  ShooterMotorShootClose=-0.8f;
     public float  ShooterMotorHold=-0.2f;
     public float  ShooterMotorClean=-0.8f;
@@ -103,10 +95,10 @@ public class Red9Long extends LinearOpMode {
     private int pathStateGPP; // Current state machine value
     private boolean hasPathStarted = false;
     private PathState pathState;
-    ShooterSubsystem shooterSubsystem;
-    FlywheelSubsystem flywheelSubsystem;
-    FeederSubsystem feederSubsystem;
-    IntakeSubsystem intakeSubsystem;
+//    ShooterSubsystem shooterSubsystem;
+//    FlywheelSubsystem flywheelSubsystem;
+//    FeederSubsystem feederSubsystem;
+//    IntakeSubsystem intakeSubsystem;
     private PathChain driveStartShoot, driveReadyFirstPickup, driveFirstPickup,
             driveFirstPickupShoot, driveReadySecondPickup,
             driveSecondPickup, driveSecondPickupShoot, driveOffline;
@@ -145,10 +137,10 @@ public class Red9Long extends LinearOpMode {
 
         /* ---------------- INIT ---------------- */
 //        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-
-
-        Robot.alliance = Alliance.RED;
-        Robot.sendHardwareMap(hardwareMap);
+///////////////////////////////////////////////////////
+//
+//        Robot.alliance = Alliance.RED;
+//        Robot.sendHardwareMap(hardwareMap);
 
         robot.init(hardwareMap);
 //        robot.imu.resetYaw();
@@ -165,7 +157,7 @@ public class Red9Long extends LinearOpMode {
 //         * Starts polling for data.
 //         */
 //        limelight.start();// 需要手动开启吗？
-
+/// ///////////////////////////////////////////////debug PIDF////////////////////
         initShooterPIDF();
 
         FtcDashboard Dashboard = FtcDashboard.getInstance();
@@ -192,9 +184,6 @@ public class Red9Long extends LinearOpMode {
 //        telemetry.addLine("Ready");
 //        telemetry.update();
 
-
-
-
         /* ---------------- WAIT ---------------- */
         waitForStart();
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
@@ -207,8 +196,12 @@ public class Red9Long extends LinearOpMode {
         while (opModeIsActive() && pathState != PathState.END) {
             panelsTelemetry.update();
             follower.update();
+//            autoshoot();
+
             statePathUpdate();
-            updateShooter();
+/// ///////////////////////////////////////////////debug PIDF////////////////////
+//            updateShooter();
+//            autoshoot();
 
             telemetry.addData("State", pathState);
             telemetry.addData("Path Time", pathTimer.getElapsedTimeSeconds());
@@ -234,67 +227,41 @@ public class Red9Long extends LinearOpMode {
 
 
     /// ////////////////////////////////////////////////////
-    ///
-    ///
-    ///
-//    public void updateIntake() {
-//        // 手柄控制拾取电机
-//        if (gamepad1.left_trigger > 0.1) {
-//            // 吸入
-//            robot.IntakeMotor.setPower(intakePowerIntake);
-//            robot.MasterShooterMotorL.setPower(ShooterMotorHold);
-//            robot.SlaveShooterMotorR.setPower(ShooterMotorHold);
-//            telemetry.addData("intakePowerIntake", intakePowerIntake);
-//            telemetry.update();
-//
-//
-//        } else if (gamepad1.left_bumper) {
-//            // 反转（吐出）
-//            robot.IntakeMotor.setPower(intakePowerDump);
-//            telemetry.addData("intakePowerDump", intakePowerDump);
-//            telemetry.update();
-//        } else if (gamepad1.y)  {
-//            // 停止
-//            stopIntake();
-//
-//
-//        }
-//    }
 
 
 //    public static double flywheelSpeed(double goalDist){ return Mathfunctions.clamp(0.0204772 * Math,pow(goalDist, 2)+ 0.643162 * goalDist + 712.90909, lower 0, upper: 1400)+ flywheeloffset;}
 //
 //    public static double hoodAngle(double goalDist){ return MathFunctions.clamp(-2.34831e-7 * Math.pow(goalDist, 3)+ 0.0000936893 * math.pow(goalDist, 2)- 0.0165033*goalDist + 1.25724,lower: 0.11, upper: 0.904)+ hoodoffset;
 //    }
-    public void updateShooter() {
-
-            checkShooterVelocity();
-            if (!robot.MasterShooterMotorL.isBusy()){
-                startShooter();
-            }
-
-        // 手动射击触发 - 按下A键射击（仅在速度达标时有效）
-//        if (gamepad1.right_bumper && isShooterAtSpeed && !fireRequested)
-        if (gamepad1.right_bumper) {
-            fireRequested = true;
-            executeFireSequence();
-            robot.IntakeMotor.setPower(intakePowerShoot);
-        }
-        // 停止射击电机 - 按下B键
-        if (gamepad1.b) {
-            stopShooter();
-            robot.IntakeMotor.setPower(intakePowerOff);
-            fireRequested = false;
-        }
-
-        // 如果射击电机未运行，确保重置状态
-        if (!gamepad1.right_bumper && !robot.MasterShooterMotorL.isBusy()) {
-            isShooterAtSpeed = false;
-            fireRequested = false;
-        }
-        // 更新射击系统遥测数据（关键！）
-        updateShooterTelemetry();
-    }
+//    public void updateShooter() {
+//
+//            checkShooterVelocity();
+//            if (!robot.MasterShooterMotorL.isBusy()){
+//                startShooter();
+//            }
+//
+//        // 手动射击触发 - 按下A键射击（仅在速度达标时有效）
+////        if (gamepad1.right_bumper && isShooterAtSpeed && !fireRequested)
+//        if (gamepad1.right_bumper) {
+//            fireRequested = true;
+//            executeFireSequence();
+//            robot.IntakeMotor.setPower(intakePowerShoot);
+//        }
+//        // 停止射击电机 - 按下B键
+//        if (gamepad1.b) {
+//            stopShooter();
+//            robot.IntakeMotor.setPower(intakePowerOff);
+//            fireRequested = false;
+//        }
+//
+//        // 如果射击电机未运行，确保重置状态
+//        if (!gamepad1.right_bumper && !robot.MasterShooterMotorL.isBusy()) {
+//            isShooterAtSpeed = false;
+//            fireRequested = false;
+//        }
+//        // 更新射击系统遥测数据（关键！）
+//        updateShooterTelemetry();
+//    }
 
     public void autoIntake() {
            // 吸入
@@ -329,7 +296,7 @@ public class Red9Long extends LinearOpMode {
                 break;
 
             case SPINNING_UP:
-                if (Math.abs(currentRPM - targetRPM) <= ShooterPIDFConfig.tolerance) {
+                if (Math.abs(currentRPM - targetRPM) <= ShooterPIDFConfig.toleranceofRPM) {
                     shootTimer.resetTimer(); // ⭐ 只在“到速”瞬间 reset
                     robot.IntakeMotor.setPower(intakePowerShoot);
                     autoShootState = AutoShootState.FEEDING;
@@ -355,7 +322,7 @@ public class Red9Long extends LinearOpMode {
         if (robot.MasterShooterMotorL instanceof DcMotorEx) {
             DcMotorEx shooter = (DcMotorEx) robot.MasterShooterMotorL;
             // 直接使用setVelocity，它会使用已配置的PIDF
-            shooter.setVelocity((TeleOpQualifier.ShooterPIDFConfig.targetRPM)*28/60);//28*13.7/60)
+            shooter.setVelocity((ShooterPIDFConfig.targetRPM)*28/60);//28*13.7/60)
             double MasterShooterMotorLPower = robot.MasterShooterMotorL.getPower();
             double SlaveShooterMotorRPower = calculateOptimalSlavePower(MasterShooterMotorLPower);
             robot.SlaveShooterMotorR.setPower(SlaveShooterMotorRPower);
@@ -377,7 +344,8 @@ public class Red9Long extends LinearOpMode {
 //        F: 10–30
 //        public static double targetRPM =Close_SHOOTER_TARGET_RPM;
         public static double targetRPM =Med_SHOOTER_TARGET_RPM; // 目标转速
-        public static double tolerance = 50;    // 转速容差 5RPM---30TPS
+        public static double toleranceofRPM = 100;    // 转速容差 5RPM---30TPS
+        public static double tolerance = 50;
 
     }
 
@@ -388,14 +356,21 @@ public class Red9Long extends LinearOpMode {
 
             // 设置PIDF参数
             PIDFCoefficients pidf = new PIDFCoefficients(
-                    TeleOpQualifier.ShooterPIDFConfig.kP,
-                    TeleOpQualifier.ShooterPIDFConfig.kI,
-                    TeleOpQualifier.ShooterPIDFConfig.kD,
-                    TeleOpQualifier.ShooterPIDFConfig.kF
+                    ShooterPIDFConfig.kP,
+                    ShooterPIDFConfig.kI,
+                    ShooterPIDFConfig.kD,
+                    ShooterPIDFConfig.kF
             );
             shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
 
             telemetry.addData("Shooter PIDF", "Initialized");
+            telemetry.addLine("Shooter PIDF");
+            telemetry.addData("kP", pidf.p);
+            telemetry.addData("kI", pidf.i);
+            telemetry.addData("kD", pidf.d);
+            telemetry.addData("kF", pidf.f);
+            telemetry.update();
+
         }
     }
 
@@ -416,11 +391,55 @@ public class Red9Long extends LinearOpMode {
     private void checkShooterVelocity() {
         if (robot.MasterShooterMotorL.isBusy()) {
             double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());
-            double targetVelocity = (TeleOpQualifier.ShooterPIDFConfig.targetRPM)*28/60; //28*13.7/60
-            double tolerance = TeleOpQualifier.ShooterPIDFConfig.tolerance;
+            double targetVelocity = (ShooterPIDFConfig.targetRPM)*28/60; //28*13.7/60
+            double toleranceofVelocity = ShooterPIDFConfig.tolerance;
+            double shooterPower = robot.MasterShooterMotorL.getPower();
+            double shooterCurrent = robot.MasterShooterMotorL.getCurrent(CurrentUnit.AMPS); // 如果有电流传感器
+            telemetry.addLine("=== SHOOTER PIDF TUNING ===");
+            telemetry.addLine("Shooter Velocity");
+            telemetry.addData("Target RPM",ShooterPIDFConfig.targetRPM);
+            telemetry.addData("targetVelocity ",targetVelocity);
+            telemetry.addData("CurrentVelocity", "%.0f", currentVelocity);
+            telemetry.addData("Error Velocity", "%.1f", targetVelocity - currentVelocity);
+
+            telemetry.addData("At Speed?", isShooterAtSpeed ? "YES" : "NO");
+            telemetry.addData("Power", "%.2f", shooterPower);
+            telemetry.update();
+
+            // PIDF 参数值
+            telemetry.addLine("=== PIDF PARAMETERS ===");
+            telemetry.addData("kP", "%.4f", ShooterPIDFConfig.kP);
+            telemetry.addData("kI", "%.4f", ShooterPIDFConfig.kI);
+            telemetry.addData("kD", "%.4f", ShooterPIDFConfig.kD);
+            telemetry.addData("kF", "%.4f", ShooterPIDFConfig.kF);
+            telemetry.addData("Tolerance", "%.0f RPM", ShooterPIDFConfig.tolerance);
+
+            // 从电机状态
+            telemetry.addLine("=== SLAVE MOTOR ===");
+            telemetry.addData("Slave Power", "%.2f", robot.SlaveShooterMotorR.getPower());
+            telemetry.addData("Slave RPM", "%.0f", robot.SlaveShooterMotorR.getVelocity());
+
+            // 射击状态
+            telemetry.addLine("=== SHOOTING STATUS ===");
+            telemetry.addData("Fire Requested", fireRequested ? "YES" : "NO");
+            telemetry.addData("LED Color", isShooterAtSpeed ? "GREEN" : "RED");
+
+            // PIDF 参数值
+            telemetry.addLine("=== PIDF PARAMETERS ===");
+            telemetry.addData("kP", "%.4f", ShooterPIDFConfig.kP);
+            telemetry.addData("kI", "%.4f", ShooterPIDFConfig.kI);
+            telemetry.addData("kD", "%.4f", ShooterPIDFConfig.kD);
+            telemetry.addData("kF", "%.4f", ShooterPIDFConfig.kF);
+            telemetry.addData("Tolerance", "%.0f RPM", ShooterPIDFConfig.tolerance);
+
+            // 从电机状态
+            telemetry.addLine("=== SLAVE MOTOR ===");
+            telemetry.addData("Slave Power", "%.2f", robot.SlaveShooterMotorR.getPower());
+            telemetry.addData("Slave RPM", "%.0f", robot.SlaveShooterMotorR.getVelocity());
+
 
             // 检查是否在容差范围内
-            if (Math.abs(currentVelocity - targetVelocity) <= tolerance) {
+            if (Math.abs(currentVelocity - targetVelocity) <= toleranceofVelocity) {
                 isShooterAtSpeed = true;
             } else {
                 isShooterAtSpeed = false;
@@ -442,19 +461,19 @@ public class Red9Long extends LinearOpMode {
         double shooterCurrent = robot.MasterShooterMotorL.getCurrent(CurrentUnit.AMPS); // 如果有电流传感器
 
         telemetry.addLine("=== SHOOTER PIDF TUNING ===");
-        telemetry.addData("Target RPM", "%.0f", TeleOpQualifier.ShooterPIDFConfig.targetRPM);
+        telemetry.addData("Target RPM", "%.0f", ShooterPIDFConfig.targetRPM);
         telemetry.addData("Current RPM", "%.0f", shooterVelocity);
-        telemetry.addData("Error", "%.0f RPM", Math.abs(TeleOpQualifier.ShooterPIDFConfig.targetRPM - shooterVelocity));
+        telemetry.addData("Error", "%.0f RPM", Math.abs(ShooterPIDFConfig.targetRPM - shooterVelocity));
         telemetry.addData("At Speed?", isShooterAtSpeed ? "YES" : "NO");
         telemetry.addData("Power", "%.2f", shooterPower);
 
         // PIDF 参数值
         telemetry.addLine("=== PIDF PARAMETERS ===");
-        telemetry.addData("kP", "%.4f", TeleOpQualifier.ShooterPIDFConfig.kP);
-        telemetry.addData("kI", "%.4f", TeleOpQualifier.ShooterPIDFConfig.kI);
-        telemetry.addData("kD", "%.4f", TeleOpQualifier.ShooterPIDFConfig.kD);
-        telemetry.addData("kF", "%.4f", TeleOpQualifier.ShooterPIDFConfig.kF);
-        telemetry.addData("Tolerance", "%.0f RPM", TeleOpQualifier.ShooterPIDFConfig.tolerance);
+        telemetry.addData("kP", "%.4f", ShooterPIDFConfig.kP);
+        telemetry.addData("kI", "%.4f", ShooterPIDFConfig.kI);
+        telemetry.addData("kD", "%.4f", ShooterPIDFConfig.kD);
+        telemetry.addData("kF", "%.4f", ShooterPIDFConfig.kF);
+        telemetry.addData("Tolerance", "%.0f RPM", ShooterPIDFConfig.tolerance);
 
         // 从电机状态
         telemetry.addLine("=== SLAVE MOTOR ===");

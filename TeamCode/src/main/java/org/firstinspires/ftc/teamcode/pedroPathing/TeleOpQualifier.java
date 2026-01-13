@@ -193,7 +193,7 @@ public class TeleOpQualifier extends LinearOpMode {
 //        F: 10–30
 //        public static double targetRPM =Close_SHOOTER_TARGET_RPM;
         public static double targetRPM =Med_SHOOTER_TARGET_RPM; // 目标转速
-        public static double tolerance = 10;    // 转速容差
+        public static double tolerance = 30;    // 转速容差
     }
 
     private void initShooterPIDF() {
