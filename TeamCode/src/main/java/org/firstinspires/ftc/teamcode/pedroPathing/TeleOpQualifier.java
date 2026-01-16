@@ -32,6 +32,7 @@ public class TeleOpQualifier extends LinearOpMode {
 //    return (tps * 60.0) / ticksPerRevolution;  28*13.7
     private static final double Close_SHOOTER_TARGET_RPM = 800;//  400RPM---2,557.33333333333333
     private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
+    public static double toleranceforShoot = 100;        // 转速容差
     //1300
 //    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
     private static final double Far_SHOOTER_TARGET_RPM = 2237;  //  350RPM---2237
@@ -99,6 +100,7 @@ public class TeleOpQualifier extends LinearOpMode {
             // 3. 更新射击系统
             updateShooter();
             updateHood();
+            updateLEDs();
             // 4. 更新所有遥测数据（重要！）
             telemetry.update();
             // 5. 添加短暂延迟避免过于频繁的更新
@@ -193,7 +195,8 @@ public class TeleOpQualifier extends LinearOpMode {
 //        F: 10–30
 //        public static double targetRPM =Close_SHOOTER_TARGET_RPM;
         public static double targetRPM =Med_SHOOTER_TARGET_RPM; // 目标转速
-        public static double tolerance = 30;    // 转速容差
+        public static double tolerance = 30;
+
     }
 
     private void initShooterPIDF() {
@@ -241,7 +244,7 @@ public class TeleOpQualifier extends LinearOpMode {
             robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             double SlaveShooterMotorRPower = calculateOptimalSlavePower(MasterShooterMotorLPower);
             robot.SlaveShooterMotorR.setPower(SlaveShooterMotorRPower);
-
+            //
         }
 
     }
@@ -256,7 +259,7 @@ public class TeleOpQualifier extends LinearOpMode {
             double tolerance = ShooterPIDFConfig.tolerance;
 
             // 检查是否在容差范围内
-            if (Math.abs(currentVelocity - targetVelocity) <= tolerance) {
+            if (Math.abs(currentVelocity - targetVelocity) <= toleranceforShoot) {
                 isShooterAtSpeed = true;
             } else {
                 isShooterAtSpeed = false;
@@ -276,19 +279,22 @@ public class TeleOpQualifier extends LinearOpMode {
         double shooterVelocity = robot.MasterShooterMotorL.getVelocity();
         double shooterPower = robot.MasterShooterMotorL.getPower();
         double shooterCurrent = robot.MasterShooterMotorL.getCurrent(CurrentUnit.AMPS); // 如果有电流传感器
-
+        double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());
+        double targetVelocity = ShooterPIDFConfig.targetRPM;
+        double tolerance = ShooterPIDFConfig.tolerance;
         telemetry.addLine("=== SHOOTER PIDF TUNING ===");
         telemetry.addData("Target RPM", "%.0f", ShooterPIDFConfig.targetRPM);
         telemetry.addData("Current RPM", "%.0f", shooterVelocity);
+        telemetry.addData("currentVelocity", currentVelocity);
+        telemetry.addData("targetVelocity", targetVelocity);
         telemetry.addData("Error", "%.0f RPM", Math.abs(ShooterPIDFConfig.targetRPM - shooterVelocity));
         telemetry.addData("At Speed?", isShooterAtSpeed ? "YES" : "NO");
         telemetry.addData("Power", "%.2f", shooterPower);
-
         // PIDF 参数值
         telemetry.addLine("=== PIDF PARAMETERS ===");
         telemetry.addData("kP", "%.4f", ShooterPIDFConfig.kP);
-        telemetry.addData("kI", "%.4f", ShooterPIDFConfig.kI);
-        telemetry.addData("kD", "%.4f", ShooterPIDFConfig.kD);
+//        telemetry.addData("kI", "%.4f", ShooterPIDFConfig.kI);
+//        telemetry.addData("kD", "%.4f", ShooterPIDFConfig.kD);
         telemetry.addData("kF", "%.4f", ShooterPIDFConfig.kF);
         telemetry.addData("Tolerance", "%.0f RPM", ShooterPIDFConfig.tolerance);
 
@@ -296,11 +302,11 @@ public class TeleOpQualifier extends LinearOpMode {
         telemetry.addLine("=== SLAVE MOTOR ===");
         telemetry.addData("Slave Power", "%.2f", robot.SlaveShooterMotorR.getPower());
         telemetry.addData("Slave RPM", "%.0f", robot.SlaveShooterMotorR.getVelocity());
-
-        // 射击状态
-        telemetry.addLine("=== SHOOTING STATUS ===");
-        telemetry.addData("Fire Requested", fireRequested ? "YES" : "NO");
-        telemetry.addData("LED Color", isShooterAtSpeed ? "GREEN" : "RED");
+//
+//        // 射击状态
+//        telemetry.addLine("=== SHOOTING STATUS ===");
+//        telemetry.addData("Fire Requested", fireRequested ? "YES" : "NO");
+//        telemetry.addData("LED Color", isShooterAtSpeed ? "GREEN" : "RED");
     }
 
 
@@ -368,7 +374,7 @@ public class TeleOpQualifier extends LinearOpMode {
      */
     private void updateLEDs() {
         // 检测状态变化，只在变化时更新LED以减少通信负载
-        if (isShooterAtSpeed != wasShooterAtSpeed) {
+        if (isShooterAtSpeed) {
             if (isShooterAtSpeed) {
                 setLEDColor(LED_COLOR_READY);
                 telemetry.addData("LED Status", "READY (GREEN) - Press A to Fire");
@@ -376,7 +382,7 @@ public class TeleOpQualifier extends LinearOpMode {
                 setLEDColor(LED_COLOR_OFF);
                 telemetry.addData("LED Status", "OFF (RED)");
             }
-            wasShooterAtSpeed = isShooterAtSpeed;
+            wasShooterAtSpeed = false;
         }
     }
 
