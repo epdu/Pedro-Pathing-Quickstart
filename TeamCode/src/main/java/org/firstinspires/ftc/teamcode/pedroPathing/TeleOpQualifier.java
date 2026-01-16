@@ -100,7 +100,14 @@ public class TeleOpQualifier extends LinearOpMode {
             // 3. 更新射击系统
             updateShooter();
             updateHood();
-            updateLEDs();
+//            updateLEDs();
+//            robot.greenLED.setState(true);
+//            robot.redLED.setState(false);
+////                robot.greenLED = RevBlinkinLedDriver.BlinkinPattern.GREEN;
+//        } else if (color.equals("RED")) {
+//            robot.greenLED.setState(false);
+//            robot.redLED.setState(true);
+
             // 4. 更新所有遥测数据（重要！）
             telemetry.update();
             // 5. 添加短暂延迟避免过于频繁的更新
@@ -374,7 +381,7 @@ public class TeleOpQualifier extends LinearOpMode {
      */
     private void updateLEDs() {
         // 检测状态变化，只在变化时更新LED以减少通信负载
-        if (isShooterAtSpeed) {
+//        if (isShooterAtSpeed) {
             if (isShooterAtSpeed) {
                 setLEDColor(LED_COLOR_READY);
                 telemetry.addData("LED Status", "READY (GREEN) - Press A to Fire");
@@ -382,8 +389,8 @@ public class TeleOpQualifier extends LinearOpMode {
                 setLEDColor(LED_COLOR_OFF);
                 telemetry.addData("LED Status", "OFF (RED)");
             }
-            wasShooterAtSpeed = false;
-        }
+//            wasShooterAtSpeed = false;
+//        }
     }
 
     /**

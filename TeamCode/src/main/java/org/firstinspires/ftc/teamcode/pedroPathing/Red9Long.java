@@ -225,44 +225,7 @@ public class Red9Long extends LinearOpMode {
         }
     }
 
-
-
-    /// ////////////////////////////////////////////////////
-
-
-//    public static double flywheelSpeed(double goalDist){ return Mathfunctions.clamp(0.0204772 * Math,pow(goalDist, 2)+ 0.643162 * goalDist + 712.90909, lower 0, upper: 1400)+ flywheeloffset;}
-//
-//    public static double hoodAngle(double goalDist){ return MathFunctions.clamp(-2.34831e-7 * Math.pow(goalDist, 3)+ 0.0000936893 * math.pow(goalDist, 2)- 0.0165033*goalDist + 1.25724,lower: 0.11, upper: 0.904)+ hoodoffset;
-//    }
-//    public void updateShooter() {
-//
-//            checkShooterVelocity();
-//            if (!robot.MasterShooterMotorL.isBusy()){
-//                startShooter();
-//            }
-//
-//        // 手动射击触发 - 按下A键射击（仅在速度达标时有效）
-////        if (gamepad1.right_bumper && isShooterAtSpeed && !fireRequested)
-//        if (gamepad1.right_bumper) {
-//            fireRequested = true;
-//            executeFireSequence();
-//            robot.IntakeMotor.setPower(intakePowerShoot);
-//        }
-//        // 停止射击电机 - 按下B键
-//        if (gamepad1.b) {
-//            stopShooter();
-//            robot.IntakeMotor.setPower(intakePowerOff);
-//            fireRequested = false;
-//        }
-//
-//        // 如果射击电机未运行，确保重置状态
-//        if (!gamepad1.right_bumper && !robot.MasterShooterMotorL.isBusy()) {
-//            isShooterAtSpeed = false;
-//            fireRequested = false;
-//        }
-//        // 更新射击系统遥测数据（关键！）
-//        updateShooterTelemetry();
-//    }
+////////////////////////////////////////////////////
 
     public void autoIntake() {
            // 吸入
