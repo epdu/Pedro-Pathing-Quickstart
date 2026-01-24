@@ -41,6 +41,7 @@ public class Red9Long extends LinearOpMode {
     private volatile boolean isRunning = true;
     private boolean shooterStarted=false;
     // Initialize elapsed timer
+
     private final ElapsedTime runtime = new ElapsedTime();
     private Timer autoTimer, pathTimer,shootTimer;
     private static final double VELOCITY_TOLERANCE = 30; // RPM容差，可根据测试调整
