@@ -43,8 +43,8 @@ public class TeleOpQualifier extends LinearOpMode {
     public float DriveTrains_ReducePOWER=1f;
     public float DriveTrains_smoothTurn=1f;
     HardwareQualifier robot = new HardwareQualifier();
-    public String fieldOrRobotCentric = "robot";
-//    public String fieldOrRobotCentric = "field";
+//    public String fieldOrRobotCentric = "robot";
+    public String fieldOrRobotCentric = "field";
     private double powerMultiplier = 0.9;
     boolean move = false;
     int controlMode = 1;

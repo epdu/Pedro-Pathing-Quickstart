@@ -34,7 +34,7 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.limelightvision.LLResult;
 // 位姿
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-@Autonomous(name = "AAA working on turret, tune pidf follow done Red9long")
+@Autonomous(name = "AAA Southeastern Pennsylvania Qualifier V1  Red9long")
 public class Red9Long extends LinearOpMode {
     HardwareQualifier robot = new HardwareQualifier();
    private Limelight3A limelight;
@@ -118,7 +118,7 @@ public class Red9Long extends LinearOpMode {
         DRIVE_OFFLINE,
         END
     }
-    private final Pose startPose = new Pose(92, 6.25, Math.toRadians(0)); // Start Pose further zone of our robot.
+    private final Pose startPose = new Pose(129,113.75, Math.toRadians(0)); // Start Pose further zone of our robot.
     private final Pose shootPose = new Pose(92, 92.25, Math.toRadians(45)); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
     private final Pose scoreEnd = new Pose(92, 92.25, Math.toRadians(0)); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
     private final Pose readyFirstPickupPose = new Pose(92, 82.25, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
@@ -197,7 +197,7 @@ public class Red9Long extends LinearOpMode {
         while (opModeIsActive() && pathState != PathState.END) {
             panelsTelemetry.update();
             follower.update();
-       updateShooterTelemetry();
+            updateShooterTelemetry();
 
             statePathUpdate();
 /// ///////////////////////////////////////////////debug PIDF////////////////////
@@ -253,9 +253,6 @@ public class Red9Long extends LinearOpMode {
         double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());//60/(28*13.7)
         double targetVelocity = ShooterPIDFConfig.targetVelocity;
 
-
-
-
         switch (autoShootState) {
 
             case IDLE:
@@ -266,7 +263,7 @@ public class Red9Long extends LinearOpMode {
                 break;
 
             case SPINNING_UP:
-                if (Math.abs(currentVelocity - targetVelocity) <= ShooterPIDFConfig.toleranceofVelocity) {
+                if (Math.abs(Math.abs(currentVelocity) - targetVelocity) <= ShooterPIDFConfig.toleranceofVelocity) {
                     shootTimer.resetTimer(); // ⭐ 只在“到速”瞬间 reset
                     robot.IntakeMotor.setPower(intakePowerShoot);
                     autoShootState = AutoShootState.FEEDING;
@@ -361,7 +358,7 @@ public class Red9Long extends LinearOpMode {
      * 检查射击电机速度（使用 Dashboard 调整的容差）
      */
     private void checkShooterVelocity() {
-        if (robot.MasterShooterMotorL.isBusy()) {
+
             double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());
             double targetVelocity = (ShooterPIDFConfig.targetVelocity); //28*13.7/60
             // targetVelocity
@@ -369,59 +366,15 @@ public class Red9Long extends LinearOpMode {
             double toleranceofVelocity = ShooterPIDFConfig.tolerance;
             double shooterPower = robot.MasterShooterMotorL.getPower();
             double shooterCurrent = robot.MasterShooterMotorL.getCurrent(CurrentUnit.AMPS); // 如果有电流传感器
-            telemetry.addLine("=== SHOOTER PIDF TUNING ===");
-            telemetry.addLine("Shooter Velocity");
-            telemetry.addData("Target Velocity",ShooterPIDFConfig.targetVelocity);
-            telemetry.addData("targetVelocity ",targetVelocity);
-            telemetry.addData("CurrentVelocity", "%.0f", currentVelocity);
-            telemetry.addData("Error Velocity", "%.1f", targetVelocity - currentVelocity);
-
-            telemetry.addData("At Speed?", isShooterAtSpeed ? "YES" : "NO");
-            telemetry.addData("Power", "%.2f", shooterPower);
-            telemetry.update();
-
-            // PIDF 参数值
-            telemetry.addLine("=== PIDF PARAMETERS ===");
-            telemetry.addData("kP", "%.4f", ShooterPIDFConfig.kP);
-            telemetry.addData("kI", "%.4f", ShooterPIDFConfig.kI);
-            telemetry.addData("kD", "%.4f", ShooterPIDFConfig.kD);
-            telemetry.addData("kF", "%.4f", ShooterPIDFConfig.kF);
-            telemetry.addData("Tolerance", "%.0f RPM", ShooterPIDFConfig.tolerance);
-
-            // 从电机状态
-            telemetry.addLine("=== SLAVE MOTOR ===");
-            telemetry.addData("Slave Power", "%.2f", robot.SlaveShooterMotorR.getPower());
-            telemetry.addData("Slave RPM", "%.0f", robot.SlaveShooterMotorR.getVelocity());
-
-            // 射击状态
-            telemetry.addLine("=== SHOOTING STATUS ===");
-            telemetry.addData("Fire Requested", fireRequested ? "YES" : "NO");
-            telemetry.addData("LED Color", isShooterAtSpeed ? "GREEN" : "RED");
-
-            // PIDF 参数值
-            telemetry.addLine("=== PIDF PARAMETERS ===");
-            telemetry.addData("kP", "%.4f", ShooterPIDFConfig.kP);
-            telemetry.addData("kI", "%.4f", ShooterPIDFConfig.kI);
-            telemetry.addData("kD", "%.4f", ShooterPIDFConfig.kD);
-            telemetry.addData("kF", "%.4f", ShooterPIDFConfig.kF);
-            telemetry.addData("Tolerance", "%.0f RPM", ShooterPIDFConfig.tolerance);
-
-            // 从电机状态
-            telemetry.addLine("=== SLAVE MOTOR ===");
-            telemetry.addData("Slave Power", "%.2f", robot.SlaveShooterMotorR.getPower());
-            telemetry.addData("Slave RPM", "%.0f", robot.SlaveShooterMotorR.getVelocity());
-
 
             // 检查是否在容差范围内
-            if (Math.abs(currentVelocity - targetVelocity) <= toleranceofVelocity) {
+            if (Math.abs(Math.abs(currentVelocity) - targetVelocity) <= toleranceofVelocity) {
                 isShooterAtSpeed = true;
             } else {
                 isShooterAtSpeed = false;
                 fireRequested = false;
             }
-        } else {
-            isShooterAtSpeed = false;
-        }
+
     }
 
 
