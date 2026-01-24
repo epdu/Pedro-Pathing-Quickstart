@@ -168,6 +168,8 @@ public class HardwareQualifier {
         greenLED = hwMap.get(DigitalChannel.class, "green");         // digital 01
         redLED.setMode(DigitalChannel.Mode.OUTPUT);
         greenLED.setMode(DigitalChannel.Mode.OUTPUT);
+        redLED.setState(true);
+        greenLED.setState(true);
 
     }
     public void setMotorPower(double lF, double rF, double lB, double rB){

@@ -14,8 +14,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 @Config  // 添加这个注解，让 Dashboard 可以调整参数
-@TeleOp(name = "AAA Blue Streak Qualifier V1 1228")
-//V1 with pid for xxx  but not odo
+@TeleOp(name = "AAA Southeastern Pennsylvania Qualifier V1 0123")
+//check speed fixed
 public class TeleOpQualifier extends LinearOpMode {
     // 已有的硬件和常量定义...
     private static final double VELOCITY_TOLERANCE = 30; // RPM容差，可根据测试调整
@@ -32,14 +32,14 @@ public class TeleOpQualifier extends LinearOpMode {
 //    return (tps * 60.0) / ticksPerRevolution;  28*13.7
     private static final double Close_SHOOTER_TARGET_RPM = 800;//  400RPM---2,557.33333333333333
     private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
-    public static double toleranceforShoot = 100;        // 转速容差
+    // use rpm as speed, the real name should be speed = 1300
+    public static double toleranceforShoot = 50;        // 转速容差
     //1300
 //    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
     private static final double Far_SHOOTER_TARGET_RPM = 2237;  //  350RPM---2237
     //  1000RPM---6346.67
     //  600RPM---3808
     //  500RPM---3173.3
-
     public float DriveTrains_ReducePOWER=1f;
     public float DriveTrains_smoothTurn=1f;
     HardwareQualifier robot = new HardwareQualifier();
@@ -99,14 +99,9 @@ public class TeleOpQualifier extends LinearOpMode {
             updateIntake();
             // 3. 更新射击系统
             updateShooter();
+            checkShooterVelocity();
+            updateLEDs();
             updateHood();
-//            updateLEDs();
-//            robot.greenLED.setState(true);
-//            robot.redLED.setState(false);
-////                robot.greenLED = RevBlinkinLedDriver.BlinkinPattern.GREEN;
-//        } else if (color.equals("RED")) {
-//            robot.greenLED.setState(false);
-//            robot.redLED.setState(true);
 
             // 4. 更新所有遥测数据（重要！）
             telemetry.update();
@@ -154,9 +149,6 @@ public class TeleOpQualifier extends LinearOpMode {
             }
     }
 
-
-
-
     public void updateShooter() {
 
         // 手柄控制发射电机 - 按下右肩键启动射击电机
@@ -172,7 +164,7 @@ public class TeleOpQualifier extends LinearOpMode {
 //        if (gamepad1.right_bumper && isShooterAtSpeed && !fireRequested)
         if (gamepad1.right_bumper) {
             fireRequested = true;
-            executeFireSequence();
+//            executeFireSequence();
             robot.IntakeMotor.setPower(intakePowerShoot);
         }
         // 停止射击电机 - 按下B键
@@ -196,14 +188,8 @@ public class TeleOpQualifier extends LinearOpMode {
         public static double kI = 0.0;      // 积分增益
         public static double kD = 0.0;      // 微分增益
         public static double kF = 17;      // 前馈增益0.050.08
-//        P: 20–60
-//        I: 0–0.002
-//        D: 0–0.5
-//        F: 10–30
-//        public static double targetRPM =Close_SHOOTER_TARGET_RPM;
         public static double targetRPM =Med_SHOOTER_TARGET_RPM; // 目标转速
         public static double tolerance = 30;
-
     }
 
     private void initShooterPIDF() {
@@ -213,7 +199,6 @@ public class TeleOpQualifier extends LinearOpMode {
             // 设置运行模式
             shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
             // 设置PIDF参数
             PIDFCoefficients pidf = new PIDFCoefficients(
                     ShooterPIDFConfig.kP,
@@ -222,17 +207,14 @@ public class TeleOpQualifier extends LinearOpMode {
                     ShooterPIDFConfig.kF
             );
             shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
-
             telemetry.addData("Shooter PIDF", "Initialized");
         }
     }
 
     private void updateHood() {
-
         if (gamepad1.x) {
                     robot.HoodArmL.setPosition(HoodArmPositionCloseShoot);
                     robot.HoodArmR.setPosition(HoodArmPositionCloseShoot);
-////                    sleep(600);
                     } // 防止快速连击导致模式快速切换
  }
 
@@ -242,10 +224,8 @@ public class TeleOpQualifier extends LinearOpMode {
             DcMotorEx shooter = (DcMotorEx) robot.MasterShooterMotorL;
             // 直接使用setVelocity，它会使用已配置的PIDF
             shooter.setVelocity(ShooterPIDFConfig.targetRPM);
-
             // 从电机使用简单功率跟随（可选PIDF）
 //            robot.SlaveShooterMotorR.setPower(shooter.getPower() * 0.95); // 95%跟随
-//
             double MasterShooterMotorLPower = robot.MasterShooterMotorL.getPower();
             robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -253,29 +233,46 @@ public class TeleOpQualifier extends LinearOpMode {
             robot.SlaveShooterMotorR.setPower(SlaveShooterMotorRPower);
             //
         }
-
     }
 
     /**
      * 检查射击电机速度（使用 Dashboard 调整的容差）
      */
     private void checkShooterVelocity() {
-        if (robot.MasterShooterMotorL.isBusy()) {
+
             double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());
             double targetVelocity = ShooterPIDFConfig.targetRPM;
             double tolerance = ShooterPIDFConfig.tolerance;
 
             // 检查是否在容差范围内
-            if (Math.abs(currentVelocity - targetVelocity) <= toleranceforShoot) {
+            if (Math.abs(Math.abs(currentVelocity) - targetVelocity) <= toleranceforShoot) {
                 isShooterAtSpeed = true;
             } else {
                 isShooterAtSpeed = false;
                 fireRequested = false;
             }
-        } else {
-            isShooterAtSpeed = false;
-        }
+
     }
+
+
+//    private void checkShooterVelocity() {
+//        if (robot.MasterShooterMotorL.isBusy()) {
+//            double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());
+//            double targetVelocity = ShooterPIDFConfig.targetRPM;
+//            double tolerance = ShooterPIDFConfig.tolerance;
+//
+//            // 检查是否在容差范围内
+//            if (Math.abs(Math.abs(currentVelocity) - targetVelocity) <= toleranceforShoot) {
+//                isShooterAtSpeed = true;
+//            } else {
+//                isShooterAtSpeed = false;
+//                fireRequested = false;
+//            }
+//        } else {
+//            isShooterAtSpeed = false;
+//        }
+//    }
+
 
 
     /**
@@ -400,12 +397,12 @@ public class TeleOpQualifier extends LinearOpMode {
         try {
             // 示例：使用REV Blinkin LED驱动
             if (color.equals("GREEN")) {
-                robot.greenLED.setState(true);
-                robot.redLED.setState(false);
-//                robot.greenLED = RevBlinkinLedDriver.BlinkinPattern.GREEN;
-            } else if (color.equals("RED")) {
                 robot.greenLED.setState(false);
                 robot.redLED.setState(true);
+//                robot.greenLED = RevBlinkinLedDriver.BlinkinPattern.GREEN;
+            } else if (color.equals("RED")) {
+                robot.greenLED.setState(true);
+                robot.redLED.setState(false);
             }
 
         } catch (Exception e) {
