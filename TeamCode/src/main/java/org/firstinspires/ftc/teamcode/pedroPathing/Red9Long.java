@@ -34,7 +34,7 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.limelightvision.LLResult;
 // 位姿
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-@Autonomous(name = "AAA Southeastern Pennsylvania Qualifier V1  Red9long")
+@Autonomous(name = "AAA Southeastern Pennsylvania FAR V1 Red9long")
 public class Red9Long extends LinearOpMode {
     HardwareQualifier robot = new HardwareQualifier();
    private Limelight3A limelight;
@@ -69,8 +69,8 @@ public class Red9Long extends LinearOpMode {
     //  500RPM---3173.3
     public float DriveTrains_ReducePOWER=0.75f;
     public float DriveTrains_smoothTurn=0.55f;
-    public String fieldOrRobotCentric = "robot";
-    //    public String fieldOrRobotCentric = "field";
+//    public String fieldOrRobotCentric = "robot";
+    public String fieldOrRobotCentric = "field";
     private double powerMultiplier = 0.9;
     boolean move = false;
     int controlMode = 1;
@@ -251,8 +251,7 @@ public class Red9Long extends LinearOpMode {
 //        double currentRPM = (Math.abs(robot.MasterShooterMotorL.getVelocity())*60)/(28);//60/(28*13.7)
 //        double targetRPM = ShooterPIDFConfig.targetRPM;
 
-        double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());//60/(28*13.7)
-        double targetVelocity = ShooterPIDFConfig.targetVelocity;
+
 
         switch (autoShootState) {
 
@@ -264,6 +263,8 @@ public class Red9Long extends LinearOpMode {
                 break;
 
             case SPINNING_UP:
+                double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());//60/(28*13.7)
+                double targetVelocity = ShooterPIDFConfig.targetVelocity;
                 if (Math.abs(Math.abs(currentVelocity) - targetVelocity) <= ShooterPIDFConfig.toleranceofVelocity) {
                     shootTimer.resetTimer(); // ⭐ 只在“到速”瞬间 reset
                     robot.IntakeMotor.setPower(intakePowerShoot);
