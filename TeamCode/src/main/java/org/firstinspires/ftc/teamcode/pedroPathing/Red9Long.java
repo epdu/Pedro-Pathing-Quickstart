@@ -59,7 +59,7 @@ public class Red9Long extends LinearOpMode {
     private static final double Close_SHOOTER_TARGET_RPM = 100;//  400RPM---2,557.33333333333333
 //    private static final double Med_SHOOTER_TARGET_RPM = 204;   //1598 white tri a little bit too far//  250RPM---1586.67
     private static final double Med_SHOOTER_TARGET_RPM = 2785;   //1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
-    private static final double Med_SHOOTER_TARGET_Velocity = 2785;   //1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
+    private static final double Med_SHOOTER_TARGET_Velocity = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
     private static final double Far_SHOOTER_TARGET_RPM = 350;  //  350RPM---2237
 //   private static final double Close_SHOOTER_TARGET_RPM = 800;//  400RPM---2,557.33333333333333
 //    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
@@ -199,8 +199,10 @@ public class Red9Long extends LinearOpMode {
             panelsTelemetry.update();
             follower.update();
             updateShooterTelemetry();
-
+            autoshoot();
             statePathUpdate();
+
+            /// /////////////////////added
 /// ///////////////////////////////////////////////debug PIDF////////////////////
 //            updateShooter();
 //            autoshoot();
@@ -263,13 +265,16 @@ public class Red9Long extends LinearOpMode {
                 break;
 
             case SPINNING_UP:
-                double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());//60/(28*13.7)
+                double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());//60/(28)
                 double targetVelocity = ShooterPIDFConfig.targetVelocity;
-                if (Math.abs(Math.abs(currentVelocity) - targetVelocity) <= ShooterPIDFConfig.toleranceofVelocity) {
-                    shootTimer.resetTimer(); // ⭐ 只在“到速”瞬间 reset
-                    robot.IntakeMotor.setPower(intakePowerShoot);
+                if (!isShooterAtSpeed &&
+                        Math.abs(currentVelocity - targetVelocity) <= ShooterPIDFConfig.toleranceofVelocity) {
+
+                    isShooterAtSpeed = true;
+                    shootTimer.resetTimer();
                     autoShootState = AutoShootState.FEEDING;
                 }
+
                 break;
 
             case FEEDING:
@@ -359,25 +364,25 @@ public class Red9Long extends LinearOpMode {
     /**
      * 检查射击电机速度（使用 Dashboard 调整的容差）
      */
-    private void checkShooterVelocity() {
-
-            double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());
-            double targetVelocity = (ShooterPIDFConfig.targetVelocity); //28*13.7/60
-            // targetVelocity
-//            double targetVelocity = (ShooterPIDFConfig.targetRPM)*28/60; //28*13.7/60
-            double toleranceofVelocity = ShooterPIDFConfig.tolerance;
-            double shooterPower = robot.MasterShooterMotorL.getPower();
-            double shooterCurrent = robot.MasterShooterMotorL.getCurrent(CurrentUnit.AMPS); // 如果有电流传感器
-
-            // 检查是否在容差范围内
-            if (Math.abs(Math.abs(currentVelocity) - targetVelocity) <= toleranceofVelocity) {
-                isShooterAtSpeed = true;
-            } else {
-                isShooterAtSpeed = false;
-                fireRequested = false;
-            }
-
-    }
+//    private void checkShooterVelocity() {
+//
+//            double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());
+//            double targetVelocity = (ShooterPIDFConfig.targetVelocity); //28*13.7/60
+//            // targetVelocity
+////            double targetVelocity = (ShooterPIDFConfig.targetRPM)*28/60; //28*13.7/60
+//            double toleranceofVelocity = ShooterPIDFConfig.tolerance;
+//            double shooterPower = robot.MasterShooterMotorL.getPower();
+//            double shooterCurrent = robot.MasterShooterMotorL.getCurrent(CurrentUnit.AMPS); // 如果有电流传感器
+//
+//            // 检查是否在容差范围内
+//            if (Math.abs(Math.abs(currentVelocity) - targetVelocity) <= toleranceofVelocity) {
+//                isShooterAtSpeed = true;
+//            } else {
+//                isShooterAtSpeed = false;
+//                fireRequested = false;
+//            }
+//
+//    }
 
 
     /**
@@ -399,6 +404,9 @@ public class Red9Long extends LinearOpMode {
         double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());
         double targetVelocity = ShooterPIDFConfig.targetVelocity;
         double tolerance = ShooterPIDFConfig.tolerance;
+        telemetry.addData("VEL raw", robot.MasterShooterMotorL.getVelocity());
+        telemetry.addData("VEL target", ShooterPIDFConfig.targetVelocity);
+        telemetry.addData("VEL error",ShooterPIDFConfig.targetVelocity - robot.MasterShooterMotorL.getVelocity());
         telemetry.addData("currentVelocity", currentVelocity);
         telemetry.addData("targetVelocity", targetVelocity);
         telemetry.update();
