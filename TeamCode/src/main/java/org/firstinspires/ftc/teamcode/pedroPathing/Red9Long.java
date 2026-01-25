@@ -223,10 +223,7 @@ public class Red9Long extends LinearOpMode {
 /// ///////////////////////////////////////////////debug PIDF////////////////////
 //            updateShooter();
 //            autoshoot();
-
-
 //            telemetry.update();
-
 //            YawPitchRollAngles orientation =robot.imu.getRobotYawPitchRollAngles();
 //            limelight.updateRobotOrientation(orientation.getYaw());
 //            LLResult llResult= limelight.getLatestResult();
