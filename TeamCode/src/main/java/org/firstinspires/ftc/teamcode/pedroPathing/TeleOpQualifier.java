@@ -31,7 +31,7 @@ public class TeleOpQualifier extends LinearOpMode {
     // RPM = (TPS * 60秒) / 每转ticks数
 //    return (tps * 60.0) / ticksPerRevolution;  28*13.7
     private static final double Close_SHOOTER_TARGET_RPM = 800;//  400RPM---2,557.33333333333333
-    private static final double Med_SHOOTER_TARGET_RPM = 1866;
+    private static final double Med_SHOOTER_TARGET_RPM = 1666;  // 1866 kind of good for far， but a little bit too big
     /////////////////////////////////pretty goood for close shoot /////////////////////////// 1300
 //    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
     // use rpm as speed, the real name should be speed = 1300
@@ -63,6 +63,9 @@ public class TeleOpQualifier extends LinearOpMode {
     public static final double HoodArmPositionInit = 0.1;
     public static final double HoodArmPositionCloseShoot = 0.3;
     public static final double HoodArmPositionMedShoot = 0.2;
+    private ElapsedTime imuResetTimer = new ElapsedTime();
+    private boolean imuResetInCooldown = false;
+    private static final long IMU_RESET_COOLDOWN_MS = 300; // 1秒冷却时间
     ButtonHandler dpadDownHandler = new ButtonHandler();
     ButtonHandler dpadUpHandler = new ButtonHandler();
     ButtonHandler dpadLeftHandler = new ButtonHandler();
@@ -96,6 +99,7 @@ public class TeleOpQualifier extends LinearOpMode {
 
             // 1. 更新底盘驱动
             updateDrivetrain_FieldCentric();
+            handleIMUReset();
 //            updateDrivetrain_RobotCentric();
             // 2. 更新拾取系统
             updateIntake();
@@ -493,6 +497,50 @@ public class TeleOpQualifier extends LinearOpMode {
             robot.rightRearMotor.setPower(br * DriveTrains_ReducePOWER);
 
         }
+
+    private void handleIMUReset() {
+        // 检查冷却状态
+        if (imuResetInCooldown) {
+            if (imuResetTimer.milliseconds() > IMU_RESET_COOLDOWN_MS) {
+                imuResetInCooldown = false;
+            } else {
+                return; // 冷却中，不处理
+            }
+        }
+
+        // 使用 gamepad1.back 键重设IMU
+        if (gamepad1.back) {
+            robot.imu.resetYaw();
+
+            // 记录状态和开始冷却
+            imuResetInCooldown = true;
+            imuResetTimer.reset();
+
+            // 提供视觉反馈
+            telemetry.addLine("=== IMU RESET ===");
+            telemetry.addData("Status", "Yaw angle reset to 0°");
+            telemetry.addData("Current Heading", "%.1f°",
+                    robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+            telemetry.addData("Cooldown", "%.1fs", IMU_RESET_COOLDOWN_MS / 1000.0);
+
+            // 震动反馈
+            gamepad1.rumble(300);
+        }
+    }
+        //    private void handleIMUReset() {
+//        // 使用 gamepad1.start 键重设IMU
+//        if (gamepad1.start) {
+//            robot.imu.resetYaw();
+//            telemetry.addData("IMU", "Yaw Axis Reset Complete");
+//            telemetry.update();
+//            // 短暂震动反馈（如果有gamepad震动功能）
+////            if (gamepad1.getGamepadId() == 1) {
+////                gamepad1.rumble(300); // 震动300ms
+////            }
+//            // 防抖延迟
+//            sleep(300);
+//        }
+//    }
 
 //Begin Definition and Initialization of steptestservo()
 // Begin debugging with a step increment of 0.05  SGC - servoGamepadControl

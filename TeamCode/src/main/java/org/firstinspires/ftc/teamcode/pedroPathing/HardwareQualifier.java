@@ -73,8 +73,6 @@ public class HardwareQualifier {
 
         MasterShooterMotorL = hwMap.get(DcMotorEx.class, "MasterShooterMotorL");//11072025 control  hub port 3
         SlaveShooterMotorR = hwMap.get(DcMotorEx.class, "SlaveShooterMotorR"); //11072025 expansion  hub port 2
-
-
         SlaveShooterMotorR.setDirection(DcMotorSimple.Direction.REVERSE);
 
         MasterShooterMotorL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
