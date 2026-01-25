@@ -50,6 +50,7 @@ public class Red9Long extends LinearOpMode {
     // 状态变量
     private boolean isShooterAtSpeed = false;
     private boolean wasShooterAtSpeed = false; // 用于检测状态变化
+    private boolean firstPickupCompleted = false;
     private boolean fireRequested = false;
     // LED颜色常量（根据你的LED库调整）
     private final String LED_COLOR_READY = "GREEN";
@@ -99,6 +100,7 @@ public class Red9Long extends LinearOpMode {
     private int pathStateGPP; // Current state machine value
     private boolean hasPathStarted = false;
     private PathState pathState;
+    private AutoShootState autoShootState;
 //    ShooterSubsystem shooterSubsystem;
 //    FlywheelSubsystem flywheelSubsystem;
 //    FeederSubsystem feederSubsystem;
@@ -127,9 +129,9 @@ public class Red9Long extends LinearOpMode {
     private final Pose readyFirstPickupPose = new Pose(92, 82.25, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
     private final Pose readySecondPickupPose = new Pose(92, 60.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose readyThirdPickupPose = new Pose(92, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
-    private final Pose firstPickupPose = new Pose(122, 82.25, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
-    private final Pose secondPickupPose = new Pose(122, 60.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose thirdPickupPose = new Pose(122, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
+    private final Pose firstPickupPose = new Pose(127, 82.25, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
+    private final Pose secondPickupPose = new Pose(129, 60.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose thirdPickupPose = new Pose(129, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     //    private final Pose PARKPose = new Pose(120, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     private final Pose offlinePose = new Pose(110, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     // Initialize variables for paths
@@ -188,6 +190,7 @@ public class Red9Long extends LinearOpMode {
         follower = Constants.createFollower(hardwareMap);
 
         pathState = PathState.DRIVE_START_POS_SHOOT_POS;
+        autoShootState = AutoShootState.IDLE;
         buildPaths();
 //        shooterSubsystem = ShooterSubsystem.getInstance(hardwareMap, gamepad1, gamepad2);
 //        flywheelSubsystem = FlywheelSubsystem.getInstance(hardwareMap, gamepad1);
@@ -221,11 +224,7 @@ public class Red9Long extends LinearOpMode {
 //            updateShooter();
 //            autoshoot();
 
-            telemetry.addData("State", pathState);
-            telemetry.addData("Path Time", pathTimer.getElapsedTimeSeconds());
-            telemetry.addData("X", follower.getPose().getX());
-            telemetry.addData("Y", follower.getPose().getY());
-            telemetry.addData("Heading", Math.toDegrees(follower.getPose().getHeading()));
+
 //            telemetry.update();
 
 //            YawPitchRollAngles orientation =robot.imu.getRobotYawPitchRollAngles();
@@ -259,7 +258,8 @@ public class Red9Long extends LinearOpMode {
         DONE
     }
 
-    private AutoShootState autoShootState = AutoShootState.IDLE;
+//    private AutoShootState autoShootState = AutoShootState.IDLE;
+//    autoShootState = AutoShootState.IDLE;
 
     public void autoshoot() {
 
@@ -280,8 +280,7 @@ public class Red9Long extends LinearOpMode {
             case SPINNING_UP:
                 double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());//60/(28)
                 double targetVelocity = ShooterPIDFConfig.targetVelocity;
-                if (!isShooterAtSpeed &&
-                        Math.abs(currentVelocity - targetVelocity) <= ShooterPIDFConfig.toleranceofVelocity) {
+                if ((!isShooterAtSpeed) && (Math.abs(currentVelocity - targetVelocity) <= ShooterPIDFConfig.toleranceofVelocity)) {
                     robot.IntakeMotor.setPower(intakePowerShoot);
                     isShooterAtSpeed = true;
                     shootTimer.resetTimer();
@@ -454,17 +453,26 @@ public static class ShooterPIDFConfig {
 //        telemetry.addData("At Speed?", isShooterAtSpeed ? "YES" : "NO");
         telemetry.addData("ShooterPower", "%.2f", shooterPower);
         telemetry.addData("ShooterPowerR", "%.2f", shooterPowerr);
-//        telemetry.addData(" robot.SlaveShooterMotorR.setPower", "%.2f",  (robot.MasterShooterMotorL.getPower()));
+        telemetry.addData("state AutoShootState",  autoShootState);
+        telemetry.addData("State", pathState);
+        telemetry.addData("isShooterAtSpeed", isShooterAtSpeed);
+        telemetry.addData("State", pathState);
+//        telemetry.addData("Path Time", pathTimer.getElapsedTimeSeconds());
+        telemetry.addData("X", follower.getPose().getX());
+        telemetry.addData("Y", follower.getPose().getY());
+//        telemetry.addData("Heading", Math.toDegrees(follower.getPose().getHeading()));
+
+        //        telemetry.addData(" robot.SlaveShooterMotorR.setPower", "%.2f",  (robot.MasterShooterMotorL.getPower()));
 
 
         /// /////////////////////////////////////////////////
-        // PIDF 参数值
-        telemetry.addLine("=== PIDF PARAMETERS ===");
-        telemetry.addData("kP", "%.4f", TeleOpQualifier.ShooterPIDFConfig.kP);
-//        telemetry.addData("kI", "%.4f", TeleOpQualifier.ShooterPIDFConfig.kI);
-//        telemetry.addData("kD", "%.4f", TeleOpQualifier.ShooterPIDFConfig.kD);
-        telemetry.addData("kF", "%.4f", TeleOpQualifier.ShooterPIDFConfig.kF);
-        telemetry.addData("Tolerance", "%.0f RPM", TeleOpQualifier.ShooterPIDFConfig.tolerance);
+//        // PIDF 参数值
+//        telemetry.addLine("=== PIDF PARAMETERS ===");
+//        telemetry.addData("kP", "%.4f", TeleOpQualifier.ShooterPIDFConfig.kP);
+////        telemetry.addData("kI", "%.4f", TeleOpQualifier.ShooterPIDFConfig.kI);
+////        telemetry.addData("kD", "%.4f", TeleOpQualifier.ShooterPIDFConfig.kD);
+//        telemetry.addData("kF", "%.4f", TeleOpQualifier.ShooterPIDFConfig.kF);
+//        telemetry.addData("Tolerance", "%.0f RPM", TeleOpQualifier.ShooterPIDFConfig.tolerance);
 //        telemetry.addData("MasterShooterMPower", "%.0f", robot.MasterShooterMotorL.getPower());
         // 从电机状态
 //        telemetry.addLine("=== SLAVE MOTOR ===");
@@ -683,14 +691,14 @@ public static class ShooterPIDFConfig {
                 }
                 break;
             case FIRST_PICKUP:
-                if (pathTimer.getElapsedTimeSeconds() < 2.5) {
+                if (!firstPickupCompleted && pathTimer.getElapsedTimeSeconds() < 2.5) {
             autoIntake();
-
                 } else {
                     follower.followPath(driveFirstPickupShoot);
                     stopShooter();
                     stopIntake();
                     setPathState(PathState.DRIVE_BACK_FIRST_SHOOT_POS);
+                    firstPickupCompleted = true;
                 }
                 break;
             case DRIVE_BACK_FIRST_SHOOT_POS:
