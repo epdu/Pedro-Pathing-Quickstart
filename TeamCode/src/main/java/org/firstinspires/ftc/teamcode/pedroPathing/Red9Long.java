@@ -273,16 +273,18 @@ public class Red9Long extends LinearOpMode {
             case IDLE:
                 startShooter();
                 shooterStarted = true;
+                isShooterAtSpeed = false;
                 shootTimer.resetTimer();
                 autoShootState = AutoShootState.SPINNING_UP;
                 break;
 
             case SPINNING_UP:
-                double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());//60/(28)
-                double targetVelocity = ShooterPIDFConfig.targetVelocity;
-                if ((!isShooterAtSpeed) && (Math.abs(currentVelocity - targetVelocity) <= ShooterPIDFConfig.toleranceofVelocity)) {
+//                double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());//60/(28)
+//                double targetVelocity = ShooterPIDFConfig.targetVelocity;
+//                if ((!isShooterAtSpeed) && (Math.abs(currentVelocity - targetVelocity) <= ShooterPIDFConfig.toleranceofVelocity)) {
+                if ((Math.abs(Math.abs(robot.MasterShooterMotorL.getVelocity()) - ShooterPIDFConfig.targetVelocity) <= ShooterPIDFConfig.toleranceofVelocity)) {
                     robot.IntakeMotor.setPower(intakePowerShoot);
-                    isShooterAtSpeed = true;
+//                    isShooterAtSpeed = true;
                     shootTimer.resetTimer();
                     autoShootState = AutoShootState.FEEDING;
                 }
@@ -293,7 +295,7 @@ public class Red9Long extends LinearOpMode {
                 if (shootTimer.getElapsedTimeSeconds()  >= 3.0) {
                     stopShooter();
                     stopIntake();
-                    isShooterAtSpeed = false;
+//                    isShooterAtSpeed = false;
                     autoShootState = AutoShootState.DONE;
                 }
                 break;
@@ -681,6 +683,7 @@ public static class ShooterPIDFConfig {
              autoshoot();
                if (autoShootState == AutoShootState.DONE) {
                    follower.followPath(driveReadyFirstPickup, 0.8, true);
+                   isShooterAtSpeed = false;
                    setPathState(PathState.DRIVE_READY_FIRST_PICKUP_POS);
                     }
                break;
