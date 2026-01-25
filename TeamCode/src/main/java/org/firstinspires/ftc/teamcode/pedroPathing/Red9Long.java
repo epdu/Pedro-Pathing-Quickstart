@@ -447,6 +447,7 @@ public static class ShooterPIDFConfig {
         telemetry.addData("currentVelocity", currentVelocity);
         telemetry.addData("currentVelocityR", currentVelocityR);
         telemetry.addData("targetVelocity", targetVelocity);
+        telemetry.addData("ShooterPIDFConfig.targetVelocity", ShooterPIDFConfig.targetVelocity);
         double shooterPower = robot.MasterShooterMotorL.getPower();
         double shooterPowerr = robot.SlaveShooterMotorR.getPower();
 //        telemetry.addData("At Speed?", isShooterAtSpeed ? "YES" : "NO");
