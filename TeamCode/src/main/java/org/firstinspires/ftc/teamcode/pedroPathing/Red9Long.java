@@ -269,7 +269,7 @@ public class Red9Long extends LinearOpMode {
                 double targetVelocity = ShooterPIDFConfig.targetVelocity;
                 if (!isShooterAtSpeed &&
                         Math.abs(currentVelocity - targetVelocity) <= ShooterPIDFConfig.toleranceofVelocity) {
-
+                    robot.IntakeMotor.setPower(intakePowerShoot);
                     isShooterAtSpeed = true;
                     shootTimer.resetTimer();
                     autoShootState = AutoShootState.FEEDING;
@@ -390,17 +390,7 @@ public class Red9Long extends LinearOpMode {
      */
     private void updateShooterTelemetry() {
         // 射击电机状态
-        double shooterVelocity = robot.MasterShooterMotorL.getVelocity();
-        double shooterPower = robot.MasterShooterMotorL.getPower();
-        double shooterCurrent = robot.MasterShooterMotorL.getCurrent(CurrentUnit.AMPS); // 如果有电流传感器
-
         telemetry.addLine("=== SHOOTER PIDF TUNING ===");
-        telemetry.addData("Target Velocity", "%.0f", ShooterPIDFConfig.targetVelocity);
-        telemetry.addData("Current RPM", "%.0f", shooterVelocity);
-        telemetry.addData("Error", "%.0f Velocity", Math.abs(ShooterPIDFConfig.targetVelocity - shooterVelocity));
-        telemetry.addData("At Speed?", isShooterAtSpeed ? "YES" : "NO");
-        telemetry.addData("Power", "%.2f", shooterPower);
-        /// ////////////////////////////////////////////
         double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());
         double targetVelocity = ShooterPIDFConfig.targetVelocity;
         double tolerance = ShooterPIDFConfig.tolerance;
@@ -409,13 +399,16 @@ public class Red9Long extends LinearOpMode {
         telemetry.addData("VEL error",ShooterPIDFConfig.targetVelocity - robot.MasterShooterMotorL.getVelocity());
         telemetry.addData("currentVelocity", currentVelocity);
         telemetry.addData("targetVelocity", targetVelocity);
-        telemetry.update();
+        double shooterPower = robot.MasterShooterMotorL.getPower();
+        telemetry.addData("At Speed?", isShooterAtSpeed ? "YES" : "NO");
+        telemetry.addData("Power", "%.2f", shooterPower);
+
         /// /////////////////////////////////////////////////
         // PIDF 参数值
         telemetry.addLine("=== PIDF PARAMETERS ===");
         telemetry.addData("kP", "%.4f", TeleOpQualifier.ShooterPIDFConfig.kP);
-        telemetry.addData("kI", "%.4f", TeleOpQualifier.ShooterPIDFConfig.kI);
-        telemetry.addData("kD", "%.4f", TeleOpQualifier.ShooterPIDFConfig.kD);
+//        telemetry.addData("kI", "%.4f", TeleOpQualifier.ShooterPIDFConfig.kI);
+//        telemetry.addData("kD", "%.4f", TeleOpQualifier.ShooterPIDFConfig.kD);
         telemetry.addData("kF", "%.4f", TeleOpQualifier.ShooterPIDFConfig.kF);
         telemetry.addData("Tolerance", "%.0f RPM", TeleOpQualifier.ShooterPIDFConfig.tolerance);
 
@@ -424,10 +417,10 @@ public class Red9Long extends LinearOpMode {
         telemetry.addData("Slave Power", "%.2f", robot.SlaveShooterMotorR.getPower());
         telemetry.addData("Slave RPM", "%.0f", robot.SlaveShooterMotorR.getVelocity());
 
-        // 射击状态
-        telemetry.addLine("=== SHOOTING STATUS ===");
-        telemetry.addData("Fire Requested", fireRequested ? "YES" : "NO");
-        telemetry.addData("LED Color", isShooterAtSpeed ? "GREEN" : "RED");
+//        // 射击状态
+//        telemetry.addLine("=== SHOOTING STATUS ===");
+//        telemetry.addData("Fire Requested", fireRequested ? "YES" : "NO");
+//        telemetry.addData("LED Color", isShooterAtSpeed ? "GREEN" : "RED");
     }
 
 
