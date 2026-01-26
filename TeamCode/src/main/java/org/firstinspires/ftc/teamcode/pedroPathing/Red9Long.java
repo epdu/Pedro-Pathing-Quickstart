@@ -262,7 +262,6 @@ public class Red9Long extends LinearOpMode {
 
 //        double currentRPM = (Math.abs(robot.MasterShooterMotorL.getVelocity())*60)/(28);//60/(28*13.7)
 //        double targetRPM = ShooterPIDFConfig.targetRPM;
-        autoShootState = AutoShootState.IDLE;
 
 
         switch (autoShootState) {
@@ -701,10 +700,11 @@ public static class ShooterPIDFConfig {
             case DRIVE_BACK_FIRST_SHOOT_POS:
                 if (!follower.isBusy()) {
                     setPathState(PathState.SHOOT_FIRST_PICKUP);
+                    autoShootState = AutoShootState.IDLE;
                 }
                 break;
             case SHOOT_FIRST_PICKUP:
-//                autoShootState = AutoShootState.IDLE;
+
                 autoshoot();
                 if (autoShootState == AutoShootState.DONE) {
                     follower.followPath(driveReadySecondPickup, 0.8, true);
@@ -732,6 +732,7 @@ public static class ShooterPIDFConfig {
             case DRIVE_BACK_SECOND_PICKUP:
                 if (!follower.isBusy()) {
                     setPathState(PathState.SHOOT_SECOND_PICKUP);
+                    autoShootState = AutoShootState.IDLE;
                 }
                 break;
             case SHOOT_SECOND_PICKUP:
@@ -747,7 +748,6 @@ public static class ShooterPIDFConfig {
 //                    setPathState(PathState.DRIVE_OFFLINE);
 //                }
 //                break;
-
             case DRIVE_OFFLINE:
                 if (!follower.isBusy()) {
                     setPathState(PathState.END);
