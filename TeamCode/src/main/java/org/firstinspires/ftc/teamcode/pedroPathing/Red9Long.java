@@ -262,7 +262,7 @@ public class Red9Long extends LinearOpMode {
 
 //        double currentRPM = (Math.abs(robot.MasterShooterMotorL.getVelocity())*60)/(28);//60/(28*13.7)
 //        double targetRPM = ShooterPIDFConfig.targetRPM;
-
+        autoShootState = AutoShootState.IDLE;
 
 
         switch (autoShootState) {
@@ -445,6 +445,7 @@ public static class ShooterPIDFConfig {
 //        telemetry.addData("VEL target", ShooterPIDFConfig.targetVelocity);
         telemetry.addData("VEL error",ShooterPIDFConfig.targetVelocity - robot.MasterShooterMotorL.getVelocity());
         telemetry.addData("currentVelocity", currentVelocity);
+        telemetry.addData("  shootTimer ", shootTimer.getElapsedTimeSeconds());
         telemetry.addData("currentVelocityR", currentVelocityR);
         telemetry.addData("ShooterPIDFConfig.targetVelocity", ShooterPIDFConfig.targetVelocity);
         telemetry.addData("ShooterPIDFConfig.toleranceofVelocity", ShooterPIDFConfig.toleranceofVelocity);
@@ -713,6 +714,7 @@ public static class ShooterPIDFConfig {
                 autoshoot();
                 if (autoShootState == AutoShootState.DONE) {
                     follower.followPath(driveReadySecondPickup, 0.8, true);
+                    isShooterAtSpeed = false;
                     setPathState(PathState.DRIVE_READY_SECOND_PICKUP);
                 }
                 break;
