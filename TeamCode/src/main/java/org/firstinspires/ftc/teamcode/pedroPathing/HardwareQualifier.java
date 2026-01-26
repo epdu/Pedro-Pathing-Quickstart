@@ -29,7 +29,8 @@ public class HardwareQualifier {
     public DcMotorEx SlaveShooterMotorR;
     public Servo blocker;
 
-    public DcMotorEx IntakeMotor;
+    public DcMotorEx IntakeMotorL;
+    public DcMotorEx IntakeMotorR;
 
     public DcMotorEx ShooterMotor;
     public DigitalChannel redLED ;
@@ -85,8 +86,11 @@ public class HardwareQualifier {
         SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
-        IntakeMotor  = hwMap.get(DcMotorEx.class, "IntakeMotor"); //11072025 control hub port 0
-        IntakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        IntakeMotorL  = hwMap.get(DcMotorEx.class, "IntakeMotorL"); //11072025 control hub port 0
+        IntakeMotorL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        IntakeMotorR  = hwMap.get(DcMotorEx.class, "IntakeMotorR"); //11072025 control hub port
+        IntakeMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        IntakeMotorR.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
         voltageCHub = hwMap.get(VoltageSensor.class, "Control Hub");

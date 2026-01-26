@@ -447,7 +447,7 @@ public static class ShooterPIDFConfig {
 //        telemetry.addData("Path Time", pathTimer.getElapsedTimeSeconds());
         telemetry.addData("X", follower.getPose().getX());
         telemetry.addData("Y", follower.getPose().getY());
-//        telemetry.addData("Heading", Math.toDegrees(follower.getPose().getHeading()));
+        telemetry.addData("Heading", Math.toDegrees(follower.getPose().getHeading()));
 
         //        telemetry.addData(" robot.SlaveShooterMotorR.setPower", "%.2f",  (robot.MasterShooterMotorL.getPower()));
 

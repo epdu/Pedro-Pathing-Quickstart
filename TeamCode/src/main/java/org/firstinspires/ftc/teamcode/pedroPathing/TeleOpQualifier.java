@@ -123,7 +123,8 @@ public class TeleOpQualifier extends LinearOpMode {
             // 手柄控制拾取电机
             if (gamepad1.left_trigger > 0.1) {
                 // 吸入
-                robot.IntakeMotor.setPower(intakePowerIntake);
+                robot.IntakeMotorL.setPower(intakePowerIntake);
+                robot.IntakeMotorR.setPower(intakePowerIntake);
 
                 robot.MasterShooterMotorL.setPower(ShooterMotorHold);
                 robot.SlaveShooterMotorR.setPower(ShooterMotorHold);
@@ -138,7 +139,8 @@ public class TeleOpQualifier extends LinearOpMode {
 
             } else if (gamepad1.left_bumper) {
                 // 反转（吐出）
-                robot.IntakeMotor.setPower(intakePowerDump);
+                robot.IntakeMotorL.setPower(intakePowerDump);
+                robot.IntakeMotorR.setPower(intakePowerDump);
 
                 telemetry.addData("intakePowerDump", intakePowerDump);
                 telemetry.update();
@@ -171,12 +173,14 @@ public class TeleOpQualifier extends LinearOpMode {
         if (gamepad1.right_bumper) {
             fireRequested = true;
 //            executeFireSequence();
-            robot.IntakeMotor.setPower(intakePowerShoot);
+            robot.IntakeMotorL.setPower(intakePowerShoot);
+            robot.IntakeMotorR.setPower(intakePowerShoot);
         }
         // 停止射击电机 - 按下B键
         if (gamepad1.b) {
             stopShooter();
-            robot.IntakeMotor.setPower(intakePowerOff);
+            robot.IntakeMotorL.setPower(intakePowerOff);
+            robot.IntakeMotorR.setPower(intakePowerOff);
             fireRequested = false;
         }
 
@@ -225,7 +229,8 @@ public class TeleOpQualifier extends LinearOpMode {
  }
 
     private void startShooter() {
-        robot.IntakeMotor.setPower(0);
+        robot.IntakeMotorL.setPower(0);
+        robot.IntakeMotorR.setPower(0);
         if (robot.MasterShooterMotorL instanceof DcMotorEx) {
             DcMotorEx shooter = (DcMotorEx) robot.MasterShooterMotorL;
             // 直接使用setVelocity，它会使用已配置的PIDF
@@ -326,7 +331,8 @@ public class TeleOpQualifier extends LinearOpMode {
     private void stopShooter() {
         robot.MasterShooterMotorL.setVelocity(0);
         robot.SlaveShooterMotorR.setPower(0);
-        robot.IntakeMotor.setPower(0);
+        robot.IntakeMotorL.setPower(0);
+        robot. IntakeMotorR.setPower(0);
         isShooterAtSpeed = false;
         fireRequested = false;
     }
@@ -335,7 +341,8 @@ public class TeleOpQualifier extends LinearOpMode {
     ///  ///////////
 
     private void stopIntake() {
-        robot.IntakeMotor.setPower(intakePowerOff);
+        robot.IntakeMotorL.setPower(intakePowerOff);
+        robot.IntakeMotorR.setPower(intakePowerOff);
         robot.MasterShooterMotorL.setPower(ShooterMotorOff);
         robot.SlaveShooterMotorR.setPower(ShooterMotorOff);
         robot.MasterShooterMotorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -361,7 +368,8 @@ public class TeleOpQualifier extends LinearOpMode {
         telemetry.addData("Shooter", "FIRING! RPM: %.0f", robot.MasterShooterMotorL.getVelocity());
         telemetry.update();
         // 启动拾取电机将球推入射击器
-        robot.IntakeMotor.setPower(intakePowerShoot); // 全功率推出
+        robot.IntakeMotorL.setPower(intakePowerShoot);
+        robot.IntakeMotorR.setPower(intakePowerShoot); // 全功率推出
 
         // 保持推球一段时间（根据实际调整）
         ElapsedTime fireTimer = new ElapsedTime();
@@ -372,7 +380,8 @@ public class TeleOpQualifier extends LinearOpMode {
         }
 
         // 停止拾取电机
-        robot.IntakeMotor.setPower(0);
+        robot.IntakeMotorL.setPower(0);
+        robot.IntakeMotorR.setPower(0);
         fireRequested = false;
 
         telemetry.addData("Shooter", "Fire sequence completed");
