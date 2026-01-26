@@ -736,7 +736,7 @@ public static class ShooterPIDFConfig {
                 }
                 break;
             case SHOOT_SECOND_PICKUP:
-                autoShootState = AutoShootState.IDLE;
+
                 autoshoot();
                 if (autoShootState == AutoShootState.DONE) {
                     follower.followPath(driveOffline, 0.8, true);
