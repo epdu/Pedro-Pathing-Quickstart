@@ -339,12 +339,6 @@ private void startShooter() {
         // 直接使用setVelocity，它会使用已配置的PIDF
         shooter.setVelocity(Math.abs(ShooterPIDFConfig.targetVelocity));
         shooterR.setVelocity(Math.abs(ShooterPIDFConfig.targetVelocity));
-//            double MasterShooterMotorLPower = robot.MasterShooterMotorL.getPower();
-//            robot.SlaveShooterMotorR.setPower(robot.MasterShooterMotorL.getPower());
-//            double SlaveShooterMotorRPower = (robot.MasterShooterMotorL.getPower());
-//            double SlaveShooterMotorRPower2 = calculateOptimalSlavePower(MasterShooterMotorLPower);
-//            robot.SlaveShooterMotorR.setPower(SlaveShooterMotorRPower);
-
     }
     shooterStarted=true;
 
