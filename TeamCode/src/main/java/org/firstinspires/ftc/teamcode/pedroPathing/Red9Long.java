@@ -37,6 +37,10 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 // 位姿
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 @Autonomous(name = "AAA Southeastern Pennsylvania FAR V1 Red9long")
+//three preload and take two roles, parking
+//shooting a little bit too long
+//6 s left over
+//parking further
 public class Red9Long extends LinearOpMode {
     HardwareQualifier robot = new HardwareQualifier();
    private Limelight3A limelight;
