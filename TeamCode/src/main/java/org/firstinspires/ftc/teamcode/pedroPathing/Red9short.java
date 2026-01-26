@@ -41,7 +41,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 //shooting a little bit too long
 //6 s left over
 //parking further
-public class Red9Long extends LinearOpMode {
+public class Red9short extends LinearOpMode {
     HardwareQualifier robot = new HardwareQualifier();
    private Limelight3A limelight;
     private volatile boolean isRunning = true;
