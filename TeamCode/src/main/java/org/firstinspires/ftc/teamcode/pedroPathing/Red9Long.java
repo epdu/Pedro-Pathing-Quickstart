@@ -709,7 +709,7 @@ public static class ShooterPIDFConfig {
                 }
                 break;
             case SHOOT_FIRST_PICKUP:
-                autoShootState = AutoShootState.IDLE;
+//                autoShootState = AutoShootState.IDLE;
                 autoshoot();
                 if (autoShootState == AutoShootState.DONE) {
                     follower.followPath(driveReadySecondPickup, 0.8, true);
