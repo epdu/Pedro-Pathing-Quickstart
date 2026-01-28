@@ -16,6 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 @Config  // 添加这个注解，让 Dashboard 可以调整参数
 @TeleOp(name = "AAA Southeastern Pennsylvania Qualifier V1 0123")
 //check speed fixed
+//two intake motors
 public class TeleOpQualifier extends LinearOpMode {
     // 已有的硬件和常量定义...
     private static final double VELOCITY_TOLERANCE = 30; // RPM容差，可根据测试调整
