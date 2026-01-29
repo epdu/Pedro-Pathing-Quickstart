@@ -112,7 +112,7 @@ public class TeleOpQualifier extends LinearOpMode {
             checkShooterVelocity();
             updateLEDs();
             updateHood();
-            updateBlooker();
+            updateBlockage();
 
             // 4. 更新所有遥测数据（重要！）
             telemetry.update();
@@ -238,7 +238,7 @@ public class TeleOpQualifier extends LinearOpMode {
 
  }
 /// /////////////////need work
-    private void updateBlooker() {
+    private void updateBlockage() {
         if (gamepad1.dpad_left) {
             robot.HoodArmL.setPosition(HoodArmPositionFarShoot);
             robot.HoodArmR.setPosition(HoodArmPositionFarShoot);
