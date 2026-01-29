@@ -17,6 +17,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 @TeleOp(name = "AAA Southeastern Pennsylvania Qualifier V1 0123")
 //check speed fixed
 //two intake motors
+// new bot
+
 public class TeleOpQualifier extends LinearOpMode {
     // 已有的硬件和常量定义...
     private static final double VELOCITY_TOLERANCE = 30; // RPM容差，可根据测试调整
@@ -64,6 +66,7 @@ public class TeleOpQualifier extends LinearOpMode {
     public static final double HoodArmPositionInit = 0.1;
     public static final double HoodArmPositionCloseShoot = 0.3;
     public static final double HoodArmPositionMedShoot = 0.2;
+    public static final double HoodArmPositionFarShoot = 0.1;
     private ElapsedTime imuResetTimer = new ElapsedTime();
     private boolean imuResetInCooldown = false;
     private static final long IMU_RESET_COOLDOWN_MS = 300; // 1秒冷却时间
@@ -109,6 +112,7 @@ public class TeleOpQualifier extends LinearOpMode {
             checkShooterVelocity();
             updateLEDs();
             updateHood();
+            updateBlooker();
 
             // 4. 更新所有遥测数据（重要！）
             telemetry.update();
@@ -223,11 +227,27 @@ public class TeleOpQualifier extends LinearOpMode {
     }
 
     private void updateHood() {
-        if (gamepad1.x) {
-                    robot.HoodArmL.setPosition(HoodArmPositionCloseShoot);
-                    robot.HoodArmR.setPosition(HoodArmPositionCloseShoot);
-                    } // 防止快速连击导致模式快速切换
+        if (gamepad1.dpad_down) {
+                    robot.HoodArmL.setPosition(HoodArmPositionFarShoot);
+                    robot.HoodArmR.setPosition(HoodArmPositionFarShoot);
+                    }  else if(gamepad1.dpad_up) {
+            robot.HoodArmL.setPosition(HoodArmPositionCloseShoot);
+            robot.HoodArmR.setPosition(HoodArmPositionCloseShoot);
+        } // 防止快速连击导致模式快速切换
+
  }
+/// /////////////////need work
+    private void updateBlooker() {
+        if (gamepad1.dpad_left) {
+            robot.HoodArmL.setPosition(HoodArmPositionFarShoot);
+            robot.HoodArmR.setPosition(HoodArmPositionFarShoot);
+        }  else if(gamepad1.dpad_right) {
+            robot.HoodArmL.setPosition(HoodArmPositionCloseShoot);
+            robot.HoodArmR.setPosition(HoodArmPositionCloseShoot);
+        } // 防止快速连击导致模式快速切换
+
+    }
+
 
     private void startShooter() {
         robot.IntakeMotorL.setPower(0);
