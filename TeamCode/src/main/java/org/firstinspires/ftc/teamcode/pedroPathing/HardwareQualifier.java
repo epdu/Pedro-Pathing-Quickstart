@@ -56,8 +56,10 @@ public class HardwareQualifier {
         rightFrontMotor  = hwMap.get(DcMotorEx.class, "RFMotor"); //01292026 control hub port 2
         rightRearMotor  = hwMap.get(DcMotorEx.class, "RBMotor"); //11072025 control hub port 3
 
-        leftRearMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//        leftRearMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//        leftFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightRearMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
         leftFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
