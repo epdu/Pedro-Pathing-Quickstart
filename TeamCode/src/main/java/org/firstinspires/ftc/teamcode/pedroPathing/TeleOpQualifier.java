@@ -226,6 +226,7 @@ public class TeleOpQualifier extends LinearOpMode {
         }
     }
 
+
     private void updateHood() {
         if (gamepad1.dpad_down) {
                     robot.HoodArmL.setPosition(HoodArmPositionFarShoot);
