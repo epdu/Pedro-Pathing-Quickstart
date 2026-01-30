@@ -14,7 +14,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
-            .mass(12.11);
+            .mass(12.11)
+            .lateralZeroPowerAcceleration(-59.39382)
+            .forwardZeroPowerAcceleration(-32.17968);
+
 
 //    public static FollowerConstants followerConstants = new FollowerConstants()
 //            .mass(9.117);
@@ -33,20 +36,21 @@ public class Constants {
             .rightRearMotorName("RBMotor")
             .leftRearMotorName("LBMotor")
             .leftFrontMotorName("LFMotor")
-            .leftFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
-            .leftRearMotorDirection(DcMotorSimple.Direction.FORWARD)
-            .rightFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
-            .rightRearMotorDirection(DcMotorSimple.Direction.REVERSE)
-            .xVelocity(78.401);
+            .leftFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
+            .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
+            .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
+            .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
+            .xVelocity(64.599);
+
 
     public static PinpointConstants localizerConstants = new PinpointConstants()
             .forwardPodY(-1.9685)
-            .strafePodX(-6.08661)
+            .strafePodX(-8.033)
             .distanceUnit(DistanceUnit.INCH)
             .hardwareMapName("odo")
             .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
             .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD)
-            .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED);
+            .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD);
 //    public static PinpointConstants localizerConstants = new PinpointConstants()
 //            .forwardPodY(-1.9685)
 //            .strafePodX(-7.08661)
