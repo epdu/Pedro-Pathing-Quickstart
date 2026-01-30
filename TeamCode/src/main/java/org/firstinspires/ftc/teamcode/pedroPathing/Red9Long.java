@@ -344,7 +344,7 @@ public class Red9Long extends LinearOpMode {
 //        F: 10–30
 //        public static double targetRPM =Close_SHOOTER_TARGET_RPM;
         public static double targetRPM =Med_SHOOTER_TARGET_RPM; // 目标转速
-        public static double toleranceofRPM = 100;    // 转速容差 5RPM---30TPS
+        public static double toleranceofRPM = 80;    // 转速容差 5RPM---30TPS
         public static double tolerance = 50;
 
     }
