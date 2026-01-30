@@ -37,8 +37,10 @@ public class HardwareQualifier {
     public DigitalChannel greenLED;
     public VoltageSensor voltageCHub;
     public VoltageSensor voltageExHub;
-    public ServoImplEx HoodArmL;
-    public ServoImplEx HoodArmR;
+    public ServoImplEx BlockageArm;
+    public ServoImplEx HoodArm;
+    public ServoImplEx TurretArmL;
+    public ServoImplEx TurretArmR;
     GoBildaPinpointDriver odo;
     IMU imu;
     public static final double DriveTrains_POWER =  0.95 ;// reduced power of driving train motors
@@ -101,11 +103,24 @@ public class HardwareQualifier {
 
 //Begin Definition and Initialization of HoodArm  and ArmR Servos
 
-        HoodArmL = hwMap.get(ServoImplEx.class, "HoodArmL");//control hub port 2
-        HoodArmR = hwMap.get(ServoImplEx.class, "HoodArmR");;//control hub port 4
-        HoodArmL.setPwmRange(new PwmControl.PwmRange(500, 2500));
-        HoodArmR.setPwmRange(new PwmControl.PwmRange(500, 2500));
-        HoodArmR.setDirection(Servo.Direction.REVERSE);
+        TurretArmL = hwMap.get(ServoImplEx.class, "TurretArmL");//control hub port 2
+        TurretArmR = hwMap.get(ServoImplEx.class, "TurretArmR");;//control hub port 4
+        TurretArmL.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        TurretArmR.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        TurretArmR.setDirection(Servo.Direction.REVERSE);
+
+        BlockageArm = hwMap.get(ServoImplEx.class, "BlockageArm");// expansion  hub port 2
+        BlockageArm.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        BlockageArm.setDirection(Servo.Direction.REVERSE);
+        BlockageArm.setPosition(0.3);//
+
+
+        HoodArm = hwMap.get(ServoImplEx.class, "HoodArm");//expansion  hub port 4
+        HoodArm.setPwmRange(new PwmControl.PwmRange(500, 2500));
+//        HoodArm.setDirection(Servo.Direction.REVERSE);
+        HoodArm.setPosition(0.3);//
+
+        // HoodArm = hwMap.get(ServoImplEx.class, "HoodArm");//expansion  hub port 4
 //        initializeOArmPosition();
 
         ////End Definition and Initialization of outtake ArmL and ArmR Servos

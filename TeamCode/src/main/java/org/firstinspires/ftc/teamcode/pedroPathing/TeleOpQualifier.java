@@ -63,6 +63,10 @@ public class TeleOpQualifier extends LinearOpMode {
     public float  ShooterMotorHold=-0.2f;
     public float  ShooterMotorClean=-0.8f;
     public float  ShooterMotorOff=0.0f;
+    public static final double blockageblockposition=0.3;
+    public static final double blockagereleaseposition=0.8;
+    public static final double HoodArmfarposition=0.3;
+    public static final double HoodArmcloseposition=0.35;
     public static final double HoodArmPositionInit = 0.1;
     public static final double HoodArmPositionCloseShoot = 0.3;
     public static final double HoodArmPositionMedShoot = 0.2;
@@ -128,15 +132,13 @@ public class TeleOpQualifier extends LinearOpMode {
             // 手柄控制拾取电机
             if (gamepad1.left_trigger > 0.1) {
                 // 吸入
+                robot.BlockageArm.setPosition(blockageblockposition); // blockage the ball     robot.BlockageArm.setPosition(blockagereleaseposition);
                 robot.IntakeMotorL.setPower(intakePowerIntake);
                 robot.IntakeMotorR.setPower(intakePowerIntake);
 
                 robot.MasterShooterMotorL.setPower(ShooterMotorHold);
                 robot.SlaveShooterMotorR.setPower(ShooterMotorHold);
                 // Non-blocking delay to prevent rapid mode switching
-
-                telemetry.addData("intakePowerIntake", intakePowerIntake);
-                telemetry.update();
                 delayTimer.reset();
                 while (delayTimer.milliseconds() < 300 && opModeIsActive()) {
                     // Other tasks can be processed here
@@ -147,8 +149,6 @@ public class TeleOpQualifier extends LinearOpMode {
                 robot.IntakeMotorL.setPower(intakePowerDump);
                 robot.IntakeMotorR.setPower(intakePowerDump);
 
-                telemetry.addData("intakePowerDump", intakePowerDump);
-                telemetry.update();
                 delayTimer.reset();
                 while (delayTimer.milliseconds() < 300 && opModeIsActive()) {
                     // Other tasks can be processed here
@@ -170,6 +170,7 @@ public class TeleOpQualifier extends LinearOpMode {
             checkShooterVelocity();
             if (!robot.MasterShooterMotorL.isBusy()){
                 startShooter();
+                robot.BlockageArm.setPosition(blockagereleaseposition);
             }
 
         }
@@ -177,7 +178,6 @@ public class TeleOpQualifier extends LinearOpMode {
 //        if (gamepad1.right_bumper && isShooterAtSpeed && !fireRequested)
         if (gamepad1.right_bumper) {
             fireRequested = true;
-//            executeFireSequence();
             robot.IntakeMotorL.setPower(intakePowerShoot);
             robot.IntakeMotorR.setPower(intakePowerShoot);
         }
@@ -186,6 +186,7 @@ public class TeleOpQualifier extends LinearOpMode {
             stopShooter();
             robot.IntakeMotorL.setPower(intakePowerOff);
             robot.IntakeMotorR.setPower(intakePowerOff);
+            robot.BlockageArm.setPosition(blockageblockposition);
             fireRequested = false;
         }
 
@@ -226,25 +227,22 @@ public class TeleOpQualifier extends LinearOpMode {
         }
     }
 
-
+/// ///////////need fix
     private void updateHood() {
         if (gamepad1.dpad_down) {
-                    robot.HoodArmL.setPosition(HoodArmPositionFarShoot);
-                    robot.HoodArmR.setPosition(HoodArmPositionFarShoot);
+             robot.HoodArm.setPosition(HoodArmfarposition);
                     }  else if(gamepad1.dpad_up) {
-            robot.HoodArmL.setPosition(HoodArmPositionCloseShoot);
-            robot.HoodArmR.setPosition(HoodArmPositionCloseShoot);
+            robot.HoodArm.setPosition(HoodArmcloseposition);
         } // 防止快速连击导致模式快速切换
 
  }
 /// /////////////////need work
     private void updateBlockage() {
         if (gamepad1.dpad_left) {
-            robot.HoodArmL.setPosition(HoodArmPositionFarShoot);
-            robot.HoodArmR.setPosition(HoodArmPositionFarShoot);
+            robot.BlockageArm.setPosition((blockageblockposition));
         }  else if(gamepad1.dpad_right) {
-            robot.HoodArmL.setPosition(HoodArmPositionCloseShoot);
-            robot.HoodArmR.setPosition(HoodArmPositionCloseShoot);
+            robot.BlockageArm.setPosition((blockagereleaseposition));
+
         } // 防止快速连击导致模式快速切换
 
     }

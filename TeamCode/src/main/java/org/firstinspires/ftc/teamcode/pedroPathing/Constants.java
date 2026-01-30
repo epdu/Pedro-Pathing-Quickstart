@@ -14,9 +14,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
-            .mass(9.117);
+            .mass(12.11);
 
-
+//    public static FollowerConstants followerConstants = new FollowerConstants()
+//            .mass(9.117);
     public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
 
     public static Follower createFollower(HardwareMap hardwareMap) {
@@ -40,10 +41,19 @@ public class Constants {
 
     public static PinpointConstants localizerConstants = new PinpointConstants()
             .forwardPodY(-1.9685)
-            .strafePodX(-7.08661)
+            .strafePodX(-6.08661)
             .distanceUnit(DistanceUnit.INCH)
             .hardwareMapName("odo")
             .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
             .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD)
             .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED);
+//    public static PinpointConstants localizerConstants = new PinpointConstants()
+//            .forwardPodY(-1.9685)
+//            .strafePodX(-7.08661)
+//            .distanceUnit(DistanceUnit.INCH)
+//            .hardwareMapName("odo")
+//            .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
+//            .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD)
+//            .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED);
+
 }
