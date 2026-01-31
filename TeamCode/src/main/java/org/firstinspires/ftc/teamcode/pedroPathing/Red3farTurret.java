@@ -57,7 +57,7 @@ public class Red3farTurret extends LinearOpMode {
 //    private static final double Med_SHOOTER_TARGET_RPM = 204;   //1598 white tri a little bit too far//  250RPM---1586.67
     private static final double Med_SHOOTER_TARGET_RPM = 2785;   //1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
 //    private static final double Med_SHOOTER_TARGET_Velocity = 1300;
-    private static final double Med_SHOOTER_TARGET_Velocity = 1450; //1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
+    private static final double Med_SHOOTER_TARGET_Velocity = 1480; //1450   1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
     private static final double Far_SHOOTER_TARGET_RPM = 350;  //  350RPM---2237
 //   private static final double Close_SHOOTER_TARGET_RPM = 800;//  400RPM---2,557.33333333333333
 //    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
@@ -73,7 +73,7 @@ public class Red3farTurret extends LinearOpMode {
     boolean move = false;
     int controlMode = 1;
     public float  intakePowerIntake=0.98f;//0.95
-    public float  intakePowerShoot=0.98f;//0.9
+    public float  intakePowerShoot=0.80f;//0.9  only for far
     public float  intakePowerDump=-0.6f;
     public float  intakePowerOff=0.0f;
     public float  ShooterMotorShootFar=0.95f;
@@ -124,7 +124,7 @@ public class Red3farTurret extends LinearOpMode {
         END
     }
     private final Pose startPose = new Pose(96,6.25, Math.toRadians(0)); // Start Pose further zone of our robot.
-    private final Pose shootPose = new Pose(96, 10.25, Math.toRadians(65)); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
+    private final Pose shootPose = new Pose(96, 10.25, Math.toRadians(73)); //70-73 65-75 Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
 //    private final Pose scoreEnd = new Pose(92, 92.25, Math.toRadians(0)); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
 //    private final Pose readyFirstPickupPose = new Pose(92, 86.25, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
 //    private final Pose readySecondPickupPose = new Pose(92, 62.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
@@ -134,7 +134,7 @@ public class Red3farTurret extends LinearOpMode {
 //    private final Pose secondPickupPoseControlPoint = new Pose(125, 64.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
 //    private final Pose thirdPickupPose = new Pose(134, 37.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
 //    //    private final Pose PARKPose = new Pose(120, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
-    private final Pose offlinePose = new Pose(100, 10.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
+    private final Pose offlinePose = new Pose(104, 10.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     // Initialize variables for paths
 
 
@@ -294,7 +294,7 @@ public class Red3farTurret extends LinearOpMode {
                 break;
 
             case FEEDING:
-                if (shootTimer.getElapsedTimeSeconds()  >= 2.0) {
+                if (shootTimer.getElapsedTimeSeconds()  >= 3.0) {
                     stopShooter();
                     stopIntake();
                     robot.BlockageArm.setPosition(blockageblockposition);
@@ -691,7 +691,7 @@ public static class ShooterPIDFConfig {
     private void statePathUpdate() {
         switch (pathState) {
             case DRIVE_START_POS_SHOOT_POS:
-                follower.followPath(driveStartShoot, 0.6, true);
+                follower.followPath(driveStartShoot, 0.3, true);
                 setPathState(PathState.DRIVE_TO_SHOOT_WAIT);
                 break;
             case DRIVE_TO_SHOOT_WAIT:
@@ -702,7 +702,7 @@ public static class ShooterPIDFConfig {
             case SHOOT_PRELOAD:
              autoshoot();
                if (autoShootState == AutoShootState.DONE) {
-                   follower.followPath(driveOffline, 0.6, true);
+                   follower.followPath(driveOffline, 0.3, true);
                    isShooterAtSpeed = false;
                    setPathState(PathState.DRIVE_OFFLINE);
                     }
