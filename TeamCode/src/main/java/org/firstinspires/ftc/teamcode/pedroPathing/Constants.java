@@ -50,7 +50,7 @@ public class Constants {
             .hardwareMapName("odo")
             .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
             .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD)
-            .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD);
+            .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED);// changed from forward tobe reversed 0130843pm
 //    public static PinpointConstants localizerConstants = new PinpointConstants()
 //            .forwardPodY(-1.9685)
 //            .strafePodX(-7.08661)
