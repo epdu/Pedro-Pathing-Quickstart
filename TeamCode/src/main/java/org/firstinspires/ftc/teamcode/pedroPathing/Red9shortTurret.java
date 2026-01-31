@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
+import static org.firstinspires.ftc.teamcode.pedroPathing.TeleOpQualifier.blockageblockposition;
+import static org.firstinspires.ftc.teamcode.pedroPathing.TeleOpQualifier.blockagereleaseposition;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -53,7 +56,8 @@ public class Red9shortTurret extends LinearOpMode {
     private static final double Close_SHOOTER_TARGET_RPM = 100;//  400RPM---2,557.33333333333333
 //    private static final double Med_SHOOTER_TARGET_RPM = 204;   //1598 white tri a little bit too far//  250RPM---1586.67
     private static final double Med_SHOOTER_TARGET_RPM = 2785;   //1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
-    private static final double Med_SHOOTER_TARGET_Velocity = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
+//    private static final double Med_SHOOTER_TARGET_Velocity = 1300;
+    private static final double Med_SHOOTER_TARGET_Velocity = 1200; //1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
     private static final double Far_SHOOTER_TARGET_RPM = 350;  //  350RPM---2237
 //   private static final double Close_SHOOTER_TARGET_RPM = 800;//  400RPM---2,557.33333333333333
 //    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
@@ -68,8 +72,8 @@ public class Red9shortTurret extends LinearOpMode {
     private double powerMultiplier = 0.9;
     boolean move = false;
     int controlMode = 1;
-    public float  intakePowerIntake=0.95f;
-    public float  intakePowerShoot=0.9f;
+    public float  intakePowerIntake=0.98f;//0.95
+    public float  intakePowerShoot=0.98f;//0.9
     public float  intakePowerDump=-0.6f;
     public float  intakePowerOff=0.0f;
     public float  ShooterMotorShootFar=0.95f;
@@ -114,17 +118,17 @@ public class Red9shortTurret extends LinearOpMode {
         DRIVE_OFFLINE,
         END
     }
-    private final Pose startPose = new Pose(129,113.75, Math.toRadians(0)); // Start Pose further zone of our robot.
+    private final Pose startPose = new Pose(129,117.75, Math.toRadians(0)); // Start Pose further zone of our robot.
     private final Pose shootPose = new Pose(92, 92.25, Math.toRadians(45)); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
     private final Pose scoreEnd = new Pose(92, 92.25, Math.toRadians(0)); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
-    private final Pose readyFirstPickupPose = new Pose(92, 82.25, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
-    private final Pose readySecondPickupPose = new Pose(92, 60.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose readyFirstPickupPose = new Pose(92, 84.25, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
+    private final Pose readySecondPickupPose = new Pose(92, 58.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose readyThirdPickupPose = new Pose(92, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     private final Pose firstPickupPose = new Pose(127, 82.25, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
-    private final Pose secondPickupPose = new Pose(129, 60.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose secondPickupPose = new Pose(132, 60.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose thirdPickupPose = new Pose(129, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     //    private final Pose PARKPose = new Pose(120, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
-    private final Pose offlinePose = new Pose(110, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
+    private final Pose offlinePose = new Pose(112, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     // Initialize variables for paths
 
 
@@ -144,8 +148,9 @@ public class Red9shortTurret extends LinearOpMode {
 //        robot.imu.resetYaw();
         robot.MasterShooterMotorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.MasterShooterMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.BlockageArm.setPosition(blockageblockposition);
 //        follower.setStartingPose(startPose);
 
 //        limelight = hardwareMap.get(Limelight3A.class, "limelight");
@@ -235,8 +240,8 @@ public class Red9shortTurret extends LinearOpMode {
            // 吸入
             robot.IntakeMotorL.setPower(intakePowerIntake);
             robot.IntakeMotorR.setPower(intakePowerIntake);
-            robot.MasterShooterMotorL.setPower(ShooterMotorHold);
-            robot.SlaveShooterMotorR.setPower(ShooterMotorHold);
+//            robot.MasterShooterMotorL.setPower(ShooterMotorHold);
+//            robot.SlaveShooterMotorR.setPower(ShooterMotorHold);
             telemetry.update();
     }
 
@@ -259,6 +264,7 @@ public class Red9shortTurret extends LinearOpMode {
         switch (autoShootState) {
 
             case IDLE:
+                robot.BlockageArm.setPosition(blockageblockposition);
                 startShooter();
                 shooterStarted = true;
                 isShooterAtSpeed = false;
@@ -267,6 +273,7 @@ public class Red9shortTurret extends LinearOpMode {
                 break;
 
             case SPINNING_UP:
+                  robot.BlockageArm.setPosition(blockagereleaseposition);
 //                double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());//60/(28)
 //                double targetVelocity = ShooterPIDFConfig.targetVelocity;
 //                if ((!isShooterAtSpeed) && (Math.abs(currentVelocity - targetVelocity) <= ShooterPIDFConfig.toleranceofVelocity)) {
@@ -284,6 +291,7 @@ public class Red9shortTurret extends LinearOpMode {
                 if (shootTimer.getElapsedTimeSeconds()  >= 3.0) {
                     stopShooter();
                     stopIntake();
+                    robot.BlockageArm.setPosition(blockageblockposition);
 //                    isShooterAtSpeed = false;
                     autoShootState = AutoShootState.DONE;
                 }
@@ -353,7 +361,7 @@ public static class ShooterPIDFConfig {
 //        public static double targetRPM =Med_SHOOTER_TARGET_RPM; // 目标转速
         public static double targetVelocity =Med_SHOOTER_TARGET_Velocity;
 //        public static double toleranceofRPM = 100;    // 转速容差 5RPM---30TPS
-        public static double toleranceofVelocity = 100;
+        public static double toleranceofVelocity = 70;
         public static double tolerance = 50;
 
     }
@@ -662,7 +670,7 @@ public static class ShooterPIDFConfig {
     private void statePathUpdate() {
         switch (pathState) {
             case DRIVE_START_POS_SHOOT_POS:
-                follower.followPath(driveStartShoot, 0.8, true);
+                follower.followPath(driveStartShoot, 0.7, true);
                 setPathState(PathState.DRIVE_TO_SHOOT_WAIT);
                 break;
             case DRIVE_TO_SHOOT_WAIT:
@@ -673,7 +681,7 @@ public static class ShooterPIDFConfig {
             case SHOOT_PRELOAD:
              autoshoot();
                if (autoShootState == AutoShootState.DONE) {
-                   follower.followPath(driveReadyFirstPickup, 0.8, true);
+                   follower.followPath(driveReadyFirstPickup, 0.7, true);
                    isShooterAtSpeed = false;
                    setPathState(PathState.DRIVE_READY_FIRST_PICKUP_POS);
                     }
@@ -685,7 +693,7 @@ public static class ShooterPIDFConfig {
                 }
                 break;
             case FIRST_PICKUP:
-                if (!firstPickupCompleted && pathTimer.getElapsedTimeSeconds() < 2.5) {
+                if (!firstPickupCompleted && pathTimer.getElapsedTimeSeconds() < 1.8) {
             autoIntake();
                 } else {
                     follower.followPath(driveFirstPickupShoot);
@@ -702,10 +710,9 @@ public static class ShooterPIDFConfig {
                 }
                 break;
             case SHOOT_FIRST_PICKUP:
-
                 autoshoot();
                 if (autoShootState == AutoShootState.DONE) {
-                    follower.followPath(driveReadySecondPickup, 0.8, true);
+                    follower.followPath(driveReadySecondPickup, 0.7, true);
                     isShooterAtSpeed = false;
                     setPathState(PathState.DRIVE_READY_SECOND_PICKUP);
                 }
@@ -713,12 +720,12 @@ public static class ShooterPIDFConfig {
 
             case DRIVE_READY_SECOND_PICKUP:
                 if (!follower.isBusy()) {
-                    follower.followPath(driveSecondPickup, 0.8, true);
+                    follower.followPath(driveSecondPickup, 0.5, true);
                     setPathState(PathState.SECOND_PICKUP);
                 }
                 break;
             case SECOND_PICKUP:
-                if (pathTimer.getElapsedTimeSeconds() < 2.5) {
+                if (pathTimer.getElapsedTimeSeconds() < 1.8) {
                     autoIntake();
                 } else {
                     follower.followPath(driveSecondPickupShoot);
@@ -734,7 +741,6 @@ public static class ShooterPIDFConfig {
                 }
                 break;
             case SHOOT_SECOND_PICKUP:
-
                 autoshoot();
                 if (autoShootState == AutoShootState.DONE) {
                     follower.followPath(driveOffline, 0.8, true);

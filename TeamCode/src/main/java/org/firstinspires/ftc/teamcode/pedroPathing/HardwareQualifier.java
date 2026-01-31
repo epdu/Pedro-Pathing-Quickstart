@@ -86,7 +86,7 @@ public class HardwareQualifier {
         double ShooterMotorRVelo =SlaveShooterMotorR.getVelocity();
 
         MasterShooterMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
         IntakeMotorL  = hwMap.get(DcMotorEx.class, "IntakeMotorL"); //11072025 expansion  hub port 0

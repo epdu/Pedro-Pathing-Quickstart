@@ -136,8 +136,8 @@ public class TeleOpQualifier extends LinearOpMode {
                 robot.IntakeMotorL.setPower(intakePowerIntake);
                 robot.IntakeMotorR.setPower(intakePowerIntake);
 
-                robot.MasterShooterMotorL.setPower(ShooterMotorHold);
-                robot.SlaveShooterMotorR.setPower(ShooterMotorHold);
+//                robot.MasterShooterMotorL.setPower(ShooterMotorHold);
+//                robot.SlaveShooterMotorR.setPower(ShooterMotorHold);
                 // Non-blocking delay to prevent rapid mode switching
                 delayTimer.reset();
                 while (delayTimer.milliseconds() < 300 && opModeIsActive()) {
