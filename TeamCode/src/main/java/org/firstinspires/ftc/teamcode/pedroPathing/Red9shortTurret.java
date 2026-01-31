@@ -124,7 +124,7 @@ public class Red9shortTurret extends LinearOpMode {
     private final Pose readyFirstPickupPose = new Pose(92, 86.25, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
     private final Pose readySecondPickupPose = new Pose(92, 62.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose readyThirdPickupPose = new Pose(92, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
-    private final Pose firstPickupPose = new Pose(127, 86.25, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
+    private final Pose firstPickupPose = new Pose(126, 86.25, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
     private final Pose secondPickupPose = new Pose(133, 62.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose secondPickupPoseControlPoint = new Pose(125, 64.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose thirdPickupPose = new Pose(134, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
@@ -289,7 +289,7 @@ public class Red9shortTurret extends LinearOpMode {
                 break;
 
             case FEEDING:
-                if (shootTimer.getElapsedTimeSeconds()  >= 2) {
+                if (shootTimer.getElapsedTimeSeconds()  >= 2.2) {
                     stopShooter();
                     stopIntake();
                     robot.BlockageArm.setPosition(blockageblockposition);
@@ -678,7 +678,7 @@ public static class ShooterPIDFConfig {
     private void statePathUpdate() {
         switch (pathState) {
             case DRIVE_START_POS_SHOOT_POS:
-                follower.followPath(driveStartShoot, 0.7, true);
+                follower.followPath(driveStartShoot, 0.6, true);
                 setPathState(PathState.DRIVE_TO_SHOOT_WAIT);
                 break;
             case DRIVE_TO_SHOOT_WAIT:
@@ -689,7 +689,7 @@ public static class ShooterPIDFConfig {
             case SHOOT_PRELOAD:
              autoshoot();
                if (autoShootState == AutoShootState.DONE) {
-                   follower.followPath(driveReadyFirstPickup, 0.7, true);
+                   follower.followPath(driveReadyFirstPickup, 0.6, true);
                    isShooterAtSpeed = false;
                    setPathState(PathState.DRIVE_READY_FIRST_PICKUP_POS);
                     }
@@ -720,7 +720,7 @@ public static class ShooterPIDFConfig {
             case SHOOT_FIRST_PICKUP:
                 autoshoot();
                 if (autoShootState == AutoShootState.DONE) {
-                    follower.followPath(driveReadySecondPickup, 0.7, true);
+                    follower.followPath(driveReadySecondPickup, 0.6, true);
                     isShooterAtSpeed = false;
                     setPathState(PathState.DRIVE_READY_SECOND_PICKUP);
                 }
