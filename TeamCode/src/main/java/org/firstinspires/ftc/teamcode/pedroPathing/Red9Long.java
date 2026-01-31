@@ -43,7 +43,6 @@ public class Red9Long extends LinearOpMode {
     private volatile boolean isRunning = true;
     private boolean shooterStarted=false;
     // Initialize elapsed timer
-
     private final ElapsedTime runtime = new ElapsedTime();
     private Timer autoTimer, pathTimer,shootTimer;
     private static final double VELOCITY_TOLERANCE = 30; // RPM容差，可根据测试调整
@@ -276,7 +275,7 @@ public class Red9Long extends LinearOpMode {
 
             case SPINNING_UP:
 //                double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());//60/(28)
-//                double targetVelocity = ShooterPIDFConfig.targetVelocity;
+//                double targetVelocity =9 ShooterPIDFConfig.targetVelocity;
 //                if ((!isShooterAtSpeed) && (Math.abs(currentVelocity - targetVelocity) <= ShooterPIDFConfig.toleranceofVelocity)) {
                 if ((Math.abs(Math.abs(robot.MasterShooterMotorL.getVelocity()) - ShooterPIDFConfig.targetVelocity) <= ShooterPIDFConfig.toleranceofVelocity)) {
                     robot.IntakeMotor.setPower(intakePowerShoot);
