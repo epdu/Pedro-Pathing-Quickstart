@@ -29,15 +29,18 @@ public class HardwareQualifier {
     public DcMotorEx SlaveShooterMotorR;
     public Servo blocker;
 
-    public DcMotorEx IntakeMotor;
+    public DcMotorEx IntakeMotorL;
+    public DcMotorEx IntakeMotorR;
 
     public DcMotorEx ShooterMotor;
     public DigitalChannel redLED ;
     public DigitalChannel greenLED;
     public VoltageSensor voltageCHub;
     public VoltageSensor voltageExHub;
-    public ServoImplEx HoodArmL;
-    public ServoImplEx HoodArmR;
+    public ServoImplEx BlockageArm;
+    public ServoImplEx HoodArm;
+    public ServoImplEx TurretArmL;
+    public ServoImplEx TurretArmR;
     GoBildaPinpointDriver odo;
     IMU imu;
     public static final double DriveTrains_POWER =  0.95 ;// reduced power of driving train motors
@@ -50,13 +53,15 @@ public class HardwareQualifier {
         // Save reference to Hardware map
         hwMap = ahwMap;
 
-        leftFrontMotor   = hwMap.get(DcMotorEx.class, "LFMotor");//11072025 control hub port 2
-        rightFrontMotor  = hwMap.get(DcMotorEx.class, "RFMotor"); //11072025 expansion hub port 0
+        leftFrontMotor   = hwMap.get(DcMotorEx.class, "LFMotor");//11072025 control hub port 0
         leftRearMotor   = hwMap.get(DcMotorEx.class, "LBMotor");//11072025 control hub port 1
-        rightRearMotor  = hwMap.get(DcMotorEx.class, "RBMotor"); //11072025 expansion hub port 1
+        rightFrontMotor  = hwMap.get(DcMotorEx.class, "RFMotor"); //01292026 control hub port 2
+        rightRearMotor  = hwMap.get(DcMotorEx.class, "RBMotor"); //11072025 control hub port 3
 
-        leftRearMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//        leftRearMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//        leftFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightRearMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
         leftFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -70,9 +75,8 @@ public class HardwareQualifier {
         rightRearMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
-
-        MasterShooterMotorL = hwMap.get(DcMotorEx.class, "MasterShooterMotorL");//11072025 control  hub port 3
-        SlaveShooterMotorR = hwMap.get(DcMotorEx.class, "SlaveShooterMotorR"); //11072025 expansion  hub port 2
+        MasterShooterMotorL = hwMap.get(DcMotorEx.class, "MasterShooterMotorL");//11072025 expansion  hub port 2
+        SlaveShooterMotorR = hwMap.get(DcMotorEx.class, "SlaveShooterMotorR"); //11072025 expansion  hub port 3
         SlaveShooterMotorR.setDirection(DcMotorSimple.Direction.REVERSE);
 
         MasterShooterMotorL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -85,8 +89,11 @@ public class HardwareQualifier {
         SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
-        IntakeMotor  = hwMap.get(DcMotorEx.class, "IntakeMotor"); //11072025 control hub port 0
-        IntakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        IntakeMotorL  = hwMap.get(DcMotorEx.class, "IntakeMotorL"); //11072025 expansion  hub port 0
+        IntakeMotorL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        IntakeMotorR  = hwMap.get(DcMotorEx.class, "IntakeMotorR"); //01292026  expansion  hub port 1
+        IntakeMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        IntakeMotorR.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
         voltageCHub = hwMap.get(VoltageSensor.class, "Control Hub");
@@ -94,13 +101,26 @@ public class HardwareQualifier {
 
         setAllPower(0);
 
-//Begin Definition and Initialization of outtake ArmL and ArmR Servos
+//Begin Definition and Initialization of HoodArm  and ArmR Servos
 
-        HoodArmL = hwMap.get(ServoImplEx.class, "HoodArmL");//control hub port 2
-        HoodArmR = hwMap.get(ServoImplEx.class, "HoodArmR");;//expansion hub port 2
-        HoodArmL.setPwmRange(new PwmControl.PwmRange(500, 2500));
-        HoodArmR.setPwmRange(new PwmControl.PwmRange(500, 2500));
-        HoodArmR.setDirection(Servo.Direction.REVERSE);
+        TurretArmL = hwMap.get(ServoImplEx.class, "TurretArmL");//control hub port 2
+        TurretArmR = hwMap.get(ServoImplEx.class, "TurretArmR");;//control hub port 4
+        TurretArmL.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        TurretArmR.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        TurretArmR.setDirection(Servo.Direction.REVERSE);
+
+        BlockageArm = hwMap.get(ServoImplEx.class, "BlockageArm");// expansion  hub port 2
+        BlockageArm.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        BlockageArm.setDirection(Servo.Direction.REVERSE);
+        BlockageArm.setPosition(0.3);//
+
+
+        HoodArm = hwMap.get(ServoImplEx.class, "HoodArm");//expansion  hub port 4
+        HoodArm.setPwmRange(new PwmControl.PwmRange(500, 2500));
+//        HoodArm.setDirection(Servo.Direction.REVERSE);
+        HoodArm.setPosition(0.3);//
+
+        // HoodArm = hwMap.get(ServoImplEx.class, "HoodArm");//expansion  hub port 4
 //        initializeOArmPosition();
 
         ////End Definition and Initialization of outtake ArmL and ArmR Servos
@@ -154,7 +174,7 @@ public class HardwareQualifier {
         ///////////////////////////////////////GoBildaPinpointDriver/////////////////////////////
 
 
-        imu = hwMap.get(IMU.class, "imu");  //control I2C port 1
+        imu = hwMap.get(IMU.class, "imu");  //control I2C port 3
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
                 RevHubOrientationOnRobot.UsbFacingDirection.UP));
@@ -162,8 +182,8 @@ public class HardwareQualifier {
         imu.initialize(parameters);
         imu.resetYaw();
 
-        redLED = hwMap.get(DigitalChannel.class, "red");            // digital 01
-        greenLED = hwMap.get(DigitalChannel.class, "green");         // digital 01
+        redLED = hwMap.get(DigitalChannel.class, "red");            //  Digital device  digital 0
+        greenLED = hwMap.get(DigitalChannel.class, "green");         // Digital device  digital 1
         redLED.setMode(DigitalChannel.Mode.OUTPUT);
         greenLED.setMode(DigitalChannel.Mode.OUTPUT);
         redLED.setState(true);

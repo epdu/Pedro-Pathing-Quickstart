@@ -37,7 +37,11 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 // 位姿
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 @Autonomous(name = "AAA Southeastern Pennsylvania FAR V1 Red9long")
-public class Red9Long extends LinearOpMode {
+//three preload and take two roles, parking
+//shooting a little bit too long
+//6 s left over
+//parking further
+public class Red9short extends LinearOpMode {
     HardwareQualifier robot = new HardwareQualifier();
    private Limelight3A limelight;
     private volatile boolean isRunning = true;
@@ -241,7 +245,8 @@ public class Red9Long extends LinearOpMode {
 
     public void autoIntake() {
            // 吸入
-            robot.IntakeMotor.setPower(intakePowerIntake);
+            robot.IntakeMotorL.setPower(intakePowerIntake);
+            robot.IntakeMotorR.setPower(intakePowerIntake);
             robot.MasterShooterMotorL.setPower(ShooterMotorHold);
             robot.SlaveShooterMotorR.setPower(ShooterMotorHold);
             telemetry.update();
@@ -278,7 +283,8 @@ public class Red9Long extends LinearOpMode {
 //                double targetVelocity =9 ShooterPIDFConfig.targetVelocity;
 //                if ((!isShooterAtSpeed) && (Math.abs(currentVelocity - targetVelocity) <= ShooterPIDFConfig.toleranceofVelocity)) {
                 if ((Math.abs(Math.abs(robot.MasterShooterMotorL.getVelocity()) - ShooterPIDFConfig.targetVelocity) <= ShooterPIDFConfig.toleranceofVelocity)) {
-                    robot.IntakeMotor.setPower(intakePowerShoot);
+                    robot.IntakeMotorL.setPower(intakePowerShoot);
+                    robot.IntakeMotorR.setPower(intakePowerShoot);
 //                    isShooterAtSpeed = true;
                     shootTimer.resetTimer();
                     autoShootState = AutoShootState.FEEDING;
@@ -330,7 +336,8 @@ public class Red9Long extends LinearOpMode {
 //    }
 /// /////////////////////////////
 private void startShooter() {
-    robot.IntakeMotor.setPower(0);
+    robot.IntakeMotorL.setPower(0);
+    robot.IntakeMotorR.setPower(0);
     if (robot.MasterShooterMotorL instanceof DcMotorEx) {
         DcMotorEx shooter = (DcMotorEx) robot.MasterShooterMotorL;
         DcMotorEx shooterR = (DcMotorEx) robot.SlaveShooterMotorR;
@@ -486,14 +493,16 @@ public static class ShooterPIDFConfig {
     private void stopShooter() {
         robot.MasterShooterMotorL.setVelocity(0);
         robot.SlaveShooterMotorR.setPower(0);
-        robot.IntakeMotor.setPower(0);
+        robot.IntakeMotorL.setPower(0);
+        robot.IntakeMotorR.setPower(0);
         isShooterAtSpeed = false;
         fireRequested = false;
         shooterStarted=false;
     }
 
     private void stopIntake() {
-        robot.IntakeMotor.setPower(intakePowerOff);
+        robot.IntakeMotorL.setPower(intakePowerOff);
+        robot.IntakeMotorR.setPower(intakePowerOff);
         robot.MasterShooterMotorL.setPower(ShooterMotorOff);
         robot.SlaveShooterMotorR.setPower(ShooterMotorOff);
         // Non-blocking delay to prevent rapid mode switching
@@ -515,7 +524,8 @@ public static class ShooterPIDFConfig {
         telemetry.addData("Shooter", "FIRING! RPM: %.0f", robot.MasterShooterMotorL.getVelocity());
         telemetry.update();
         // 启动拾取电机将球推入射击器
-        robot.IntakeMotor.setPower(intakePowerShoot); // 全功率推出
+        robot.IntakeMotorL.setPower(intakePowerShoot); // 全功率推出
+        robot.IntakeMotorR.setPower(intakePowerShoot); // 全功率推出
 
         // 保持推球一段时间（根据实际调整）
         ElapsedTime fireTimer = new ElapsedTime();
@@ -526,7 +536,8 @@ public static class ShooterPIDFConfig {
         }
 
         // 停止拾取电机
-        robot.IntakeMotor.setPower(0);
+        robot.IntakeMotorL.setPower(0);
+        robot.IntakeMotorR.setPower(0);
         fireRequested = false;
 
         telemetry.addData("Shooter", "Fire sequence completed");
