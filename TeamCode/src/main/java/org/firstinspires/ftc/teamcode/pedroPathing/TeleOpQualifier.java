@@ -63,7 +63,7 @@ public class TeleOpQualifier extends LinearOpMode {
     public float  ShooterMotorHold=-0.2f;
     public float  ShooterMotorClean=-0.8f;
     public float  ShooterMotorOff=0.0f;
-    public static final double blockageblockposition=0.3;
+    public static final double blockageblockposition=0.18;
     public static final double blockagereleaseposition=0.8;
     public static final double HoodArmfarposition=0.3;
     public static final double HoodArmcloseposition=0.35;
