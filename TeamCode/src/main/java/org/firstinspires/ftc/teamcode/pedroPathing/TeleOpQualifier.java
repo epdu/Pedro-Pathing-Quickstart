@@ -38,7 +38,7 @@ public class TeleOpQualifier extends LinearOpMode {
     /////////////////////////////////pretty goood for close shoot /////////////////////////// 1300
 //    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
     // use rpm as speed, the real name should be speed = 1300
-    public static double toleranceforShoot = 50;        // 转速容差
+    public static double toleranceforShoot = 100;        // 转速容差
     //1300
 //    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
     private static final double Far_SHOOTER_TARGET_RPM = 2237;  //  350RPM---2237
