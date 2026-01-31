@@ -27,7 +27,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 // 位姿
 
 
-@Autonomous(name = "RED  Short 12 Southeastern Pennsylvania short try turret V1 Red9short")
+@Autonomous(name = "RED Short TWELVE Southeastern Pennsylvania short try turret V1 Red9short")
 //three preload and take two roles, parking
 //shooting a little bit too long
 //6 s left over
