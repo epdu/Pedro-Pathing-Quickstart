@@ -45,7 +45,6 @@ import java.util.List;
 public class AutoQualifier extends LinearOpMode {
     // Initialize elapsed timer
     private final ElapsedTime runtime = new ElapsedTime();
-
     // Initialize poses
     private final Pose startPose = new Pose(72, 120, Math.toRadians(90)); // Start Pose of our robot.
     private final Pose scorePose = new Pose(72, 20, Math.toRadians(115)); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
