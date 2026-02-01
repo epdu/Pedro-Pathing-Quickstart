@@ -53,8 +53,8 @@ public class TeleOpQualifier extends LinearOpMode {
     private double powerMultiplier = 0.9;
     boolean move = false;
     int controlMode = 1;
-    public float  intakePowerIntake=0.99f;
-    public float  intakePowerShoot=0.9f;
+    public float  intakePowerIntake=0.9f;//push blocker too much from 99-90
+    public float  intakePowerShoot=0.8f;
     public float  intakePowerDump=-0.6f;
     public float  intakePowerOff=0.0f;
     public float  ShooterMotorShootFar=0.95f;
@@ -63,8 +63,10 @@ public class TeleOpQualifier extends LinearOpMode {
     public float  ShooterMotorHold=-0.2f;
     public float  ShooterMotorClean=-0.8f;
     public float  ShooterMotorOff=0.0f;
-    public static final double blockageblockposition=0.18;
+    public static final double blockageblockposition=0.18; //for auto
     public static final double blockagereleaseposition=0.8;
+    public static final double blockageblockTele=0.1; // from .18 -0.1 for tele
+    public static final double blockagereleaseTele=0.8;
     public static final double HoodArmfarposition=0.3;
     public static final double HoodArmcloseposition=0.35;
     public static final double HoodArmPositionInit = 0.1;
@@ -132,7 +134,7 @@ public class TeleOpQualifier extends LinearOpMode {
             // 手柄控制拾取电机
             if (gamepad1.left_trigger > 0.1) {
                 // 吸入
-                robot.BlockageArm.setPosition(blockageblockposition); // blockage the ball     robot.BlockageArm.setPosition(blockagereleaseposition);
+                robot.BlockageArm.setPosition(blockageblockTele); // blockage the ball     robot.BlockageArm.setPosition(blockagereleaseposition);
                 robot.IntakeMotorL.setPower(intakePowerIntake);
                 robot.IntakeMotorR.setPower(intakePowerIntake);
 
@@ -170,7 +172,7 @@ public class TeleOpQualifier extends LinearOpMode {
             checkShooterVelocity();
             if (!robot.MasterShooterMotorL.isBusy()){
                 startShooter();
-                robot.BlockageArm.setPosition(blockagereleaseposition);
+                robot.BlockageArm.setPosition(blockagereleaseTele);
             }
 
         }
@@ -186,7 +188,7 @@ public class TeleOpQualifier extends LinearOpMode {
             stopShooter();
             robot.IntakeMotorL.setPower(intakePowerOff);
             robot.IntakeMotorR.setPower(intakePowerOff);
-            robot.BlockageArm.setPosition(blockageblockposition);
+            robot.BlockageArm.setPosition(blockageblockTele);
             fireRequested = false;
         }
 
@@ -239,9 +241,9 @@ public class TeleOpQualifier extends LinearOpMode {
 /// /////////////////need work
     private void updateBlockage() {
         if (gamepad1.dpad_left) {
-            robot.BlockageArm.setPosition((blockageblockposition));
+            robot.BlockageArm.setPosition((blockageblockTele));
         }  else if(gamepad1.dpad_right) {
-            robot.BlockageArm.setPosition((blockagereleaseposition));
+            robot.BlockageArm.setPosition((blockagereleaseTele));
 
         } // 防止快速连击导致模式快速切换
 

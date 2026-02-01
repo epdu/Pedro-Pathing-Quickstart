@@ -73,7 +73,7 @@ public class Blue9shortTurret extends LinearOpMode {
     boolean move = false;
     int controlMode = 1;
     public float  intakePowerIntake=0.98f;//0.95
-    public float  intakePowerShoot=0.98f;//0.9
+    public float  intakePowerShoot=0.8f;//0.9
     public float  intakePowerDump=-0.6f;
     public float  intakePowerOff=0.0f;
     public float  ShooterMotorShootFar=0.95f;

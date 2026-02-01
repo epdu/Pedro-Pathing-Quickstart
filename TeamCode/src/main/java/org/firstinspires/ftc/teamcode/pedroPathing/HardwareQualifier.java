@@ -112,7 +112,7 @@ public class HardwareQualifier {
         BlockageArm = hwMap.get(ServoImplEx.class, "BlockageArm");// expansion  hub port 2
         BlockageArm.setPwmRange(new PwmControl.PwmRange(500, 2500));
         BlockageArm.setDirection(Servo.Direction.REVERSE);
-        BlockageArm.setPosition(0.3);//
+        BlockageArm.setPosition(0.18);//
 
 
         HoodArm = hwMap.get(ServoImplEx.class, "HoodArm");//expansion  hub port 4

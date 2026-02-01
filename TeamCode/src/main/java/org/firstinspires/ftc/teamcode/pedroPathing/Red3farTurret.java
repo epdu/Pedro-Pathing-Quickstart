@@ -73,7 +73,7 @@ public class Red3farTurret extends LinearOpMode {
     boolean move = false;
     int controlMode = 1;
     public float  intakePowerIntake=0.98f;//0.95
-    public float  intakePowerShoot=0.80f;//0.9  only for far
+    public float  intakePowerShoot=0.75f;//0.9  only for far
     public float  intakePowerDump=-0.6f;
     public float  intakePowerOff=0.0f;
     public float  ShooterMotorShootFar=0.95f;
@@ -124,7 +124,7 @@ public class Red3farTurret extends LinearOpMode {
         END
     }
     private final Pose startPose = new Pose(96,6.25, Math.toRadians(0)); // Start Pose further zone of our robot.
-    private final Pose shootPose = new Pose(96, 10.25, Math.toRadians(73)); //70-73 65-75 Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
+    private final Pose shootPose = new Pose(96, 12.25, Math.toRadians(75)); //70-73 65-75 Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
 //    private final Pose scoreEnd = new Pose(92, 92.25, Math.toRadians(0)); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
 //    private final Pose readyFirstPickupPose = new Pose(92, 86.25, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
 //    private final Pose readySecondPickupPose = new Pose(92, 62.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.

@@ -26,14 +26,14 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 // 位姿
 
 
-@Autonomous(name = "BLUE Far THREE Southeastern Pennsylvania short try turret V1 Red9short")
+@Autonomous(name = "AAAA red far mmmshort")
 //three preload and take two roles, parking
 //shooting a little bit too long
 //6 s left over
 //parking further
-public class Blue3farTurret extends LinearOpMode {
+public class redfarmm extends LinearOpMode {
     HardwareQualifier robot = new HardwareQualifier();
-   private Limelight3A limelight;
+    private Limelight3A limelight;
     private volatile boolean isRunning = true;
     private boolean shooterStarted=false;
     // Initialize elapsed timer
@@ -49,16 +49,16 @@ public class Blue3farTurret extends LinearOpMode {
     private final String LED_COLOR_READY = "GREEN";
     private final String LED_COLOR_ACCELERATING = "YELLOW";
     private final String LED_COLOR_OFF = "RED";
-//  RPM = (TPS * 60秒) / 每转ticks数
+    //  RPM = (TPS * 60秒) / 每转ticks数
 //  return (tps * 60.0) / ticksPerRevolution;  28*13.7     28*13.7-----28 6000RPM
 //  TPS=RPM/60*ticksPerRevolution=RPM*28*13.7/60；
     private static final double Close_SHOOTER_TARGET_RPM = 100;//  400RPM---2,557.33333333333333
-//    private static final double Med_SHOOTER_TARGET_RPM = 204;   //1598 white tri a little bit too far//  250RPM---1586.67
+    //    private static final double Med_SHOOTER_TARGET_RPM = 204;   //1598 white tri a little bit too far//  250RPM---1586.67
     private static final double Med_SHOOTER_TARGET_RPM = 2785;   //1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
-//    private static final double Med_SHOOTER_TARGET_Velocity = 1300;
+    //    private static final double Med_SHOOTER_TARGET_Velocity = 1300;
     private static final double Med_SHOOTER_TARGET_Velocity = 1480; //1450   1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
     private static final double Far_SHOOTER_TARGET_RPM = 350;  //  350RPM---2237
-//   private static final double Close_SHOOTER_TARGET_RPM = 800;//  400RPM---2,557.33333333333333
+    //   private static final double Close_SHOOTER_TARGET_RPM = 800;//  400RPM---2,557.33333333333333
 //    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
 //    private static final double Far_SHOOTER_TARGET_RPM = 2237;  //  350RPM---2237
     //  1000RPM---6346.67
@@ -66,13 +66,13 @@ public class Blue3farTurret extends LinearOpMode {
     //  500RPM---3173.3
     public float DriveTrains_ReducePOWER=0.75f;
     public float DriveTrains_smoothTurn=0.55f;
-//    public String fieldOrRobotCentric = "robot";
+    //    public String fieldOrRobotCentric = "robot";
     public String fieldOrRobotCentric = "field";
     private double powerMultiplier = 0.9;
     boolean move = false;
     int controlMode = 1;
     public float  intakePowerIntake=0.98f;//0.95
-    public float  intakePowerShoot=0.80f;//0.9  only for far
+    public float  intakePowerShoot=0.75f;//0.9  only for far
     public float  intakePowerDump=-0.6f;
     public float  intakePowerOff=0.0f;
     public float  ShooterMotorShootFar=0.95f;
@@ -95,45 +95,30 @@ public class Blue3farTurret extends LinearOpMode {
     private boolean hasPathStarted = false;
     private PathState pathState;
     private AutoShootState autoShootState;
-//    ShooterSubsystem shooterSubsystem;
+    //    ShooterSubsystem shooterSubsystem;
 //    FlywheelSubsystem flywheelSubsystem;
 //    FeederSubsystem feederSubsystem;
 //    IntakeSubsystem intakeSubsystem;
-    private PathChain driveStartShoot, driveReadyFirstPickup, driveFirstPickup,
-            driveFirstPickupShoot, driveReadySecondPickup,
-            driveSecondPickup, driveSecondPickupShoot, driveReadyThirdPickup,
-        driveThirdPickup, driveThirdPickupShoot, driveOffline;
+    private PathChain driveStartShoot, driveReadyPickup, drivePickup, drivePickupShoot, driveOffline;
     public enum PathState {
         DRIVE_START_POS_SHOOT_POS,
         DRIVE_TO_SHOOT_WAIT,
         SHOOT_PRELOAD,
-//        DRIVE_READY_FIRST_PICKUP_POS,
-//        FIRST_PICKUP,
-//        DRIVE_BACK_FIRST_SHOOT_POS,
-//        SHOOT_FIRST_PICKUP,
-//        DRIVE_READY_SECOND_PICKUP,
-//        SECOND_PICKUP,
-//        DRIVE_BACK_SECOND_PICKUP,
-//        SHOOT_SECOND_PICKUP,
-//        DRIVE_READY_THIRD_PICKUP,
-//        THIRD_PICKUP,
-//        DRIVE_BACK_THIRD_PICKUP,
-//        SHOOT_THIRD_PICKUP,
+        DRIVE_READY_PICKUP_POS,
+        PICKUP,
+        DRIVE_BACK_SHOOT_POS,
+        SHOOT_PICKUP,
         DRIVE_OFFLINE,
         END
     }
-    private final Pose startPose = new Pose(96,6.25, Math.toRadians(0)).mirror(); // Start Pose further zone of our robot.
-    private final Pose shootPose = new Pose(96, 10.25, Math.toRadians(73)).mirror(); //70-73 65-75 Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
-//    private final Pose scoreEnd = new Pose(92, 92.25, Math.toRadians(0)); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
-//    private final Pose readyFirstPickupPose = new Pose(92, 86.25, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
-//    private final Pose readySecondPickupPose = new Pose(92, 62.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
-//    private final Pose readyThirdPickupPose = new Pose(92, 37.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
-//    private final Pose firstPickupPose = new Pose(126, 86.25, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
-//    private final Pose secondPickupPose = new Pose(133, 62.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
-//    private final Pose secondPickupPoseControlPoint = new Pose(125, 64.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
-//    private final Pose thirdPickupPose = new Pose(134, 37.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
-//    //    private final Pose PARKPose = new Pose(120, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
-    private final Pose offlinePose = new Pose(104, 10.25, Math.toRadians(0)).mirror(); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
+    private final Pose startPose = new Pose(96,6.25, Math.toRadians(0)); // Start Pose further zone of our robot.
+    private final Pose shootPose = new Pose(96, 10.25, Math.toRadians(90)); //70-73 65-75 Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
+    private final Pose pickupredayPose = new Pose(120, 6.25, Math.toRadians(0)); //70-73 65-75 Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
+
+
+    private final Pose pickupPose = new Pose(135, 6.25, Math.toRadians(0)); //70-73 65-75 Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
+
+    private final Pose offlinePose = new Pose(104, 10.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     // Initialize variables for paths
 
 
@@ -189,20 +174,10 @@ public class Blue3farTurret extends LinearOpMode {
         shootTimer= new Timer();
 
         follower = Constants.createFollower(hardwareMap);
-
         pathState = PathState.DRIVE_START_POS_SHOOT_POS;
         autoShootState = AutoShootState.IDLE;
         buildPaths();
-//        shooterSubsystem = ShooterSubsystem.getInstance(hardwareMap, gamepad1, gamepad2);
-//        flywheelSubsystem = FlywheelSubsystem.getInstance(hardwareMap, gamepad1);
-//        feederSubsystem = FeederSubsystem.getInstance(hardwareMap, gamepad1);
-//        intakeSubsystem = IntakeSubsystem.getInstance(hardwareMap, gamepad1);
-//        shooterSubsystem.init();
-//        flywheelSubsystem.init();
-//        feederSubsystem.init();
-//        intakeSubsystem.init();
-//        telemetry.addLine("Ready");
-//        telemetry.update();
+
 
         /* ---------------- WAIT ---------------- */
         waitForStart();
@@ -221,7 +196,7 @@ public class Blue3farTurret extends LinearOpMode {
             statePathUpdate();
 
             /// /////////////////////added
-/// ///////////////////////////////////////////////debug PIDF////////////////////
+            /// ///////////////////////////////////////////////debug PIDF////////////////////
 //            updateShooter();
 //            autoshoot();
 //            telemetry.update();
@@ -239,15 +214,15 @@ public class Blue3farTurret extends LinearOpMode {
         }
     }
 
-////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////
 
     public void autoIntake() {
-           // 吸入
-            robot.IntakeMotorL.setPower(intakePowerIntake);
-            robot.IntakeMotorR.setPower(intakePowerIntake);
+        // 吸入
+        robot.IntakeMotorL.setPower(intakePowerIntake);
+        robot.IntakeMotorR.setPower(intakePowerIntake);
 //            robot.MasterShooterMotorL.setPower(ShooterMotorHold);
 //            robot.SlaveShooterMotorR.setPower(ShooterMotorHold);
-            telemetry.update();
+        telemetry.update();
     }
 
     enum AutoShootState {
@@ -278,7 +253,7 @@ public class Blue3farTurret extends LinearOpMode {
                 break;
 
             case SPINNING_UP:
-                  robot.BlockageArm.setPosition(blockagereleaseposition);
+                robot.BlockageArm.setPosition(blockagereleaseposition);
 //                double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());//60/(28)
 //                double targetVelocity = ShooterPIDFConfig.targetVelocity;
 //                if ((!isShooterAtSpeed) && (Math.abs(currentVelocity - targetVelocity) <= ShooterPIDFConfig.toleranceofVelocity)) {
@@ -335,25 +310,25 @@ public class Blue3farTurret extends LinearOpMode {
 //        shooterStarted=true;
 //
 //    }
-/// /////////////////////////////
-private void startShooter() {
-    robot.IntakeMotorL.setPower(0);
-    robot.IntakeMotorR.setPower(0);
-    if (robot.MasterShooterMotorL instanceof DcMotorEx) {
-        DcMotorEx shooter = (DcMotorEx) robot.MasterShooterMotorL;
-        DcMotorEx shooterR = (DcMotorEx) robot.SlaveShooterMotorR;
-        // 直接使用setVelocity，它会使用已配置的PIDF
-        shooter.setVelocity(Math.abs(ShooterPIDFConfig.targetVelocity));
-        shooterR.setVelocity(Math.abs(ShooterPIDFConfig.targetVelocity));
+    /// /////////////////////////////
+    private void startShooter() {
+        robot.IntakeMotorL.setPower(0);
+        robot.IntakeMotorR.setPower(0);
+        if (robot.MasterShooterMotorL instanceof DcMotorEx) {
+            DcMotorEx shooter = (DcMotorEx) robot.MasterShooterMotorL;
+            DcMotorEx shooterR = (DcMotorEx) robot.SlaveShooterMotorR;
+            // 直接使用setVelocity，它会使用已配置的PIDF
+            shooter.setVelocity(Math.abs(ShooterPIDFConfig.targetVelocity));
+            shooterR.setVelocity(Math.abs(ShooterPIDFConfig.targetVelocity));
+        }
+        shooterStarted=true;
+
     }
-    shooterStarted=true;
-
-}
 
 
-/// ///////////////////////////////
-@Config
-public static class ShooterPIDFConfig {
+    /// ///////////////////////////////
+    @Config
+    public static class ShooterPIDFConfig {
         public static double kP = 100;     // 比例增益0.10.350.651.0655
         public static double kI = 0.0;      // 积分增益
         public static double kD = 0.0;      // 微分增益
@@ -365,7 +340,7 @@ public static class ShooterPIDFConfig {
 //        public static double targetRPM =Close_SHOOTER_TARGET_RPM;
 //        public static double targetRPM =Med_SHOOTER_TARGET_RPM; // 目标转速
         public static double targetVelocity =Med_SHOOTER_TARGET_Velocity;
-//        public static double toleranceofRPM = 100;    // 转速容差 5RPM---30TPS
+        //        public static double toleranceofRPM = 100;    // 转速容差 5RPM---30TPS
         public static double toleranceofVelocity = 70;
         public static double tolerance = 50;
 
@@ -623,57 +598,21 @@ public static class ShooterPIDFConfig {
                 .addPath(new BezierLine(startPose, shootPose))
                 .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
                 .build();
-//        driveReadyFirstPickup = follower.pathBuilder()
-//                .addPath(new BezierCurve(shootPose, readyFirstPickupPose))
-//                .setLinearHeadingInterpolation(shootPose.getHeading(), readyFirstPickupPose.getHeading())
-//                .build();
-//
-//        driveFirstPickup = follower.pathBuilder()
-//                .addPath(new BezierLine(readyFirstPickupPose, firstPickupPose))
-//                .setLinearHeadingInterpolation(readyFirstPickupPose.getHeading(), firstPickupPose.getHeading())
-//                .build();
-//        driveFirstPickupShoot = follower.pathBuilder()
-//                .addPath(new BezierLine(firstPickupPose, shootPose))
-//                .setLinearHeadingInterpolation(firstPickupPose.getHeading(), shootPose.getHeading())
-//                .build();
-//        driveReadySecondPickup = follower.pathBuilder()
-//                .addPath(new BezierCurve(shootPose, readySecondPickupPose))
-//                .setLinearHeadingInterpolation(shootPose.getHeading(), readySecondPickupPose.getHeading())
-//                .build();
-//
-//        driveSecondPickup = follower.pathBuilder()
-//                .addPath(new BezierLine(readySecondPickupPose, secondPickupPose))
-//                .setLinearHeadingInterpolation(readySecondPickupPose.getHeading(), secondPickupPose.getHeading())
-//                .build();
-//        driveSecondPickupShoot = follower.pathBuilder()
-//                .addPath(new BezierCurve(secondPickupPose, secondPickupPoseControlPoint, shootPose))
-//                .setLinearHeadingInterpolation(secondPickupPose.getHeading(), shootPose.getHeading())
-//                .build();
-///// ////////////
-//        driveReadyThirdPickup = follower.pathBuilder()
-//                .addPath(new BezierCurve(shootPose, readyThirdPickupPose))
-//                .setLinearHeadingInterpolation(shootPose.getHeading(), readySecondPickupPose.getHeading())
-//                .build();
-//
-//        driveThirdPickup = follower.pathBuilder()
-//                .addPath(new BezierLine(readyThirdPickupPose, thirdPickupPose))
-//                .setLinearHeadingInterpolation(readyThirdPickupPose.getHeading(), thirdPickupPose.getHeading())
-//                .build();
-//        driveThirdPickupShoot = follower.pathBuilder()
-//                .addPath(new BezierCurve(thirdPickupPose, shootPose))
-//                .setLinearHeadingInterpolation(thirdPickupPose.getHeading(), shootPose.getHeading())
-//                .build();
-        /// ///////////
-//        driveSecondPickupShoot = follower.pathBuilder()
-//                .addPath(new BezierCurve(secondPickupPose, shootPose))
-//                .setLinearHeadingInterpolation(secondPickupPose.getHeading(), shootPose.getHeading())
-//                .build();
-//
+        driveReadyPickup = follower.pathBuilder()
+                .addPath(new BezierLine(shootPose, pickupredayPose))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), pickupredayPose.getHeading())
+                .build();
+        drivePickup = follower.pathBuilder()
+                .addPath(new BezierLine(pickupredayPose, pickupPose))
+                .setLinearHeadingInterpolation(pickupPose.getHeading(), shootPose.getHeading())
+                .build();
 
-//        driveSecondPickupShoot = follower.pathBuilder()
-//                .addPath(new BezierCurve(secondPickupPose, secondPickupCP, shootPose))
-//                .setLinearHeadingInterpolation(secondPickupPose.getHeading(), shootPose.getHeading())
-//                .build();
+        drivePickupShoot = follower.pathBuilder()
+                .addPath(new BezierLine(pickupPose, shootPose))
+                .setLinearHeadingInterpolation(pickupPose.getHeading(), shootPose.getHeading())
+                .build();
+///// ////////////
+
         driveOffline = follower.pathBuilder()
                 .addPath(new BezierLine(shootPose, offlinePose))
                 .setLinearHeadingInterpolation(shootPose.getHeading(), offlinePose.getHeading())
@@ -681,7 +620,7 @@ public static class ShooterPIDFConfig {
     }
 
     /* ---------------- STATE MACHINE ---------------- */
-/// /////////////////////////keep working here/////////////////////////12172025///////////
+    /// /////////////////////////keep working here/////////////////////////12172025///////////
     private void setPathState(PathState newState) {
         pathState = newState;
         pathTimer.resetTimer();
@@ -699,107 +638,49 @@ public static class ShooterPIDFConfig {
                 }
                 break;
             case SHOOT_PRELOAD:
-             autoshoot();
-               if (autoShootState == AutoShootState.DONE) {
-                   follower.followPath(driveOffline, 0.3, true);
-                   isShooterAtSpeed = false;
-                   setPathState(PathState.DRIVE_OFFLINE);
-                    }
-               break;
-//            case DRIVE_READY_FIRST_PICKUP_POS:
-//                if (!follower.isBusy()) {
-//                    follower.followPath(driveFirstPickup, 0.5, true);
-//                    setPathState(PathState.FIRST_PICKUP);
-//                }
-//                break;
-//            case FIRST_PICKUP:
-//                if (!firstPickupCompleted && pathTimer.getElapsedTimeSeconds() < 1.8) {
-//            autoIntake();
-//                } else {
-//                    follower.followPath(driveFirstPickupShoot);
-//                    stopShooter();
-//                    stopIntake();
-//                    setPathState(PathState.DRIVE_BACK_FIRST_SHOOT_POS);
-//                    firstPickupCompleted = true;
-//                }
-//                break;
-//            case DRIVE_BACK_FIRST_SHOOT_POS:
-//                if (!follower.isBusy()) {
-//                    setPathState(PathState.SHOOT_FIRST_PICKUP);
-//                    autoShootState = AutoShootState.IDLE;
-//                }
-//                break;
-//            case SHOOT_FIRST_PICKUP:
-//                autoshoot();
-//                if (autoShootState == AutoShootState.DONE) {
-//                    follower.followPath(driveReadySecondPickup, 0.6, true);
-//                    isShooterAtSpeed = false;
-//                    setPathState(PathState.DRIVE_READY_SECOND_PICKUP);
-//                }
-//                break;
+                autoshoot();
+                if (autoShootState == AutoShootState.DONE) {
+                    follower.followPath(driveOffline, 0.3, true);
+                    isShooterAtSpeed = false;
+                    setPathState(PathState.DRIVE_READY_PICKUP_POS);
+                }
+                break;
+
+            case DRIVE_READY_PICKUP_POS:
+                if (!follower.isBusy()) {
+                    follower.followPath(drivePickup, 50.5, true);
+                    firstPickupCompleted = false;
+                    setPathState(PathState.PICKUP);
+                }
+                break;
+            case PICKUP:
+                if (!firstPickupCompleted && pathTimer.getElapsedTimeSeconds() < 1.8) {
+                    autoIntake();
+                } else {
+                    follower.followPath(drivePickupShoot);
+                    stopShooter();
+                    stopIntake();
+                    setPathState(PathState.DRIVE_BACK_SHOOT_POS);
+                    firstPickupCompleted = true;
+                }
+                break;
+            case DRIVE_BACK_SHOOT_POS:
+                if (!follower.isBusy()) {
+                    setPathState(PathState.SHOOT_PICKUP);
+                    autoShootState = AutoShootState.IDLE;
+                }
+                break;
+            case SHOOT_PICKUP:
+                autoshoot();
+                if (autoShootState == AutoShootState.DONE) {
+                    follower.followPath(driveReadyPickup, 0.6, true);
+                    isShooterAtSpeed = false;
+                    setPathState(PathState.DRIVE_READY_PICKUP_POS);
+                }
+                break;
 //
-//            case DRIVE_READY_SECOND_PICKUP:
-//                if (!follower.isBusy()) {
-//                    follower.followPath(driveSecondPickup, 0.5, true);
-//                    setPathState(PathState.SECOND_PICKUP);
-//                }
-//                break;
-//            case SECOND_PICKUP:
-//                if (pathTimer.getElapsedTimeSeconds() < 1.8) {
-//                    autoIntake();
-//                } else {
-//                    follower.followPath(driveSecondPickupShoot);
-//                    stopShooter();
-//                    stopIntake();
-//                    setPathState(PathState.DRIVE_BACK_SECOND_PICKUP);
-//                }
-//                break;
-//            case DRIVE_BACK_SECOND_PICKUP:
-//                if (!follower.isBusy()) {
-//                    setPathState(PathState.SHOOT_SECOND_PICKUP);
-//                    autoShootState = AutoShootState.IDLE;
-//                }
-//                break;
-//            case SHOOT_SECOND_PICKUP:
-//                autoshoot();
-//                if (autoShootState == AutoShootState.DONE) {
-//                    follower.followPath(driveOffline, 0.8, true);
-//                    isShooterAtSpeed = false;
-//                    setPathState(PathState.DRIVE_OFFLINE);
-//                }
-//                break;
-///// /////////////////////////
-//            case DRIVE_READY_THIRD_PICKUP:
-//                if (!follower.isBusy()) {
-//                    follower.followPath(driveSecondPickup, 0.5, true);
-//                    setPathState(PathState.SECOND_PICKUP);
-//                }
-//                break;
-//            case THIRD_PICKUP:
-//                if (pathTimer.getElapsedTimeSeconds() < 1.8) {
-//                    autoIntake();
-//                } else {
-//                    follower.followPath(driveSecondPickupShoot);
-//                    stopShooter();
-//                    stopIntake();
-//                    setPathState(PathState.DRIVE_BACK_SECOND_PICKUP);
-//                }
-//                break;
-//            case DRIVE_BACK_THIRD_PICKUP:
-//                if (!follower.isBusy()) {
-//                    setPathState(PathState.SHOOT_SECOND_PICKUP);
-//                    autoShootState = AutoShootState.IDLE;
-//                }
-//                break;
-//            case SHOOT_THIRD_PICKUP:
-//                autoshoot();
-//                if (autoShootState == AutoShootState.DONE) {
-//                    follower.followPath(driveOffline, 0.8, true);
-//                    isShooterAtSpeed = false;
-//                    setPathState(PathState.DRIVE_OFFLINE);
-//                }
-//                break;
-        /// //////////////////////
+
+            /// //////////////////////
             case DRIVE_OFFLINE:
                 if (!follower.isBusy()) {
                     setPathState(PathState.END);
