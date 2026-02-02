@@ -28,10 +28,13 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 
 @Autonomous(name = "RED Near TWELVE without turret V1 Red9short")
-//three preload and take two roles, parking
-//shooting a little bit too long
-//6 s left over
-//parking further
+//. 3 ARTIFACTS on each SPIKE MARK arranged as follows:
+//i.
+//Near (audience side): GPP
+//ii.
+//iii.
+//Middle: PGP
+//Far (GOAL side): PPG
 public class Red12nearwithoutTurret extends LinearOpMode {
     HardwareQualifier robot = new HardwareQualifier();
    private Limelight3A limelight;
