@@ -26,7 +26,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 // Limelight
 // 位姿
 
-
 @Autonomous(name = "RED Short NINE Southeastern Pennsylvania short try turret V1 Red9short")
 //three preload and take two roles, parking
 //shooting a little bit too long
