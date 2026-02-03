@@ -25,8 +25,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 // 姿态
 // Limelight
 // 位姿
-
-
 @Autonomous(name = "RED Near TWELVE open gate without turret V1 Red9short")
 //. 3 ARTIFACTS on each SPIKE MARK arranged as follows:
 //i.
