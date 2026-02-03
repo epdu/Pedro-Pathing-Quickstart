@@ -143,14 +143,14 @@ public class Red12nearopengatewithoutTurret extends LinearOpMode {
     private final Pose readyThirdPickupPose = new Pose(92, 86.25, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
     private final Pose readySecondPickupPose = new Pose(92, 62.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose readyFirstPickupPose = new Pose(92, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
-    private final Pose readyOpenGatePickupPose = new Pose(132, 60, Math.toRadians(45)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose readyOpenGatePickupPose = new Pose(132, 63, Math.toRadians(45)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose thirdPickupPose = new Pose(126, 86.25, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
     private final Pose secondPickupPose = new Pose(133, 62.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose secondPickupCP = new Pose(72, 76, Math.toRadians(0));
     private final Pose openGatePickupCP = new Pose(72, 76, Math.toRadians(0));
     private final Pose secondPickupPoseControlPoint = new Pose(125, 64.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose firstPickupPose = new Pose(134, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
-    private final Pose openGatePickupPose = new Pose(132, 60, Math.toRadians(45));
+    private final Pose openGatePickupPose = new Pose(132, 63, Math.toRadians(45));
     //    private final Pose PARKPose = new Pose(120, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     private final Pose offlinePose = new Pose(112, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     // Initialize variables for paths
