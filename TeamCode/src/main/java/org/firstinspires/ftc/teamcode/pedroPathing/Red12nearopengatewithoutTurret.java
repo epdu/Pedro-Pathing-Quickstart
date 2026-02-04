@@ -63,9 +63,6 @@ public class Red12nearopengatewithoutTurret extends LinearOpMode {
 //   private static final double Close_SHOOTER_TARGET_RPM = 800;//  400RPM---2,557.33333333333333
 //    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
 //    private static final double Far_SHOOTER_TARGET_RPM = 2237;  //  350RPM---2237
-    //  1000RPM---6346.67
-    //  600RPM---3808
-    //  500RPM---3173.3
     public float DriveTrains_ReducePOWER=0.75f;
     public float DriveTrains_smoothTurn=0.55f;
 //    public String fieldOrRobotCentric = "robot";
