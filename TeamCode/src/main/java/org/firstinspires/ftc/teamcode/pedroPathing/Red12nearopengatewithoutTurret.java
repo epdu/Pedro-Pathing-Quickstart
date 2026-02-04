@@ -26,13 +26,11 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 // Limelight
 // 位姿
 @Autonomous(name = "RED Near TWELVE open gate without turret V1 Red9short")
+// intake second role with open gate and try to intake, but does not work
 //. 3 ARTIFACTS on each SPIKE MARK arranged as follows:
-//i.
-//Near (audience side): GPP
-//ii.
-//iii.
-//Middle: PGP
-//Far (GOAL side): PPG
+//i.Near (audience side): GPP
+//ii. Middle: PGP
+//iii. Far (GOAL side): PPG
 public class Red12nearopengatewithoutTurret extends LinearOpMode {
     HardwareQualifier robot = new HardwareQualifier();
    private Limelight3A limelight;
