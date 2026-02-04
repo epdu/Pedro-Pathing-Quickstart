@@ -27,6 +27,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 // 位姿
 @Autonomous(name = "RED Near TWELVE open gate only no taking without turret V1 Red9short")
 // intake second role with open gate only did not try to intake,
+// blockage does not work well, switch back to flywheel reverse
 //. 3 ARTIFACTS on each SPIKE MARK arranged as follows:
 //i.Near (audience side): GPP
 //ii. Middle: PGP
