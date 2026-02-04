@@ -104,8 +104,6 @@ public class Red12nearopengatewithoutTurret extends LinearOpMode {
     private PathChain driveReadyOpenGatePickup, driveOpenGatePickup, driveOpenGatePickupShoot;
     private PathChain driveReadySecondPickup,driveSecondPickup, driveSecondPickupShoot;
     private PathChain driveReadyFirstPickup, driveFirstPickup,driveFirstPickupShoot;
-
-
     private PathChain driveOffline;
     public enum PathState {
         DRIVE_START_POS_SHOOT_POS,
