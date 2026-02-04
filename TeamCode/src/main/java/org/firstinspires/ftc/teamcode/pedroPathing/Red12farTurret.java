@@ -125,17 +125,17 @@ public class Red12farTurret extends LinearOpMode {
     }
     private final Pose startPose = new Pose(96,6.25, Math.toRadians(0));
     private final Pose startPoseCP = new Pose(96,11.25, Math.toRadians(0)); // Start Pose further zone of our robot.
-    private final Pose shootPose = new Pose(96, 12.25, Math.toRadians(65)); //70-73 65-75 Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
+    private final Pose shootPose = new Pose(96, 12.25, Math.toRadians(75)); //70-73 65-75 Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
     private final Pose readyFirstPickupPose = new Pose(92, 36.25, Math.toRadians(0));
-    private final Pose readyFirstHomePickupPose = new Pose(120, 7.25, Math.toRadians(0));
-    private final Pose readySecondHomePickupPose = new Pose(120, 7.25, Math.toRadians(0));
-    private final Pose readyThirdHomePickupPose = new Pose(120, 7.25, Math.toRadians(0));
+    private final Pose readyFirstHomePickupPose = new Pose(120, 12.25, Math.toRadians(0));
+    private final Pose readySecondHomePickupPose = new Pose(120, 12.25, Math.toRadians(0));
+    private final Pose readyThirdHomePickupPose = new Pose(120, 12.25, Math.toRadians(0));
     private final Pose readySecondHomeSecondTryPickupPose = new Pose(120, 16.25, Math.toRadians(0));
     private final Pose readyThirdHomeSecondTryPickupPose = new Pose(120, 16.25, Math.toRadians(0));
     private final Pose firstPickupPose = new Pose(134, 36.25, Math.toRadians(0)); // //i.Near (audience side): GPP of Artifacts from the Spike Mark.
-    private final Pose firstHomePickupPose = new Pose(136, 6.25, Math.toRadians(0));
-    private final Pose secondHomePickupPose = new Pose(136, 6.25, Math.toRadians(0));
-    private final Pose thirdHomePickupPose = new Pose(136, 6.25, Math.toRadians(0));
+    private final Pose firstHomePickupPose = new Pose(138, 6.25, Math.toRadians(0));
+    private final Pose secondHomePickupPose = new Pose(138, 6.25, Math.toRadians(0));
+    private final Pose thirdHomePickupPose = new Pose(138, 6.25, Math.toRadians(0));
     private final Pose secondHomeSecondTryPickupPose = new Pose(136, 16.25, Math.toRadians(0));
     private final Pose thirdHomeSecondTryPickupPose = new Pose(136, 16.25, Math.toRadians(0));
     private final Pose offlinePose = new Pose(104, 10.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
@@ -676,7 +676,7 @@ public static class ShooterPIDFConfig {
                break;
             case DRIVE_READY_FIRST_HOME_PICKUP_POS:
                 if (!follower.isBusy()) {
-                    follower.followPath(driveFirstHomePickup, 0.5, true);
+                    follower.followPath(driveFirstHomePickup, 0.65, true);
                     setPathState(PathState.FIRST_HOME_PICKUP);
                 }
                 break;
@@ -738,7 +738,7 @@ public static class ShooterPIDFConfig {
                 break;
             case DRIVE_READY_SECOND_HOME_PICKUP_POS:
                 if (!follower.isBusy()) {
-                    follower.followPath(driveSecondHomePickup, 0.5, true);
+                    follower.followPath(driveSecondHomePickup, 0.65, true);
                     setPathState(PathState.SECOND_HOME_PICKUP);
                 }
                 break;
@@ -770,7 +770,7 @@ public static class ShooterPIDFConfig {
 
             case DRIVE_READY_THIRD_HOME_PICKUP_POS:
                 if (!follower.isBusy()) {
-                    follower.followPath(driveThirdHomePickup, 0.5, true);
+                    follower.followPath(driveThirdHomePickup, 0.65, true);
                     setPathState(PathState.THIRD_HOME_PICKUP);
                 }
                 break;
