@@ -137,7 +137,7 @@ public class Red12nearopengateparkafterfirst extends LinearOpMode {
     private final Pose readyThirdPickupPose = new Pose(92, 86.25, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
     private final Pose readySecondPickupPose = new Pose(92, 62.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose readyFirstPickupPose = new Pose(92, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
-    private final Pose readyOpenGatePickupPose = new Pose(133.5,64.5,Math.toRadians(45)); // 63--64  PGP Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose readyOpenGatePickupPose = new Pose(133.5,64.5,Math.toRadians(35)); // 63--64  PGP Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose thirdPickupPose = new Pose(128, 86.25, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
     private final Pose secondPickupPose = new Pose(133, 62.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose secondPickupCP = new Pose(72, 76, Math.toRadians(0));
