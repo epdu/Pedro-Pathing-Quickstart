@@ -125,7 +125,7 @@ public class Red12farTurret extends LinearOpMode {
     }
     private final Pose startPose = new Pose(96,6.25, Math.toRadians(0));
     private final Pose startPoseCP = new Pose(96,11.25, Math.toRadians(0)); // Start Pose further zone of our robot.
-    private final Pose shootPose = new Pose(96, 12.25, Math.toRadians(75)); //70-73 65-75 Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
+    private final Pose shootPose = new Pose(96, 12.25, Math.toRadians(70)); //70-73 65-75 Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
     private final Pose readyFirstPickupPose = new Pose(92, 36.25, Math.toRadians(0));
     private final Pose readyFirstHomePickupPose = new Pose(120, 12.25, Math.toRadians(0));
     private final Pose readySecondHomePickupPose = new Pose(120, 12.25, Math.toRadians(0));
