@@ -761,7 +761,7 @@ public static class ShooterPIDFConfig {
                 }
                 break;
             case THIRD_PICKUP:
-                if (!firstPickupCompleted && pathTimer.getElapsedTimeSeconds() < 2.5) {
+                if (!firstPickupCompleted && pathTimer.getElapsedTimeSeconds() < 1.8) {
             autoIntake();
                 } else {
                     follower.followPath(driveThirdPickupShoot);
