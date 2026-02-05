@@ -40,6 +40,9 @@ public class Red12farTurret extends LinearOpMode {
     private boolean isShooterAtSpeed = false;
     private boolean wasShooterAtSpeed = false; // 用于检测状态变化
     private boolean firstPickupCompleted = false;
+    private boolean firstHomePickupCompleted = false;
+    private boolean secondHomePickupCompleted = false;
+    private boolean thirdHomePickupCompleted = false;
     private boolean fireRequested = false;
     // LED颜色常量（根据你的LED库调整）
     private final String LED_COLOR_READY = "GREEN";
@@ -658,7 +661,7 @@ public static class ShooterPIDFConfig {
     private void statePathUpdate() {
         switch (pathState) {
             case DRIVE_START_POS_SHOOT_POS:
-                follower.followPath(driveStartShoot, 0.3, true);
+                follower.followPath(driveStartShoot, 0.5, true);
                 setPathState(PathState.DRIVE_TO_SHOOT_WAIT);
                 break;
             case DRIVE_TO_SHOOT_WAIT:
@@ -669,7 +672,7 @@ public static class ShooterPIDFConfig {
             case SHOOT_PRELOAD:
              autoshoot();
                if (autoShootState == AutoShootState.DONE) {
-                   follower.followPath(driveReadyFirstHomePickup, 0.3, true);
+                   follower.followPath(driveReadyFirstHomePickup, 0.5, true);
                    isShooterAtSpeed = false;
                    setPathState(PathState.DRIVE_READY_FIRST_HOME_PICKUP_POS);
                     }
@@ -681,14 +684,14 @@ public static class ShooterPIDFConfig {
                 }
                 break;
             case FIRST_HOME_PICKUP:
-                if (!firstPickupCompleted && pathTimer.getElapsedTimeSeconds() < 1.8) {
+                if (!firstHomePickupCompleted && pathTimer.getElapsedTimeSeconds() < 1.8) {
             autoIntake();
                 } else {
                     follower.followPath(driveFirstHomePickupShoot);
                     stopShooter();
                     stopIntake();
                     setPathState(PathState.DRIVE_BACK_FIRST_HOME_SHOOT_POS);
-                    firstPickupCompleted = true;
+                    firstHomePickupCompleted = true;
                 }
                 break;
             case DRIVE_BACK_FIRST_HOME_SHOOT_POS:
@@ -705,7 +708,6 @@ public static class ShooterPIDFConfig {
                     setPathState(PathState.DRIVE_READY_FIRST_PICKUP);
                 }
                 break;
-
             case DRIVE_READY_FIRST_PICKUP:
                 if (!follower.isBusy()) {
                     follower.followPath(driveFirstPickup, 0.65, true);
@@ -713,13 +715,14 @@ public static class ShooterPIDFConfig {
                 }
                 break;
             case FIRST_PICKUP:
-                if (pathTimer.getElapsedTimeSeconds() < 1.8) {
+                if (!firstPickupCompleted && pathTimer.getElapsedTimeSeconds() < 1.8) {
                     autoIntake();
                 } else {
                     follower.followPath(driveFirstPickupShoot);
                     stopShooter();
                     stopIntake();
                     setPathState(PathState.DRIVE_BACK_FIRST_PICKUP);
+                    firstPickupCompleted=true;
                 }
                 break;
             case DRIVE_BACK_FIRST_PICKUP:
@@ -743,14 +746,14 @@ public static class ShooterPIDFConfig {
                 }
                 break;
             case SECOND_HOME_PICKUP:
-                if (!firstPickupCompleted && pathTimer.getElapsedTimeSeconds() < 1.8) {
+                if (!secondHomePickupCompleted && pathTimer.getElapsedTimeSeconds() < 1.8) {
                     autoIntake();
                 } else {
                     follower.followPath(driveSecondHomePickupShoot);
                     stopShooter();
                     stopIntake();
                     setPathState(PathState.DRIVE_BACK_SECOND_HOME_SHOOT_POS);
-                    firstPickupCompleted = true;
+                    secondHomePickupCompleted = true;
                 }
                 break;
             case DRIVE_BACK_SECOND_HOME_SHOOT_POS:
@@ -775,14 +778,14 @@ public static class ShooterPIDFConfig {
                 }
                 break;
             case THIRD_HOME_PICKUP:
-                if (!firstPickupCompleted && pathTimer.getElapsedTimeSeconds() < 1.8) {
+                if (!thirdHomePickupCompleted && pathTimer.getElapsedTimeSeconds() < 1.8) {
                     autoIntake();
                 } else {
                     follower.followPath(driveThirdHomePickupShoot);
                     stopShooter();
                     stopIntake();
                     setPathState(PathState.DRIVE_BACK_THIRD_HOME_SHOOT_POS);
-                    firstPickupCompleted = true;
+                    secondHomePickupCompleted = true;
                 }
                 break;
             case DRIVE_BACK_THIRD_HOME_SHOOT_POS:

@@ -144,7 +144,7 @@ public class Red12nearopengateparkafterfirst extends LinearOpMode {
     private final Pose openGatePickupCP = new Pose(72, 76, Math.toRadians(0));
     private final Pose secondPickupPoseControlPoint = new Pose(125, 64.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose firstPickupPose = new Pose(134, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
-    private final Pose openGatePickupPose = new Pose(133, 58, Math.toRadians(50));  //63--61
+    private final Pose openGatePickupPose = new Pose(133, 56, Math.toRadians(50));  //63--61
     //    private final Pose PARKPose = new Pose(120, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     private final Pose offlinePose = new Pose(112, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     // Initialize variables for paths
@@ -670,7 +670,6 @@ public static class ShooterPIDFConfig {
         pathState = newState;
         pathTimer.resetTimer();
     }
-
     private void statePathUpdate() {
         switch (pathState) {
             case DRIVE_START_POS_SHOOT_POS:
@@ -801,6 +800,8 @@ public static class ShooterPIDFConfig {
                     setPathState(PathState.DRIVE_BACK_FIRST_SHOOT_POS);
                 }
                 break;
+
+
             case DRIVE_BACK_FIRST_SHOOT_POS:
                 if (!follower.isBusy()) {
                     setPathState(PathState.SHOOT_FIRST_PICKUP);
