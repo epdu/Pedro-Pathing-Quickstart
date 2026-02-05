@@ -714,12 +714,12 @@ public static class ShooterPIDFConfig {
                 break;
 
             case OPEN_GATE:
-                if (pathTimer.getElapsedTimeSeconds() < 1.7) {
-                    autoIntake();
+                if (pathTimer.getElapsedTimeSeconds() < 1.0) {
+//                    autoIntake();
                 } else {
                     follower.followPath(driveOpenGatePickupShoot);
-                    stopShooter();
-                    stopIntake();
+//                    stopShooter();
+//                    stopIntake();
                     setPathState(PathState.DRIVE_BACK_SECOND_PICKUPT_POS);
                 }
                 break;
