@@ -25,13 +25,13 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 // 姿态
 // Limelight
 // 位姿
-@Autonomous(name = "RED Near opengate no intake TWELVE  park after third pickedup three loaded V1 Red9short")
+@Autonomous(name = "RED Near opengate NO intake TWELVE  park after third loaded V1 Red9short")
 // intake second role with open gate , park at  136, 36.25 with three loaded
 //. 3 ARTIFACTS on each SPIKE MARK arranged as follows:
 //i.Near (audience side): GPP
 //ii. Middle: PGP
 //iii. Far (GOAL side): PPG
-public class Red12nearopengatenointakeparkafterfirst extends LinearOpMode {
+public class Red12nearopengatenointake extends LinearOpMode {
     HardwareQualifier robot = new HardwareQualifier();
    private Limelight3A limelight;
     private volatile boolean isRunning = true;
@@ -111,23 +111,18 @@ public class Red12nearopengatenointakeparkafterfirst extends LinearOpMode {
         THIRD_PICKUP,
         DRIVE_BACK_THIRD_PICKUPT_POS,
         SHOOT_THIRD_PICKUP,
-
         DRIVE_READY_SECOND_PICKUPT_POS,
         SECOND_PICKUP,
         DRIVE_BACK_SECOND_PICKUPT_POS,
         SHOOT_SECOND_PICKUP,
-
         DRIVE_READY_OPEN_GATE_POS,
         OPEN_GATE,
         DRIVE_BACK_OPEN_GATE_PICKUPT_POS,
         SHOOT_OPEN_GATE_PICKUP,
-
-
         DRIVE_READY_FIRST_PICKUP_POS,
         FIRST_PICKUP,
         DRIVE_BACK_FIRST_SHOOT_POS,
         SHOOT_FIRST_PICKUP,
-
         DRIVE_OFFLINE,
         END
     }
@@ -137,18 +132,18 @@ public class Red12nearopengatenointakeparkafterfirst extends LinearOpMode {
     private final Pose readyThirdPickupPose = new Pose(92, 86.25, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
     private final Pose readySecondPickupPose = new Pose(92, 62.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose readyFirstPickupPose = new Pose(92, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
-    private final Pose readyOpenGatePickupPose = new Pose(128.5,63.5,Math.toRadians(0)); // 63--64  PGP Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose readyOpenGatePickupPose = new Pose(128.5,64.5,Math.toRadians(0)); // 63--64  PGP Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose thirdPickupPose = new Pose(128, 86.25, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
     private final Pose secondPickupPose = new Pose(133, 62.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose secondPickupCP = new Pose(72, 76, Math.toRadians(0));
     private final Pose openGatePickupCP = new Pose(72, 76, Math.toRadians(0));
     private final Pose secondPickupPoseControlPoint = new Pose(125, 64.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose firstPickupPose = new Pose(134, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
-    private final Pose openGatePickupPose = new Pose(133, 66, Math.toRadians(50));  //63--61
+    private final Pose openGatePickupPose = new Pose(133, 66, Math.toRadians(0));  //63--61
     //    private final Pose PARKPose = new Pose(120, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     private final Pose offlinePose = new Pose(112, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     // Initialize variables for paths
-    private final Pose offlinePoseofFirst = new Pose(136, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
+//    private final Pose offlinePoseofFirst = new Pose(136, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     // Initialize variables for paths
     @Override
     public void runOpMode() {
@@ -622,10 +617,10 @@ public static class ShooterPIDFConfig {
                 .addPath(new BezierLine(readySecondPickupPose, secondPickupPose))
                 .setLinearHeadingInterpolation(readySecondPickupPose.getHeading(), secondPickupPose.getHeading())
                 .build();
-        driveSecondPickupShoot = follower.pathBuilder()
-                .addPath(new BezierCurve(secondPickupPose, secondPickupCP,shootPose))
-                .setLinearHeadingInterpolation(secondPickupPose.getHeading(), shootPose.getHeading())
-                .build();
+//        driveSecondPickupShoot = follower.pathBuilder()
+//                .addPath(new BezierCurve(secondPickupPose, secondPickupCP,shootPose))
+//                .setLinearHeadingInterpolation(secondPickupPose.getHeading(), shootPose.getHeading())
+//                .build();
 
         driveReadyThirdPickup = follower.pathBuilder()
                 .addPath(new BezierCurve(shootPose, readyThirdPickupPose))
@@ -641,8 +636,8 @@ public static class ShooterPIDFConfig {
                 .build();
 
         driveReadyOpenGatePickup = follower.pathBuilder()
-                .addPath(new BezierCurve(shootPose, openGatePickupCP,readyOpenGatePickupPose))
-                .setLinearHeadingInterpolation(shootPose.getHeading(), readyOpenGatePickupPose.getHeading())
+                .addPath(new BezierCurve(secondPickupPose, openGatePickupCP,readyOpenGatePickupPose))
+                .setLinearHeadingInterpolation(secondPickupPose.getHeading(), readyOpenGatePickupPose.getHeading())
                 .build();
         driveOpenGatePickup = follower.pathBuilder()
                 .addPath(new BezierLine(readyOpenGatePickupPose, openGatePickupPose))
@@ -659,8 +654,8 @@ public static class ShooterPIDFConfig {
                 .build();
 
         driveOfflineofFirst = follower.pathBuilder()
-            .addPath(new BezierLine(shootPose, offlinePoseofFirst))
-            .setLinearHeadingInterpolation(shootPose.getHeading(), offlinePoseofFirst.getHeading())
+            .addPath(new BezierLine(shootPose, offlinePose))
+            .setLinearHeadingInterpolation(shootPose.getHeading(), offlinePose.getHeading())
             .build();
     }
 
@@ -808,7 +803,7 @@ public static class ShooterPIDFConfig {
             case SHOOT_FIRST_PICKUP:
                 autoshoot();
                 if (autoShootState == AutoShootState.DONE) {
-                    follower.followPath(driveOfflineofFirst, 0.75, true);
+                    follower.followPath(driveOffline, 0.75, true);
                     isShooterAtSpeed = false;
                     setPathState(PathState.DRIVE_OFFLINE);
                 }

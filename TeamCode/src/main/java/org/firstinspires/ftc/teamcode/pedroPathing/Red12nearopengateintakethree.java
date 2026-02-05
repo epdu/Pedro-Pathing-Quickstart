@@ -25,13 +25,13 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 // 姿态
 // Limelight
 // 位姿
-@Autonomous(name = "RED Near opengate & intake TWELVE  park after first pickedup three loaded V1 Red9short")
+@Autonomous(name = "RED Near opengate & intake TWELVE three loaded V1 Red9short")
 // intake second role with open gate and intake, park at  136, 36.25 with three loaded
 //. 3 ARTIFACTS on each SPIKE MARK arranged as follows:
 //i.Near (audience side): GPP
 //ii. Middle: PGP
 //iii. Far (GOAL side): PPG
-public class Red12nearopengateparkafterfirst extends LinearOpMode {
+public class Red12nearopengateintakethree extends LinearOpMode {
     HardwareQualifier robot = new HardwareQualifier();
    private Limelight3A limelight;
     private volatile boolean isRunning = true;
