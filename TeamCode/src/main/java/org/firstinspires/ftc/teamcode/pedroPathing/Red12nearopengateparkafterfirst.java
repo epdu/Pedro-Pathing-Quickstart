@@ -146,8 +146,8 @@ public class Red12nearopengateparkafterfirst extends LinearOpMode {
     private final Pose firstPickupPose = new Pose(134, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     private final Pose openGatePickupPose = new Pose(133, 56, Math.toRadians(50));  //63--61
     //    private final Pose PARKPose = new Pose(120, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
-    private final Pose offlinePose = new Pose(112, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
-    // Initialize variables for paths
+//    private final Pose offlinePose = new Pose(112, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
+//    // Initialize variables for paths
     private final Pose offlinePoseofFirst = new Pose(136, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     // Initialize variables for paths
     @Override
@@ -649,10 +649,10 @@ public static class ShooterPIDFConfig {
                 .setLinearHeadingInterpolation(openGatePickupPose.getHeading(), shootPose.getHeading())
                 .build();
 
-        driveOffline = follower.pathBuilder()
-                .addPath(new BezierLine(shootPose, offlinePose))
-                .setLinearHeadingInterpolation(shootPose.getHeading(), offlinePose.getHeading())
-                .build();
+//        driveOffline = follower.pathBuilder()
+//                .addPath(new BezierLine(shootPose, offlinePose))
+//                .setLinearHeadingInterpolation(shootPose.getHeading(), offlinePose.getHeading())
+//                .build();
 
         driveOfflineofFirst = follower.pathBuilder()
             .addPath(new BezierLine(shootPose, offlinePoseofFirst))
