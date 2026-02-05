@@ -118,7 +118,7 @@ public class Red12nearopengatenointakeparkafterfirst extends LinearOpMode {
         SHOOT_SECOND_PICKUP,
 
         DRIVE_READY_OPEN_GATE_POS,
-        OPEN_GATE_PICKUP,
+        OPEN_GATE,
         DRIVE_BACK_OPEN_GATE_PICKUPT_POS,
         SHOOT_OPEN_GATE_PICKUP,
 
@@ -710,14 +710,15 @@ public static class ShooterPIDFConfig {
                 }
                 break;
 
+
             case DRIVE_READY_OPEN_GATE_POS:
                 if (!follower.isBusy()) {
                     follower.followPath(driveOpenGatePickup, 0.5, true);
-                    setPathState(PathState.OPEN_GATE_PICKUP);
+                    setPathState(PathState.OPEN_GATE);
                 }
                 break;
 
-            case OPEN_GATE_PICKUP:
+            case OPEN_GATE:
                 if (pathTimer.getElapsedTimeSeconds() < 1.7) {
                     autoIntake();
                 } else {
