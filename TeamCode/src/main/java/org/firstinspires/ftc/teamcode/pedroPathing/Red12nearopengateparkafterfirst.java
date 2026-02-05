@@ -723,7 +723,7 @@ public static class ShooterPIDFConfig {
 
             case DRIVE_READY_OPEN_GATE_POS:
                 if (!follower.isBusy()) {
-                    follower.followPath(driveOpenGatePickup, 0.5, true);
+                    follower.followPath(driveOpenGatePickup, 0.65, true);
                     setPathState(PathState.OPEN_GATE_PICKUP);
                 }
                 break;
