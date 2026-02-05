@@ -627,11 +627,11 @@ public static class ShooterPIDFConfig {
                 .build();
         driveSecondHomePickup = follower.pathBuilder()
                 .addPath(new BezierLine(readySecondHomePickupPose, secondHomePickupPose))
-                .setLinearHeadingInterpolation(readyFirstHomePickupPose.getHeading(), firstHomePickupPose.getHeading())
+                .setLinearHeadingInterpolation(readySecondHomePickupPose.getHeading(), secondHomePickupPose.getHeading())
                 .build();
         driveSecondHomePickupShoot = follower.pathBuilder()
                 .addPath(new BezierLine(secondHomePickupPose, shootPose))
-                .setLinearHeadingInterpolation(firstHomePickupPose.getHeading(), shootPose.getHeading())
+                .setLinearHeadingInterpolation(secondHomePickupPose.getHeading(), shootPose.getHeading())
                 .build();
         driveReadyThirdHomePickup = follower.pathBuilder()
                 .addPath(new BezierCurve(shootPose, readyThirdHomePickupPose))
@@ -672,7 +672,7 @@ public static class ShooterPIDFConfig {
             case SHOOT_PRELOAD:
              autoshoot();
                if (autoShootState == AutoShootState.DONE) {
-                   follower.followPath(driveReadyFirstHomePickup, 0.5, true);
+                   follower.followPath(driveReadyFirstHomePickup, 0.65, true);
                    isShooterAtSpeed = false;
                    setPathState(PathState.DRIVE_READY_FIRST_HOME_PICKUP_POS);
                     }
@@ -802,8 +802,6 @@ public static class ShooterPIDFConfig {
                     setPathState(PathState.DRIVE_OFFLINE);
                 }
                 break;
-
-
             case DRIVE_OFFLINE:
                 if (!follower.isBusy()) {
                     setPathState(PathState.END);
