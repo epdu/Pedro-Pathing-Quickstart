@@ -55,7 +55,7 @@ public class Red12farTurret extends LinearOpMode {
 //    private static final double Med_SHOOTER_TARGET_RPM = 204;   //1598 white tri a little bit too far//  250RPM---1586.67
     private static final double Med_SHOOTER_TARGET_RPM = 2785;   //1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
 //    private static final double Med_SHOOTER_TARGET_Velocity = 1300;
-    private static final double Med_SHOOTER_TARGET_Velocity = 1480; //1450   1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
+    private static final double Med_SHOOTER_TARGET_Velocity = 1450; //1450   1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
     private static final double Far_SHOOTER_TARGET_RPM = 350;  //  350RPM---2237
 //   private static final double Close_SHOOTER_TARGET_RPM = 800;//  400RPM---2,557.33333333333333
 //    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
@@ -128,7 +128,7 @@ public class Red12farTurret extends LinearOpMode {
     }
     private final Pose startPose = new Pose(96,6.25, Math.toRadians(0));
     private final Pose startPoseCP = new Pose(96,11.25, Math.toRadians(0)); // Start Pose further zone of our robot.
-    private final Pose shootPose = new Pose(96, 12.25, Math.toRadians(70)); //70-73 65-75 Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
+    private final Pose shootPose = new Pose(96, 12.25, Math.toRadians(69)); //70-73 65-75 Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
     private final Pose readyFirstPickupPose = new Pose(92, 36.25, Math.toRadians(0));
     private final Pose readyFirstHomePickupPose = new Pose(120, 12.25, Math.toRadians(0));
     private final Pose readySecondHomePickupPose = new Pose(120, 12.25, Math.toRadians(0));
@@ -679,7 +679,7 @@ public static class ShooterPIDFConfig {
                break;
             case DRIVE_READY_FIRST_HOME_PICKUP_POS:
                 if (!follower.isBusy()) {
-                    follower.followPath(driveFirstHomePickup, 0.65, true);
+                    follower.followPath(driveFirstHomePickup, 0.75, true);
                     setPathState(PathState.FIRST_HOME_PICKUP);
                 }
                 break;
@@ -741,7 +741,7 @@ public static class ShooterPIDFConfig {
                 break;
             case DRIVE_READY_SECOND_HOME_PICKUP_POS:
                 if (!follower.isBusy()) {
-                    follower.followPath(driveSecondHomePickup, 0.65, true);
+                    follower.followPath(driveSecondHomePickup, 0.75, true);
                     setPathState(PathState.SECOND_HOME_PICKUP);
                 }
                 break;
@@ -773,7 +773,7 @@ public static class ShooterPIDFConfig {
 
             case DRIVE_READY_THIRD_HOME_PICKUP_POS:
                 if (!follower.isBusy()) {
-                    follower.followPath(driveThirdHomePickup, 0.65, true);
+                    follower.followPath(driveThirdHomePickup, 0.75, true);
                     setPathState(PathState.THIRD_HOME_PICKUP);
                 }
                 break;
