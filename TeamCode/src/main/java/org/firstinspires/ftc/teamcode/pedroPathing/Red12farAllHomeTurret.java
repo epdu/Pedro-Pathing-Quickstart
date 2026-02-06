@@ -491,7 +491,7 @@ public static class ShooterPIDFConfig {
 
 
 
-    /// ///////////
+    //////////////
 
     /**
      * 执行射击序列
@@ -558,13 +558,6 @@ public static class ShooterPIDFConfig {
         }
     }
 
-    /**
-     * 设置射击电机PIDF系数
-     */
-//    private void setShooterPIDFCoefficients() {
-//        PIDFCoefficients pidf = new PIDFCoefficients(SHOOTER_P, SHOOTER_I, SHOOTER_D, SHOOTER_F);
-//        robot.MasterShooterMotorL.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
-//    }
 
     private double calculateOptimalSlavePower(double masterPower) {
 
@@ -681,7 +674,7 @@ public static class ShooterPIDFConfig {
                break;
             case DRIVE_READY_FIRST_HOME_PICKUP_POS:
                 if (!follower.isBusy()) {
-                    follower.followPath(driveFirstHomePickup, 0.8, true);
+                    follower.followPath(driveFirstHomePickup, 0.85, true);
                     setPathState(PathState.FIRST_HOME_PICKUP);
                 }
                 break;
@@ -743,7 +736,7 @@ public static class ShooterPIDFConfig {
 //                break;
             case DRIVE_READY_SECOND_HOME_PICKUP_POS:
                 if (!follower.isBusy()) {
-                    follower.followPath(driveSecondHomePickup, 0.8, true);
+                    follower.followPath(driveSecondHomePickup, 0.85, true);
                     setPathState(PathState.SECOND_HOME_PICKUP);
                 }
                 break;
