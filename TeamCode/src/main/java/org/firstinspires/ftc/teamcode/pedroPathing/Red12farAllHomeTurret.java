@@ -703,37 +703,7 @@ public static class ShooterPIDFConfig {
                     setPathState(PathState.DRIVE_READY_SECOND_HOME_PICKUP_POS);
                 }
                 break;
-//            case DRIVE_READY_FIRST_PICKUP:
-//                if (!follower.isBusy()) {
-//                    follower.followPath(driveFirstPickup, 0.65, true);
-//                    setPathState(PathState.FIRST_PICKUP);
-//                }
-//                break;
-//            case FIRST_PICKUP:
-//                if (!firstPickupCompleted && pathTimer.getElapsedTimeSeconds() < 1.8) {
-//                    autoIntake();
-//                } else {
-//                    follower.followPath(driveFirstPickupShoot);
-//                    stopShooter();
-//                    stopIntake();
-//                    setPathState(PathState.DRIVE_BACK_FIRST_PICKUP);
-//                    firstPickupCompleted=true;
-//                }
-//                break;
-//            case DRIVE_BACK_FIRST_PICKUP:
-//                if (!follower.isBusy()) {
-//                    setPathState(PathState.SHOOT_FIRST_PICKUP);
-//                    autoShootState = AutoShootState.IDLE;
-//                }
-//                break;
-//            case SHOOT_FIRST_PICKUP:
-//                autoshoot();
-//                if (autoShootState == AutoShootState.DONE) {
-//                    follower.followPath(driveReadySecondHomePickup, 0.65, true);
-//                    isShooterAtSpeed = false;
-//                    setPathState(PathState.DRIVE_READY_SECOND_HOME_PICKUP_POS);
-//                }
-//                break;
+
             case DRIVE_READY_SECOND_HOME_PICKUP_POS:
                 if (!follower.isBusy()) {
                     follower.followPath(driveSecondHomePickup, 0.85, true);
