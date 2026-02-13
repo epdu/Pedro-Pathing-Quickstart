@@ -1,9 +1,12 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.CM;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -15,8 +18,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+
+import org.firstinspires.ftc.teamcode.subsystems.RTPAxon;
 
 public class HardwareQualifier {
     HardwareMap hwMap =  null;
@@ -41,6 +45,8 @@ public class HardwareQualifier {
     public ServoImplEx HoodArm;
     public ServoImplEx TurretArmL;
     public ServoImplEx TurretArmR;
+    public RTPAxon axonTurretArmL;
+    public RTPAxon axonTurretArmR;
     GoBildaPinpointDriver odo;
     IMU imu;
     public static final double DriveTrains_POWER =  0.95 ;// reduced power of driving train motors
@@ -102,6 +108,16 @@ public class HardwareQualifier {
         setAllPower(0);
 
 //Begin Definition and Initialization of HoodArm  and ArmR Servos
+
+        CRServo servoTurretArmL = hardwareMap.get(CRServo.class, "servoTurretArmL");
+        AnalogInput encoderTurretArmL = hardwareMap.get(AnalogInput.class, "encoderTurretArmL");
+        RTPAxon axonTurretArmL = new RTPAxon(servoTurretArmL, encoderTurretArmL);
+
+        CRServo servoTurretArmR = hardwareMap.get(CRServo.class, "servoTurretArmR");
+        AnalogInput encoderTurretArmR = hardwareMap.get(AnalogInput.class, "encoderTurretArmR");
+        RTPAxon axonTurretArmR = new RTPAxon(servoTurretArmR, encoderTurretArmR);
+        servoTurretArmR.setDirection(CRServo.Direction.REVERSE);
+
 
         TurretArmL = hwMap.get(ServoImplEx.class, "TurretArmL");//control hub port 2
         TurretArmR = hwMap.get(ServoImplEx.class, "TurretArmR");;//control hub port 4

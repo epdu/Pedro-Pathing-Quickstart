@@ -714,7 +714,7 @@ public static class ShooterPIDFConfig {
                 if (!secondHomePickupCompleted && pathTimer.getElapsedTimeSeconds() < 1.8) {
                     autoIntake();
                 } else {
-                    follower.followPath(driveSecondHomePickupShoot);
+                    follower.followPath(driveSecondHomePickupShoot); 
                     stopShooter();
                     stopIntake();
                     setPathState(PathState.DRIVE_BACK_SECOND_HOME_SHOOT_POS);

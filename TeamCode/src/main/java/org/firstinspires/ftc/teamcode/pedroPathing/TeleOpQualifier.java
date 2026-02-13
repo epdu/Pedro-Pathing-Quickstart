@@ -95,6 +95,11 @@ public class TeleOpQualifier extends LinearOpMode {
     public void runOpMode() {
         robot.init(hardwareMap);
         initShooterPIDF();
+        robot.axonTurretArmL.setMaxPower(0.5);  // Limit max power to 50%
+        robot.axonTurretArmL.setPidCoeffs(0.02, 0.0005, 0.0025);
+        robot.axonTurretArmR.setMaxPower(0.5);  // Limit max power to 50%
+        robot.axonTurretArmR.setPidCoeffs(0.02, 0.0005, 0.0025);
+
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         FtcDashboard Dashboard = FtcDashboard.getInstance();
         Telemetry dashboardTelemetry = Dashboard.getTelemetry();
@@ -119,6 +124,8 @@ public class TeleOpQualifier extends LinearOpMode {
             updateLEDs();
             updateHood();
             updateBlockage();
+            robot.axonTurretArmL.update();
+            robot.axonTurretArmR.update();
 
             // 4. 更新所有遥测数据（重要！）
             telemetry.update();
@@ -319,6 +326,13 @@ public class TeleOpQualifier extends LinearOpMode {
         double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());
         double targetVelocity = ShooterPIDFConfig.targetRPM;
         double tolerance = ShooterPIDFConfig.tolerance;
+        telemetry.addData("Servo Position", robot.axonTurretArmL.getCurrentAngle());
+        telemetry.addData("Total Rotation", robot.axonTurretArmL.getTotalRotation());
+        telemetry.addData("Target Rotation", robot.axonTurretArmL.getTargetRotation());
+        telemetry.addData("Servo Position", robot.axonTurretArmR.getCurrentAngle());
+        telemetry.addData("Total Rotation", robot.axonTurretArmR.getTotalRotation());
+        telemetry.addData("Target Rotation", robot.axonTurretArmR.getTargetRotation());
+
         telemetry.addLine("=== SHOOTER PIDF TUNING ===");
         telemetry.addData("Target RPM", "%.0f", ShooterPIDFConfig.targetRPM);
         telemetry.addData("Current RPM", "%.0f", shooterVelocity);
