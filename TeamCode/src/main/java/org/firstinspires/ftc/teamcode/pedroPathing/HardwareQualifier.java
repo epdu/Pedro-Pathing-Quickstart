@@ -19,8 +19,7 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-
-import org.firstinspires.ftc.teamcode.subsystems.RTPAxon;
+import org.firstinspires.ftc.teamcode.pedroPathing.RTPAxon;
 
 public class HardwareQualifier {
     HardwareMap hwMap =  null;
@@ -83,7 +82,7 @@ public class HardwareQualifier {
 
         MasterShooterMotorL = hwMap.get(DcMotorEx.class, "MasterShooterMotorL");//11072025 expansion  hub port 2
         SlaveShooterMotorR = hwMap.get(DcMotorEx.class, "SlaveShooterMotorR"); //11072025 expansion  hub port 3
-        SlaveShooterMotorR.setDirection(DcMotorSimple.Direction.REVERSE);
+        MasterShooterMotorL.setDirection(DcMotorSimple.Direction.REVERSE);
 
         MasterShooterMotorL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         SlaveShooterMotorR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -108,15 +107,15 @@ public class HardwareQualifier {
         setAllPower(0);
 
 //Begin Definition and Initialization of HoodArm  and ArmR Servos
-
-        CRServo servoTurretArmL = hardwareMap.get(CRServo.class, "servoTurretArmL");
-        AnalogInput encoderTurretArmL = hardwareMap.get(AnalogInput.class, "encoderTurretArmL");
-        RTPAxon axonTurretArmL = new RTPAxon(servoTurretArmL, encoderTurretArmL);
-
-        CRServo servoTurretArmR = hardwareMap.get(CRServo.class, "servoTurretArmR");
-        AnalogInput encoderTurretArmR = hardwareMap.get(AnalogInput.class, "encoderTurretArmR");
-        RTPAxon axonTurretArmR = new RTPAxon(servoTurretArmR, encoderTurretArmR);
-        servoTurretArmR.setDirection(CRServo.Direction.REVERSE);
+//
+//        CRServo servoTurretArmL = hardwareMap.get(CRServo.class, "servoTurretArmL");//control hub port 2
+//        AnalogInput encoderTurretArmL = hardwareMap.get(AnalogInput.class, "encoderTurretArmL");//control hub port 3？
+//        RTPAxon axonTurretArmL = new RTPAxon(servoTurretArmL, encoderTurretArmL);
+//
+//        CRServo servoTurretArmR = hardwareMap.get(CRServo.class, "servoTurretArmR");//control hub port 4
+//        AnalogInput encoderTurretArmR = hardwareMap.get(AnalogInput.class, "encoderTurretArmR");//control hub port 5？
+//        RTPAxon axonTurretArmR = new RTPAxon(servoTurretArmR, encoderTurretArmR);
+//        servoTurretArmR.setDirection(CRServo.Direction.REVERSE);
 
 
         TurretArmL = hwMap.get(ServoImplEx.class, "TurretArmL");//control hub port 2
@@ -128,7 +127,7 @@ public class HardwareQualifier {
         BlockageArm = hwMap.get(ServoImplEx.class, "BlockageArm");// expansion  hub port 2
         BlockageArm.setPwmRange(new PwmControl.PwmRange(500, 2500));
         BlockageArm.setDirection(Servo.Direction.REVERSE);
-        BlockageArm.setPosition(0.18);//
+        BlockageArm.setPosition(0.1);//
 
 
         HoodArm = hwMap.get(ServoImplEx.class, "HoodArm");//expansion  hub port 4
