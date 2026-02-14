@@ -70,8 +70,12 @@ public class Red12nearopengatenointake extends LinearOpMode {
     private double powerMultiplier = 0.9;
     boolean move = false;
     int controlMode = 1;
-    public float  intakePowerIntake=0.75f;//0.95
-    public float  intakePowerShoot=0.85f;//0.9
+    public float  intakePowerIntake=0.85f;//0.95
+    public float  intakePowerShoot=0.9f;//0.9
+
+//    public float  intakePowerIntake=0.75f;//0.95
+//    public float  intakePowerShoot=0.85f;//0.9
+
 //    public float  intakePowerShoot=0.8f;//0.9
     public float  intakePowerDump=-0.6f;
     public float  intakePowerOff=0.0f;
@@ -297,7 +301,8 @@ public class Red12nearopengatenointake extends LinearOpMode {
                 break;
 
             case FEEDING:
-                if (shootTimer.getElapsedTimeSeconds()  >= 1.9) {
+                if (shootTimer.getElapsedTimeSeconds()  >= 1.6) {
+                    // from 1.9---1.6
                     stopShooter();
                     stopIntake();
                     robot.BlockageArm.setPosition(blockageblockTele); //switch with blockage case with blockage
@@ -705,7 +710,7 @@ public static class ShooterPIDFConfig {
                 break;
 
             case SECOND_PICKUP:
-                if (pathTimer.getElapsedTimeSeconds() < 1.4) {
+                if (pathTimer.getElapsedTimeSeconds() < 1.8) {
                     autoIntake();
                 } else {
                     follower.followPath(driveReadyOpenGatePickup);
