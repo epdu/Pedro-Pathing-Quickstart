@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
+import static org.firstinspires.ftc.teamcode.pedroPathing.TeleOpQualifier.blockageblockTele;
 import static org.firstinspires.ftc.teamcode.pedroPathing.TeleOpQualifier.blockageblockposition;
+import static org.firstinspires.ftc.teamcode.pedroPathing.TeleOpQualifier.blockagereleaseTele;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -163,7 +165,7 @@ public class Red12nearopengatenointake extends LinearOpMode {
         robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        robot.BlockageArm.setPosition(blockageblockposition);////switch with blockage case with blockage
-        robot.BlockageArm.setPosition(blockageblockposition); //switch with blockage case with blockage need command
+        robot.BlockageArm.setPosition(blockageblockTele); //switch with blockage case with blockage need command
 //        follower.setStartingPose(startPose);
 
 //        limelight = hardwareMap.get(Limelight3A.class, "limelight");
@@ -251,8 +253,12 @@ public class Red12nearopengatenointake extends LinearOpMode {
            // 吸入
             robot.IntakeMotorL.setPower(intakePowerIntake);
             robot.IntakeMotorR.setPower(intakePowerIntake);
-            robot.MasterShooterMotorL.setPower(ShooterMotorHold);//switch with blockage case with blockage need command
-            robot.SlaveShooterMotorR.setPower(ShooterMotorHold); //switch with blockage case with blockage need command
+
+            robot.BlockageArm.setPosition(blockageblockTele);
+
+
+//            robot.MasterShooterMotorL.setPower(ShooterMotorHold);//switch with blockage case with blockage need command
+//            robot.SlaveShooterMotorR.setPower(ShooterMotorHold); //switch with blockage case with blockage need command
             telemetry.update();
     }
 
@@ -267,7 +273,7 @@ public class Red12nearopengatenointake extends LinearOpMode {
         switch (autoShootState) {
 
             case IDLE:
-//                robot.BlockageArm.setPosition(blockageblockposition); //switch with blockage case with blockage
+                robot.BlockageArm.setPosition(blockageblockTele); //switch with blockage case with blockage
                 startShooter();
                 shooterStarted = true;
                 isShooterAtSpeed = false;
@@ -276,7 +282,7 @@ public class Red12nearopengatenointake extends LinearOpMode {
                 break;
 
             case SPINNING_UP:
-//                  robot.BlockageArm.setPosition(blockagereleaseposition); //switch with blockage case with blockage
+                  robot.BlockageArm.setPosition(blockagereleaseTele); //switch with blockage case with blockage
 //                double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());//60/(28)
 //                double targetVelocity = ShooterPIDFConfig.targetVelocity;
 //                if ((!isShooterAtSpeed) && (Math.abs(currentVelocity - targetVelocity) <= ShooterPIDFConfig.toleranceofVelocity)) {
@@ -294,7 +300,7 @@ public class Red12nearopengatenointake extends LinearOpMode {
                 if (shootTimer.getElapsedTimeSeconds()  >= 1.9) {
                     stopShooter();
                     stopIntake();
-//                    robot.BlockageArm.setPosition(blockageblockposition); //switch with blockage case with blockage
+                    robot.BlockageArm.setPosition(blockageblockTele); //switch with blockage case with blockage
                     autoShootState = AutoShootState.DONE;
                 }
                 break;
