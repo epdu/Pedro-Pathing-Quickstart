@@ -95,8 +95,8 @@ public class TeleOpQualifier extends LinearOpMode {
     public void runOpMode() {
         robot.init(hardwareMap);
         initShooterPIDF();
-//        robot.axonTurretArmL.setMaxPower(0.5);  // Limit max power to 50%
-//        robot.axonTurretArmL.setPidCoeffs(0.02, 0.0005, 0.0025);
+        robot.axonTurretArmL.setMaxPower(0.5);  // Limit max power to 50%
+        robot.axonTurretArmL.setPidCoeffs(0.02, 0.0005, 0.0025);
 //        robot.axonTurretArmR.setMaxPower(0.5);  // Limit max power to 50%
 //        robot.axonTurretArmR.setPidCoeffs(0.02, 0.0005, 0.0025);
 
@@ -124,7 +124,7 @@ public class TeleOpQualifier extends LinearOpMode {
             updateLEDs();
             updateHood();
             updateBlockage();
-//            robot.axonTurretArmL.update();
+            robot.axonTurretArmL.update();
 //            robot.axonTurretArmR.update();
 
             // 4. 更新所有遥测数据（重要！）
@@ -141,6 +141,7 @@ public class TeleOpQualifier extends LinearOpMode {
             // 手柄控制拾取电机
             if (gamepad1.left_trigger > 0.1) {
                 // 吸入
+                robot.axonTurretArmL.changeTargetRotation(45);
                 robot.BlockageArm.setPosition(blockageblockTele); // blockage the ball     robot.BlockageArm.setPosition(blockagereleaseposition);
                 robot.IntakeMotorL.setPower(intakePowerIntake);
                 robot.IntakeMotorR.setPower(intakePowerIntake);

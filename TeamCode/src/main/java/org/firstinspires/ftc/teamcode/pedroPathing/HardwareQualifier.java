@@ -108,12 +108,13 @@ public class HardwareQualifier {
 
 //Begin Definition and Initialization of HoodArm  and ArmR Servos
 //
-//        CRServo servoTurretArmL = hardwareMap.get(CRServo.class, "servoTurretArmL");//control hub port 2
-//        AnalogInput encoderTurretArmL = hardwareMap.get(AnalogInput.class, "encoderTurretArmL");//control hub port 3？
-//        RTPAxon axonTurretArmL = new RTPAxon(servoTurretArmL, encoderTurretArmL);
+        CRServo servoTurretArmL = hardwareMap.get(CRServo.class, "servoTurretArmL");//control hub port 2
+        AnalogInput encoderTurretArmL = hardwareMap.get(AnalogInput.class, "encoderTurretArmL");//control hub analog input devicds 0  blue
+        RTPAxon axonTurretArmL = new RTPAxon(servoTurretArmL, encoderTurretArmL);
+        axonTurretArmL.changeTargetRotation(0);
 //
 //        CRServo servoTurretArmR = hardwareMap.get(CRServo.class, "servoTurretArmR");//control hub port 4
-//        AnalogInput encoderTurretArmR = hardwareMap.get(AnalogInput.class, "encoderTurretArmR");//control hub port 5？
+//        AnalogInput encoderTurretArmR = hardwareMap.get(AnalogInput.class, "encoderTurretArmR");//control hub analog input devicds 1 white
 //        RTPAxon axonTurretArmR = new RTPAxon(servoTurretArmR, encoderTurretArmR);
 //        servoTurretArmR.setDirection(CRServo.Direction.REVERSE);
 
