@@ -1,8 +1,7 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
-import static org.firstinspires.ftc.teamcode.pedroPathing.TeleOpQualifier.blockageblockTele;
 import static org.firstinspires.ftc.teamcode.pedroPathing.TeleOpQualifier.blockageblockposition;
-import static org.firstinspires.ftc.teamcode.pedroPathing.TeleOpQualifier.blockagereleaseTele;
+import static org.firstinspires.ftc.teamcode.pedroPathing.TeleOpQualifier.blockagereleaseposition;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -23,19 +22,17 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-
+import org.firstinspires.ftc.teamcode.pedroPathing.RTPAxon;
 // 姿态
 // Limelight
 // 位姿
-@Autonomous(name = "RED Near opengate NO intake TWELVE  park after third loaded V1 Red9short")
-// intake second role with open gate , park at  136, 36.25 with three loaded
-//. 3 ARTIFACTS on each SPIKE MARK arranged as follows:
-//i.Near (audience side): GPP
-//ii. Middle: PGP
-//iii. Far (GOAL side): PPG
-public class Red12nearopengatenointake extends LinearOpMode {
+
+@Autonomous(name = "Blue Far Twelve HOME HOME HOME HOME V1 Red9short")
+//three preload and take home twice , parking
+
+public class Blue12farAllHomeTurret extends LinearOpMode {
     HardwareQualifier robot = new HardwareQualifier();
-   private Limelight3A limelight;
+    private Limelight3A limelight;
     private volatile boolean isRunning = true;
     private boolean shooterStarted=false;
     // Initialize elapsed timer
@@ -46,37 +43,38 @@ public class Red12nearopengatenointake extends LinearOpMode {
     private boolean isShooterAtSpeed = false;
     private boolean wasShooterAtSpeed = false; // 用于检测状态变化
     private boolean firstPickupCompleted = false;
+    private boolean firstHomePickupCompleted = false;
+    private boolean secondHomePickupCompleted = false;
+    private boolean thirdHomePickupCompleted = false;
     private boolean fireRequested = false;
     // LED颜色常量（根据你的LED库调整）
     private final String LED_COLOR_READY = "GREEN";
     private final String LED_COLOR_ACCELERATING = "YELLOW";
     private final String LED_COLOR_OFF = "RED";
-//  RPM = (TPS * 60秒) / 每转ticks数
+    //  RPM = (TPS * 60秒) / 每转ticks数
 //  return (tps * 60.0) / ticksPerRevolution;  28*13.7     28*13.7-----28 6000RPM
 //  TPS=RPM/60*ticksPerRevolution=RPM*28*13.7/60；
     private static final double Close_SHOOTER_TARGET_RPM = 100;//  400RPM---2,557.33333333333333
-//    private static final double Med_SHOOTER_TARGET_RPM = 204;   //1598 white tri a little bit too far//  250RPM---1586.67
+    //    private static final double Med_SHOOTER_TARGET_RPM = 204;   //1598 white tri a little bit too far//  250RPM---1586.67
     private static final double Med_SHOOTER_TARGET_RPM = 2785;   //1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
-//    private static final double Med_SHOOTER_TARGET_Velocity = 1300;
-    private static final double Med_SHOOTER_TARGET_Velocity = 1150; //1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
+    //    private static final double Med_SHOOTER_TARGET_Velocity = 1300;
+    private static final double Med_SHOOTER_TARGET_Velocity = 1460; //1450   1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
     private static final double Far_SHOOTER_TARGET_RPM = 350;  //  350RPM---2237
-//   private static final double Close_SHOOTER_TARGET_RPM = 800;//  400RPM---2,557.33333333333333
+    //   private static final double Close_SHOOTER_TARGET_RPM = 800;//  400RPM---2,557.33333333333333
 //    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
 //    private static final double Far_SHOOTER_TARGET_RPM = 2237;  //  350RPM---2237
+    //  1000RPM---6346.67
+    //  600RPM---3808
+    //  500RPM---3173.3
     public float DriveTrains_ReducePOWER=0.75f;
-    public float DriveTrains_smoothTurn=0.55f;
-//    public String fieldOrRobotCentric = "robot";
+    public float DriveTrains_smoothTurn=0.85f;
+    //    public String fieldOrRobotCentric = "robot";
     public String fieldOrRobotCentric = "field";
     private double powerMultiplier = 0.9;
     boolean move = false;
     int controlMode = 1;
-    public float  intakePowerIntake=0.85f;//0.95
-    public float  intakePowerShoot=0.9f;//0.9
-
-//    public float  intakePowerIntake=0.75f;//0.95
-//    public float  intakePowerShoot=0.85f;//0.9
-
-//    public float  intakePowerShoot=0.8f;//0.9
+    public float  intakePowerIntake=0.75f;//0.95
+    public float  intakePowerShoot=0.85f;//0.9  only for far
     public float  intakePowerDump=-0.6f;
     public float  intakePowerOff=0.0f;
     public float  ShooterMotorShootFar=0.95f;
@@ -99,58 +97,58 @@ public class Red12nearopengatenointake extends LinearOpMode {
     private boolean hasPathStarted = false;
     private PathState pathState;
     private AutoShootState autoShootState;
-//    ShooterSubsystem shooterSubsystem;
+    //    ShooterSubsystem shooterSubsystem;
 //    FlywheelSubsystem flywheelSubsystem;
 //    FeederSubsystem feederSubsystem;
 //    IntakeSubsystem intakeSubsystem;
-    private PathChain driveStartShoot;
-    private PathChain driveReadyThirdPickup, driveThirdPickup, driveThirdPickupShoot;
-    private PathChain driveReadyOpenGatePickup, driveOpenGatePickup, driveOpenGatePickupShoot;
-    private PathChain driveReadySecondPickup,driveSecondPickup, driveSecondPickupShoot;
+    private PathChain driveStartShoot, driveReadyFirstHomePickup, driveFirstHomePickup,driveFirstHomePickupShoot;
     private PathChain driveReadyFirstPickup, driveFirstPickup,driveFirstPickupShoot;
-    private PathChain driveOffline,driveOfflineofFirst;
+    private PathChain driveReadySecondHomePickup, driveSecondHomePickup,driveSecondHomePickupShoot;
+    private PathChain driveReadyThirdHomePickup, driveThirdHomePickup,driveThirdHomePickupShoot;
+    private PathChain driveOffline;
     public enum PathState {
         DRIVE_START_POS_SHOOT_POS,
         DRIVE_TO_SHOOT_WAIT,
         SHOOT_PRELOAD,
-        DRIVE_READY_THIRD_PICKUPT_POS,
-        THIRD_PICKUP,
-        DRIVE_BACK_THIRD_PICKUPT_POS,
-        SHOOT_THIRD_PICKUP,
-        DRIVE_READY_SECOND_PICKUPT_POS,
-        SECOND_PICKUP,
-        DRIVE_BACK_SECOND_PICKUPT_POS,
-        SHOOT_SECOND_PICKUP,
-        DRIVE_READY_OPEN_GATE_POS,
-        OPEN_GATE,
-        DRIVE_BACK_OPEN_GATE_PICKUPT_POS,
-        SHOOT_OPEN_GATE_PICKUP,
-        DRIVE_READY_FIRST_PICKUP_POS,
+        DRIVE_READY_FIRST_HOME_PICKUP_POS,
+        FIRST_HOME_PICKUP,
+        DRIVE_BACK_FIRST_HOME_SHOOT_POS,
+        SHOOT_FIRST_HOME_PICKUP,
+        DRIVE_READY_FIRST_PICKUP,
         FIRST_PICKUP,
-        DRIVE_BACK_FIRST_SHOOT_POS,
+        DRIVE_BACK_FIRST_PICKUP,
         SHOOT_FIRST_PICKUP,
+        DRIVE_READY_SECOND_HOME_PICKUP_POS,
+        SECOND_HOME_PICKUP,
+        DRIVE_BACK_SECOND_HOME_SHOOT_POS,
+        SHOOT_SECOND_HOME_PICKUP,
+        DRIVE_READY_THIRD_HOME_PICKUP_POS,
+        THIRD_HOME_PICKUP,
+        DRIVE_BACK_THIRD_HOME_SHOOT_POS,
+        SHOOT_THIRD_HOME_PICKUP,
         DRIVE_OFFLINE,
         END
     }
-    private final Pose startPose = new Pose(127.5,118.75, Math.toRadians(0)); // Start Pose further zone of our robot.
-    private final Pose shootPose = new Pose(92, 92.25, Math.toRadians(45)); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
-    private final Pose scoreEnd = new Pose(92, 92.25, Math.toRadians(0)); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
-    private final Pose readyThirdPickupPose = new Pose(92, 86.25, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
-    private final Pose readySecondPickupPose = new Pose(92, 62.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose readyFirstPickupPose = new Pose(92, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
-    private final Pose readyOpenGatePickupPose = new Pose(124.5,67.5,Math.toRadians(0)); // 63--64  PGP Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose thirdPickupPose = new Pose(127, 86.25, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
-    private final Pose secondPickupPose = new Pose(133, 62.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose secondPickupCP = new Pose(72, 76, Math.toRadians(0));
-    private final Pose openGatePickupCP = new Pose(72, 76, Math.toRadians(0));
-    private final Pose secondPickupPoseControlPoint = new Pose(125, 64.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose firstPickupPose = new Pose(134, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
-    private final Pose openGatePickupPose = new Pose(133, 69, Math.toRadians(0));  //63--61
-    //    private final Pose PARKPose = new Pose(120, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
-    private final Pose offlinePose = new Pose(112, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
+    private final Pose startPose = new Pose(96,6.25, Math.toRadians(0)).mirror();
+    private final Pose startPoseCP = new Pose(96,11.25, Math.toRadians(0)).mirror(); // Start Pose further zone of our robot.
+    private final Pose shootPose = new Pose(96, 12.25, Math.toRadians(68)).mirror(); //70-73 65-75 Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
+    private final Pose readyFirstPickupPose = new Pose(92, 36.25, Math.toRadians(0)).mirror();
+    private final Pose readyFirstHomePickupPose = new Pose(120, 12.25, Math.toRadians(0)).mirror();
+    private final Pose readySecondHomePickupPose = new Pose(120, 12.25, Math.toRadians(0)).mirror();
+    private final Pose readyThirdHomePickupPose = new Pose(120, 12.25, Math.toRadians(0)).mirror();
+    private final Pose readySecondHomeSecondTryPickupPose = new Pose(120, 16.25, Math.toRadians(0)).mirror();
+    private final Pose readyThirdHomeSecondTryPickupPose = new Pose(120, 16.25, Math.toRadians(0)).mirror();
+    private final Pose firstPickupPose = new Pose(134, 36.25, Math.toRadians(0)).mirror(); // //i.Near (audience side): GPP of Artifacts from the Spike Mark.
+    private final Pose firstHomePickupPose = new Pose(139, 6.25, Math.toRadians(0)).mirror();
+    private final Pose secondHomePickupPose = new Pose(139, 6.25, Math.toRadians(0)).mirror();
+    private final Pose thirdHomePickupPose = new Pose(139, 6.25, Math.toRadians(0)).mirror();
+    private final Pose secondHomeSecondTryPickupPose = new Pose(136, 16.25, Math.toRadians(0)).mirror();
+    private final Pose thirdHomeSecondTryPickupPose = new Pose(136, 16.25, Math.toRadians(0)).mirror();
+    private final Pose offlinePose = new Pose(104, 10.25, Math.toRadians(0)).mirror(); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     // Initialize variables for paths
-//    private final Pose offlinePoseofFirst = new Pose(136, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
-    // Initialize variables for paths
+
+
+
     @Override
     public void runOpMode() {
 
@@ -168,8 +166,7 @@ public class Red12nearopengatenointake extends LinearOpMode {
         robot.MasterShooterMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        robot.BlockageArm.setPosition(blockageblockposition);////switch with blockage case with blockage
-        robot.BlockageArm.setPosition(blockageblockTele); //switch with blockage case with blockage need command
+        robot.BlockageArm.setPosition(blockageblockposition);
 //        follower.setStartingPose(startPose);
 
 //        limelight = hardwareMap.get(Limelight3A.class, "limelight");
@@ -234,7 +231,11 @@ public class Red12nearopengatenointake extends LinearOpMode {
 //            autoshoot();
             statePathUpdate();
 
-//////////////////////////////////////////////////debug PIDF////////////////////
+            /// /////////////////////added
+            /// ///////////////////////////////////////////////debug PIDF////////////////////
+//            updateShooter();
+//            autoshoot();
+//            telemetry.update();
 //            YawPitchRollAngles orientation =robot.imu.getRobotYawPitchRollAngles();
 //            limelight.updateRobotOrientation(orientation.getYaw());
 //            LLResult llResult= limelight.getLatestResult();
@@ -243,27 +244,21 @@ public class Red12nearopengatenointake extends LinearOpMode {
 //                telemetry.addData("Tx",llResult.getTx());
 //                telemetry.addData("Ty",llResult.getTy());
 //                telemetry.addData("Ta",llResult.getTa());
+//
+//
 //            }
-
-
-
-
         }
     }
 
-////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////
 
     public void autoIntake() {
-           // 吸入
-            robot.IntakeMotorL.setPower(intakePowerIntake);
-            robot.IntakeMotorR.setPower(intakePowerIntake);
-
-            robot.BlockageArm.setPosition(blockageblockTele);
-
-
-//            robot.MasterShooterMotorL.setPower(ShooterMotorHold);//switch with blockage case with blockage need command
-//            robot.SlaveShooterMotorR.setPower(ShooterMotorHold); //switch with blockage case with blockage need command
-            telemetry.update();
+        // 吸入
+        robot.IntakeMotorL.setPower(intakePowerIntake);
+        robot.IntakeMotorR.setPower(intakePowerIntake);
+//            robot.MasterShooterMotorL.setPower(ShooterMotorHold);
+//            robot.SlaveShooterMotorR.setPower(ShooterMotorHold);
+        telemetry.update();
     }
 
     enum AutoShootState {
@@ -273,11 +268,19 @@ public class Red12nearopengatenointake extends LinearOpMode {
         DONE
     }
 
+//    private AutoShootState autoShootState = AutoShootState.IDLE;
+//    autoShootState = AutoShootState.IDLE;
+
     public void autoshoot() {
+
+//        double currentRPM = (Math.abs(robot.MasterShooterMotorL.getVelocity())*60)/(28);//60/(28*13.7)
+//        double targetRPM = ShooterPIDFConfig.targetRPM;
+
+
         switch (autoShootState) {
 
             case IDLE:
-                robot.BlockageArm.setPosition(blockageblockTele); //switch with blockage case with blockage
+                robot.BlockageArm.setPosition(blockageblockposition);
                 startShooter();
                 shooterStarted = true;
                 isShooterAtSpeed = false;
@@ -286,7 +289,7 @@ public class Red12nearopengatenointake extends LinearOpMode {
                 break;
 
             case SPINNING_UP:
-                  robot.BlockageArm.setPosition(blockagereleaseTele); //switch with blockage case with blockage
+                robot.BlockageArm.setPosition(blockagereleaseposition);
 //                double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());//60/(28)
 //                double targetVelocity = ShooterPIDFConfig.targetVelocity;
 //                if ((!isShooterAtSpeed) && (Math.abs(currentVelocity - targetVelocity) <= ShooterPIDFConfig.toleranceofVelocity)) {
@@ -301,50 +304,67 @@ public class Red12nearopengatenointake extends LinearOpMode {
                 break;
 
             case FEEDING:
-                if (shootTimer.getElapsedTimeSeconds()  >= 1.6) {
-                    // from 1.9---1.6
+                if (shootTimer.getElapsedTimeSeconds()  >= 1.3) {
                     stopShooter();
                     stopIntake();
-                    robot.BlockageArm.setPosition(blockageblockTele); //switch with blockage case with blockage
+                    robot.BlockageArm.setPosition(blockageblockposition);
+//                    isShooterAtSpeed = false;
                     autoShootState = AutoShootState.DONE;
                 }
                 break;
-
-
+////////////////////////////////////////////////////
 //            case FEEDING:
-//                if (shootTimer.getElapsedTimeSeconds()  >= 2.2) {
+//                if (shootTimer.getElapsedTimeSeconds()  >= 2.0) {
 //                    stopShooter();
 //                    stopIntake();
-//                    robot.BlockageArm.setPosition(blockageblockposition);
-////                    isShooterAtSpeed = false;
 //                    autoShootState = AutoShootState.DONE;
 //                }
 //                break;
-
+//
+//////////////////////////////////////////////////////
             case DONE:
                 // 什么都不做，防止重复执行
                 break;
         }
     }
 
-private void startShooter() {
-    robot.IntakeMotorL.setPower(0);
-    robot.IntakeMotorR.setPower(0);
-    if (robot.MasterShooterMotorL instanceof DcMotorEx) {
-        DcMotorEx shooter = (DcMotorEx) robot.MasterShooterMotorL;
-        DcMotorEx shooterR = (DcMotorEx) robot.SlaveShooterMotorR;
-        // 直接使用setVelocity，它会使用已配置的PIDF
-        shooter.setVelocity(Math.abs(ShooterPIDFConfig.targetVelocity));
-        shooterR.setVelocity(Math.abs(ShooterPIDFConfig.targetVelocity));
+//    private void startShooter() {
+//        robot.IntakeMotor.setPower(0);
+//        if (robot.MasterShooterMotorL instanceof DcMotorEx) {
+//            DcMotorEx shooter = (DcMotorEx) robot.MasterShooterMotorL;
+////            DcMotorEx shooterR = (DcMotorEx) robot.SlaveShooterMotorR;
+//            // 直接使用setVelocity，它会使用已配置的PIDF
+//            shooter.setVelocity(Math.abs(ShooterPIDFConfig.targetVelocity));
+////            shooterR.setVelocity(Math.abs(ShooterPIDFConfig.targetVelocity));
+//            double MasterShooterMotorLPower = robot.MasterShooterMotorL.getPower();
+////            robot.SlaveShooterMotorR.setPower(robot.MasterShooterMotorL.getPower());
+////            double SlaveShooterMotorRPower = (robot.MasterShooterMotorL.getPower());
+//            double SlaveShooterMotorRPower = calculateOptimalSlavePower(MasterShooterMotorLPower);
+//            robot.SlaveShooterMotorR.setPower(SlaveShooterMotorRPower);
+//
+//        }
+//        shooterStarted=true;
+//
+//    }
+    /// /////////////////////////////
+    private void startShooter() {
+        robot.IntakeMotorL.setPower(0);
+        robot.IntakeMotorR.setPower(0);
+        if (robot.MasterShooterMotorL instanceof DcMotorEx) {
+            DcMotorEx shooter = (DcMotorEx) robot.MasterShooterMotorL;
+            DcMotorEx shooterR = (DcMotorEx) robot.SlaveShooterMotorR;
+            // 直接使用setVelocity，它会使用已配置的PIDF
+            shooter.setVelocity(Math.abs(ShooterPIDFConfig.targetVelocity));
+            shooterR.setVelocity(Math.abs(ShooterPIDFConfig.targetVelocity));
+        }
+        shooterStarted=true;
+
     }
-    shooterStarted=true;
-
-}
 
 
-/// ///////////////////////////////
-@Config
-public static class ShooterPIDFConfig {
+    /// ///////////////////////////////
+    @Config
+    public static class ShooterPIDFConfig {
         public static double kP = 100;     // 比例增益0.10.350.651.0655
         public static double kI = 0.0;      // 积分增益
         public static double kD = 0.0;      // 微分增益
@@ -356,7 +376,7 @@ public static class ShooterPIDFConfig {
 //        public static double targetRPM =Close_SHOOTER_TARGET_RPM;
 //        public static double targetRPM =Med_SHOOTER_TARGET_RPM; // 目标转速
         public static double targetVelocity =Med_SHOOTER_TARGET_Velocity;
-//        public static double toleranceofRPM = 100;    // 转速容差 5RPM---30TPS
+        //        public static double toleranceofRPM = 100;    // 转速容差 5RPM---30TPS
         public static double toleranceofVelocity = 70;
         public static double tolerance = 50;
 
@@ -386,30 +406,6 @@ public static class ShooterPIDFConfig {
 
         }
     }
-
-
-    /**
-     * 检查射击电机速度（使用 Dashboard 调整的容差）
-     */
-//    private void checkShooterVelocity() {
-//
-//            double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());
-//            double targetVelocity = (ShooterPIDFConfig.targetVelocity); //28*13.7/60
-//            // targetVelocity
-////            double targetVelocity = (ShooterPIDFConfig.targetRPM)*28/60; //28*13.7/60
-//            double toleranceofVelocity = ShooterPIDFConfig.tolerance;
-//            double shooterPower = robot.MasterShooterMotorL.getPower();
-//            double shooterCurrent = robot.MasterShooterMotorL.getCurrent(CurrentUnit.AMPS); // 如果有电流传感器
-//
-//            // 检查是否在容差范围内
-//            if (Math.abs(Math.abs(currentVelocity) - targetVelocity) <= toleranceofVelocity) {
-//                isShooterAtSpeed = true;
-//            } else {
-//                isShooterAtSpeed = false;
-//                fireRequested = false;
-//            }
-//
-//    }
 
 
     /**
@@ -496,7 +492,7 @@ public static class ShooterPIDFConfig {
 
 
 
-    /// ///////////
+    //////////////
 
     /**
      * 执行射击序列
@@ -563,13 +559,6 @@ public static class ShooterPIDFConfig {
         }
     }
 
-    /**
-     * 设置射击电机PIDF系数
-     */
-//    private void setShooterPIDFCoefficients() {
-//        PIDFCoefficients pidf = new PIDFCoefficients(SHOOTER_P, SHOOTER_I, SHOOTER_D, SHOOTER_F);
-//        robot.MasterShooterMotorL.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
-//    }
 
     private double calculateOptimalSlavePower(double masterPower) {
 
@@ -601,227 +590,184 @@ public static class ShooterPIDFConfig {
 
     private void buildPaths() {
         driveStartShoot = follower.pathBuilder()
-                .addPath(new BezierLine(startPose, shootPose))
+                .addPath(new BezierCurve(startPose, startPoseCP,shootPose))
                 .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
+                .build();
+        driveReadyFirstHomePickup = follower.pathBuilder()
+                .addPath(new BezierCurve(shootPose, readyFirstHomePickupPose))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), readyFirstHomePickupPose.getHeading())
+                .build();
+        driveFirstHomePickup = follower.pathBuilder()
+                .addPath(new BezierLine(readyFirstHomePickupPose, firstHomePickupPose))
+                .setLinearHeadingInterpolation(readyFirstHomePickupPose.getHeading(), firstHomePickupPose.getHeading())
+                .build();
+        driveFirstHomePickupShoot = follower.pathBuilder()
+                .addPath(new BezierLine(firstHomePickupPose, shootPose))
+                .setLinearHeadingInterpolation(firstHomePickupPose.getHeading(), shootPose.getHeading())
                 .build();
         driveReadyFirstPickup = follower.pathBuilder()
                 .addPath(new BezierCurve(shootPose, readyFirstPickupPose))
                 .setLinearHeadingInterpolation(shootPose.getHeading(), readyFirstPickupPose.getHeading())
                 .build();
-//        driveReadyFirstPickup = follower.pathBuilder()
-//                .addPath(new BezierCurve(shootPose, firstPickupCP, readyFirstPickupPose))
-//                .setLinearHeadingInterpolation(shootPose.getHeading(), readyFirstPickupPose.getHeading())
-//                .build();
         driveFirstPickup = follower.pathBuilder()
                 .addPath(new BezierLine(readyFirstPickupPose, firstPickupPose))
                 .setLinearHeadingInterpolation(readyFirstPickupPose.getHeading(), firstPickupPose.getHeading())
                 .build();
         driveFirstPickupShoot = follower.pathBuilder()
-                .addPath(new BezierLine(firstPickupPose, shootPose))
+                .addPath(new BezierCurve(firstPickupPose,  shootPose))
                 .setLinearHeadingInterpolation(firstPickupPose.getHeading(), shootPose.getHeading())
                 .build();
-        driveReadySecondPickup = follower.pathBuilder()
-                .addPath(new BezierCurve(shootPose, secondPickupCP,readySecondPickupPose))
-                .setLinearHeadingInterpolation(shootPose.getHeading(), readySecondPickupPose.getHeading())
+        driveReadySecondHomePickup = follower.pathBuilder()
+                .addPath(new BezierCurve(shootPose, readySecondHomePickupPose))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), readySecondHomePickupPose.getHeading())
                 .build();
-        driveSecondPickup = follower.pathBuilder()
-                .addPath(new BezierLine(readySecondPickupPose, secondPickupPose))
-                .setLinearHeadingInterpolation(readySecondPickupPose.getHeading(), secondPickupPose.getHeading())
+        driveSecondHomePickup = follower.pathBuilder()
+                .addPath(new BezierLine(readySecondHomePickupPose, secondHomePickupPose))
+                .setLinearHeadingInterpolation(readySecondHomePickupPose.getHeading(), secondHomePickupPose.getHeading())
                 .build();
-//        driveSecondPickupShoot = follower.pathBuilder()
-//                .addPath(new BezierCurve(secondPickupPose, secondPickupCP,shootPose))
-//                .setLinearHeadingInterpolation(secondPickupPose.getHeading(), shootPose.getHeading())
-//                .build();
-//        driveSecondPickupOpengate = follower.pathBuilder()
-//                .addPath(new BezierCurve(secondPickupPose, secondPickupCP,shootPose))
-//                .setLinearHeadingInterpolation(secondPickupPose.getHeading(), shootPose.getHeading())
-//                .build();
-
-        driveReadyThirdPickup = follower.pathBuilder()
-                .addPath(new BezierCurve(shootPose, readyThirdPickupPose))
-                .setLinearHeadingInterpolation(shootPose.getHeading(), readyThirdPickupPose.getHeading())
+        driveSecondHomePickupShoot = follower.pathBuilder()
+                .addPath(new BezierLine(secondHomePickupPose, shootPose))
+                .setLinearHeadingInterpolation(secondHomePickupPose.getHeading(), shootPose.getHeading())
                 .build();
-        driveThirdPickup = follower.pathBuilder()
-                .addPath(new BezierLine(readyThirdPickupPose, thirdPickupPose))
-                .setLinearHeadingInterpolation(readyThirdPickupPose.getHeading(), thirdPickupPose.getHeading())
+        driveReadyThirdHomePickup = follower.pathBuilder()
+                .addPath(new BezierCurve(shootPose, readyThirdHomePickupPose))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), readyThirdHomePickupPose.getHeading())
                 .build();
-        driveThirdPickupShoot = follower.pathBuilder()
-                .addPath(new BezierCurve(thirdPickupPose, shootPose))
-                .setLinearHeadingInterpolation(thirdPickupPose.getHeading(), shootPose.getHeading())
+        driveThirdHomePickup = follower.pathBuilder()
+                .addPath(new BezierLine(readyThirdHomePickupPose, thirdHomePickupPose))
+                .setLinearHeadingInterpolation(readyThirdHomePickupPose.getHeading(), thirdHomePickupPose.getHeading())
                 .build();
-
-        driveReadyOpenGatePickup = follower.pathBuilder()
-                .addPath(new BezierLine(secondPickupPose, readyOpenGatePickupPose))
-                .setLinearHeadingInterpolation(secondPickupPose.getHeading(), readyOpenGatePickupPose.getHeading())
+        driveThirdHomePickupShoot = follower.pathBuilder()
+                .addPath(new BezierLine(thirdHomePickupPose, shootPose))
+                .setLinearHeadingInterpolation(thirdHomePickupPose.getHeading(), shootPose.getHeading())
                 .build();
-        driveOpenGatePickup = follower.pathBuilder()
-                .addPath(new BezierLine(readyOpenGatePickupPose, openGatePickupPose))
-                .setLinearHeadingInterpolation(readyOpenGatePickupPose.getHeading(), openGatePickupPose.getHeading())
-                .build();
-        driveOpenGatePickupShoot = follower.pathBuilder()
-                .addPath(new  BezierCurve(openGatePickupPose,openGatePickupCP,shootPose))
-                .setLinearHeadingInterpolation(openGatePickupPose.getHeading(), shootPose.getHeading())
-                .build();
-
         driveOffline = follower.pathBuilder()
                 .addPath(new BezierLine(shootPose, offlinePose))
                 .setLinearHeadingInterpolation(shootPose.getHeading(), offlinePose.getHeading())
                 .build();
-
-        driveOfflineofFirst = follower.pathBuilder()
-            .addPath(new BezierLine(shootPose, offlinePose))
-            .setLinearHeadingInterpolation(shootPose.getHeading(), offlinePose.getHeading())
-            .build();
     }
 
     /* ---------------- STATE MACHINE ---------------- */
-/// /////////////////////////keep working here/////////////////////////12172025///////////
+    /// /////////////////////////keep working here/////////////////////////12172025///////////
     private void setPathState(PathState newState) {
         pathState = newState;
         pathTimer.resetTimer();
     }
+
     private void statePathUpdate() {
         switch (pathState) {
             case DRIVE_START_POS_SHOOT_POS:
-                follower.followPath(driveStartShoot, 0.65, true);
+                follower.followPath(driveStartShoot, 0.5, true);
                 setPathState(PathState.DRIVE_TO_SHOOT_WAIT);
                 break;
-
             case DRIVE_TO_SHOOT_WAIT:
                 if (!follower.isBusy()) {
                     setPathState(PathState.SHOOT_PRELOAD);
                 }
                 break;
-
             case SHOOT_PRELOAD:
-             autoshoot();
-               if (autoShootState == AutoShootState.DONE) {
-                   follower.followPath(driveReadySecondPickup, 0.65, true);
-                   isShooterAtSpeed = false;
-                   setPathState(PathState.DRIVE_READY_SECOND_PICKUPT_POS);
-                    }
-               break;
-
-            case DRIVE_READY_SECOND_PICKUPT_POS:
-                if (!follower.isBusy()) {
-                    follower.followPath(driveSecondPickup, 0.5, true);
-                    setPathState(PathState.SECOND_PICKUP);
+                autoshoot();
+                if (autoShootState == AutoShootState.DONE) {
+                    follower.followPath(driveReadyFirstHomePickup, 0.65, true);
+                    isShooterAtSpeed = false;
+                    setPathState(PathState.DRIVE_READY_FIRST_HOME_PICKUP_POS);
                 }
                 break;
-
-            case SECOND_PICKUP:
-                if (pathTimer.getElapsedTimeSeconds() < 1.8) {
+            case DRIVE_READY_FIRST_HOME_PICKUP_POS:
+                if (!follower.isBusy()) {
+                    follower.followPath(driveFirstHomePickup, 0.85, true);
+                    setPathState(PathState.FIRST_HOME_PICKUP);
+                }
+                break;
+            case FIRST_HOME_PICKUP:
+                if (!firstHomePickupCompleted && pathTimer.getElapsedTimeSeconds() < 1.8) {
                     autoIntake();
                 } else {
-                    follower.followPath(driveReadyOpenGatePickup);
+                    follower.followPath(driveFirstHomePickupShoot);
                     stopShooter();
                     stopIntake();
-                    setPathState(PathState.DRIVE_READY_OPEN_GATE_POS);
+                    setPathState(PathState.DRIVE_BACK_FIRST_HOME_SHOOT_POS);
+                    firstHomePickupCompleted = true;
                 }
                 break;
-            case DRIVE_READY_OPEN_GATE_POS:
+            case DRIVE_BACK_FIRST_HOME_SHOOT_POS:
                 if (!follower.isBusy()) {
-                    follower.followPath(driveOpenGatePickup, 0.5, true);
-                    setPathState(PathState.OPEN_GATE);
-                }
-                break;
-
-            case OPEN_GATE:
-                if (pathTimer.getElapsedTimeSeconds() < .9) {
-//                    autoIntake();
-                } else {
-                    follower.followPath(driveOpenGatePickupShoot);
-//                    stopShooter();
-//                    stopIntake();
-                    setPathState(PathState.DRIVE_BACK_SECOND_PICKUPT_POS);
-                }
-                break;
-
-            case DRIVE_BACK_SECOND_PICKUPT_POS:
-                if (!follower.isBusy()) {
-                    setPathState(PathState.SHOOT_SECOND_PICKUP);
+                    setPathState(PathState.SHOOT_FIRST_HOME_PICKUP);
                     autoShootState = AutoShootState.IDLE;
                 }
                 break;
-
-            case SHOOT_SECOND_PICKUP:
+            case SHOOT_FIRST_HOME_PICKUP:
                 autoshoot();
                 if (autoShootState == AutoShootState.DONE) {
-                    follower.followPath(driveReadyThirdPickup, 0.65, true);
+                    follower.followPath(driveReadySecondHomePickup, 0.65, true);
                     isShooterAtSpeed = false;
-                    setPathState(PathState.DRIVE_READY_THIRD_PICKUPT_POS);
+                    setPathState(PathState.DRIVE_READY_SECOND_HOME_PICKUP_POS);
                 }
                 break;
 
-            case DRIVE_READY_THIRD_PICKUPT_POS:
+            case DRIVE_READY_SECOND_HOME_PICKUP_POS:
                 if (!follower.isBusy()) {
-                    follower.followPath(driveThirdPickup, 0.5, true);
-                    setPathState(PathState.THIRD_PICKUP);
+                    follower.followPath(driveSecondHomePickup, 0.85, true);
+                    setPathState(PathState.SECOND_HOME_PICKUP);
                 }
                 break;
-
-            case THIRD_PICKUP:
-                if (!firstPickupCompleted && pathTimer.getElapsedTimeSeconds() < 1.8) {
-            autoIntake();
-                } else {
-                    follower.followPath(driveThirdPickupShoot);
-                    stopShooter();
-                    stopIntake();
-                    setPathState(PathState.DRIVE_BACK_THIRD_PICKUPT_POS);
-                    firstPickupCompleted = true;
-                }
-                break;
-
-            case DRIVE_BACK_THIRD_PICKUPT_POS:
-                if (!follower.isBusy()) {
-                    setPathState(PathState.SHOOT_THIRD_PICKUP);
-                    autoShootState = AutoShootState.IDLE;
-                }
-                break;
-
-            case SHOOT_THIRD_PICKUP:
-                autoshoot();
-                if (autoShootState == AutoShootState.DONE) {
-                    follower.followPath(driveReadyFirstPickup, 0.65, true);
-                    isShooterAtSpeed = false;
-                    setPathState(PathState.DRIVE_READY_FIRST_PICKUP_POS);
-                }
-                break;
-
-            case DRIVE_READY_FIRST_PICKUP_POS:
-                if (!follower.isBusy()) {
-                    follower.followPath(driveFirstPickup, 0.5, true);
-                    setPathState(PathState.FIRST_PICKUP);
-                }
-                break;
-
-            case FIRST_PICKUP:
-                if (pathTimer.getElapsedTimeSeconds() < 1.8) {
+            case SECOND_HOME_PICKUP:
+                if (!secondHomePickupCompleted && pathTimer.getElapsedTimeSeconds() < 1.8) {
                     autoIntake();
                 } else {
-                    follower.followPath(driveFirstPickupShoot);
+                    follower.followPath(driveSecondHomePickupShoot);
                     stopShooter();
                     stopIntake();
-                    setPathState(PathState.DRIVE_BACK_FIRST_SHOOT_POS);
+                    setPathState(PathState.DRIVE_BACK_SECOND_HOME_SHOOT_POS);
+                    secondHomePickupCompleted = true;
                 }
                 break;
-
-            case DRIVE_BACK_FIRST_SHOOT_POS:
+            case DRIVE_BACK_SECOND_HOME_SHOOT_POS:
                 if (!follower.isBusy()) {
-                    setPathState(PathState.SHOOT_FIRST_PICKUP);
+                    setPathState(PathState.SHOOT_SECOND_HOME_PICKUP);
                     autoShootState = AutoShootState.IDLE;
                 }
                 break;
-
-            case SHOOT_FIRST_PICKUP:
+            case SHOOT_SECOND_HOME_PICKUP:
                 autoshoot();
                 if (autoShootState == AutoShootState.DONE) {
-                    follower.followPath(driveOffline, 0.75, true);
+                    follower.followPath(driveReadyThirdHomePickup, 0.65, true);
+                    isShooterAtSpeed = false;
+                    setPathState(PathState.DRIVE_READY_THIRD_HOME_PICKUP_POS);
+                }
+                break;
+
+            case DRIVE_READY_THIRD_HOME_PICKUP_POS:
+                if (!follower.isBusy()) {
+                    follower.followPath(driveThirdHomePickup, 0.8, true);
+                    setPathState(PathState.THIRD_HOME_PICKUP);
+                }
+                break;
+            case THIRD_HOME_PICKUP:
+                if (!thirdHomePickupCompleted && pathTimer.getElapsedTimeSeconds() < 1.8) {
+                    autoIntake();
+                } else {
+                    follower.followPath(driveThirdHomePickupShoot);
+                    stopShooter();
+                    stopIntake();
+                    setPathState(PathState.DRIVE_BACK_THIRD_HOME_SHOOT_POS);
+                    secondHomePickupCompleted = true;
+                }
+                break;
+            case DRIVE_BACK_THIRD_HOME_SHOOT_POS:
+                if (!follower.isBusy()) {
+                    setPathState(PathState.SHOOT_THIRD_HOME_PICKUP);
+                    autoShootState = AutoShootState.IDLE;
+                }
+                break;
+            case SHOOT_THIRD_HOME_PICKUP:
+                autoshoot();
+                if (autoShootState == AutoShootState.DONE) {
+                    follower.followPath(driveOffline, 0.65, true);
                     isShooterAtSpeed = false;
                     setPathState(PathState.DRIVE_OFFLINE);
                 }
                 break;
-
             case DRIVE_OFFLINE:
                 if (!follower.isBusy()) {
                     setPathState(PathState.END);
