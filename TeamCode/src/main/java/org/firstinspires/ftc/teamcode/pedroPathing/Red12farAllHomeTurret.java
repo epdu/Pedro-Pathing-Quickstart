@@ -28,7 +28,6 @@ import org.firstinspires.ftc.teamcode.pedroPathing.RTPAxon;
 // 位姿
 @Autonomous(name = "RED Far Twelve HOME HOME HOME HOME V1 Red9short")
 //three preload and take home twice , parking
-
 public class Red12farAllHomeTurret extends LinearOpMode {
     HardwareQualifier robot = new HardwareQualifier();
    private Limelight3A limelight;
