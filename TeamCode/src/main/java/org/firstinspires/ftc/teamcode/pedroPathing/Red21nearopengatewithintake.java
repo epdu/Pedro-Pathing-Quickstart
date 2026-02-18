@@ -149,7 +149,7 @@ private PathChain driveStartShoot;
     private final Pose readyFirstSpikePickupPose = new Pose(92, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     private final Pose readyOpenGatePickupPose = new Pose(124.5,67.5,Math.toRadians(0)); // 63--64  PGP Middle (Second Set) of Artifacts from the Spike Mark.
 /// //////////////////////////////////
-    private final Pose readyOpenGateForPickPickupPose = new Pose(124.5,67.5,Math.toRadians(18));
+    private final Pose readyOpenGateForPickPickupPose = new Pose(123.5,64.5,Math.toRadians(18));
     private final Pose thirdSpikePickupPose = new Pose(127, 86.25, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
     private final Pose secondSpikePickupPose = new Pose(133, 62.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose secondSpikePickupCP = new Pose(72, 76, Math.toRadians(0));
@@ -160,8 +160,8 @@ private PathChain driveStartShoot;
     private final Pose firstSpikePickupPose = new Pose(134, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     private final Pose openGatePickupPose = new Pose(133, 69, Math.toRadians(0));  //63--61
     /// /////////////////////////////////////////
-    private final Pose openGateForPickPickupPose = new Pose(133, 69, Math.toRadians(18));
-    private final Pose openGateForPickPickupPoseAdjust = new Pose(124.5,67.5,Math.toRadians(26));
+    private final Pose openGateForPickPickupPose = new Pose(130, 66, Math.toRadians(18));
+    private final Pose openGateForPickPickupPoseAdjust = new Pose(130,66,Math.toRadians(26));
 
     //    private final Pose PARKPose = new Pose(120, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     private final Pose offlinePose = new Pose(112, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
@@ -671,7 +671,7 @@ public static class ShooterPIDFConfig {
                 .setLinearHeadingInterpolation(thirdSpikePickupPose.getHeading(), shootPose.getHeading())
                 .build();
         driveReadyOpenGatePickup = follower.pathBuilder()
-                .addPath(new BezierLine(shootPose, readyOpenGatePickupPose))
+                .addPath(new BezierCurve(shootPose, openGateForPickPickupCP,readyOpenGatePickupPose))
                 .setLinearHeadingInterpolation(shootPose.getHeading(), readyOpenGatePickupPose.getHeading())
                 .build();
 
