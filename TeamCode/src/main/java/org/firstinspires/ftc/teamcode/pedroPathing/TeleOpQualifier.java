@@ -97,14 +97,10 @@ public class TeleOpQualifier extends LinearOpMode {
         robot.init(hardwareMap);
         initShooterPIDF();
 //        robot.axonTurretArmL.setTargetRotation(0);
-
 //        robot.axonTurretArmL.setMaxPower(0.5);
 //        robot.axonTurretArmL.setPidCoeffs(0.000002, 0.0000, 0.000);
 //        robot.axonTurretArmL.setTargetRotation(0);
-
-
 //        robot.axonTurretArmL.setMaxPower(0.5);  // Limit max power to 50%
-
 //        robot.axonTurretArmR.setMaxPower(0.5);  // Limit max power to 50%
 //        robot.axonTurretArmR.setPidCoeffs(0.02, 0.0005, 0.0025);
 
