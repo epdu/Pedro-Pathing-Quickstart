@@ -160,8 +160,8 @@ private PathChain driveStartShoot;
     private final Pose firstSpikePickupPose = new Pose(134, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     private final Pose openGatePickupPose = new Pose(133, 69, Math.toRadians(0));  //63--61
     /// /////////////////////////////////////////
-    private final Pose openGateForPickPickupPose = new Pose(128, 65, Math.toRadians(18));
-    private final Pose openGateForPickPickupPoseAdjust = new Pose(128,65,Math.toRadians(26));
+    private final Pose openGateForPickPickupPose = new Pose(128, 64, Math.toRadians(18));
+    private final Pose openGateForPickPickupPoseAdjust = new Pose(130,62,Math.toRadians(26));
 
     //    private final Pose PARKPose = new Pose(120, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     private final Pose offlinePose = new Pose(112, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
@@ -316,8 +316,8 @@ private PathChain driveStartShoot;
                 break;
 
             case FEEDING:
-                if (shootTimer.getElapsedTimeSeconds()  >= 1.6) {
-                    // from 1.9---1.6
+                if (shootTimer.getElapsedTimeSeconds()  >= 1.3) {
+                    // from 1.9---1.6---1.3
                     stopShooter();
                     stopIntake();
                     robot.BlockageArm.setPosition(blockageblockTele); //switch with blockage case with blockage
@@ -790,7 +790,7 @@ public static class ShooterPIDFConfig {
                 if (pathTimer.getElapsedTimeSeconds() < .5) {
                     autoIntake();
                 } else {
-                    follower.followPath(driveOpenGatePickup);
+                    follower.followPath(driveOpenGatePickupAdjust);
 //                    stopShooter();
 //                    stopIntake();
                     setPathState(PathState.FIRST_OPEN_GATE_INTAKE);
@@ -798,7 +798,7 @@ public static class ShooterPIDFConfig {
                 break;
 
             case FIRST_OPEN_GATE_INTAKE:
-                if (pathTimer.getElapsedTimeSeconds() < .9) {
+                if (pathTimer.getElapsedTimeSeconds() < 1.5) {
                     autoIntake();
                 } else {
                     follower.followPath(driveOpenGatePickupShoot);
@@ -832,10 +832,10 @@ public static class ShooterPIDFConfig {
                 break;
 
             case SECOND_OPEN_GATE:
-                if (pathTimer.getElapsedTimeSeconds() < .9) {
+                if (pathTimer.getElapsedTimeSeconds() < .5) {
                     autoIntake();
                 } else {
-                    follower.followPath(driveOpenGatePickup);
+                    follower.followPath(driveOpenGatePickupAdjust);
 //                    stopShooter();
 //                    stopIntake();
                     setPathState(PathState.SECOND_OPEN_GATE_INTAKE);
@@ -843,7 +843,7 @@ public static class ShooterPIDFConfig {
                 break;
 
             case SECOND_OPEN_GATE_INTAKE:
-                if (pathTimer.getElapsedTimeSeconds() < .9) {
+                if (pathTimer.getElapsedTimeSeconds() < 1.5) {
                     autoIntake();
                 } else {
                     follower.followPath(driveOpenGatePickupShoot);
@@ -880,7 +880,7 @@ public static class ShooterPIDFConfig {
                 if (pathTimer.getElapsedTimeSeconds() < .9) {
                     autoIntake();
                 } else {
-                    follower.followPath(driveOpenGatePickup);
+                    follower.followPath(driveOpenGatePickupAdjust);
 //                    stopShooter();
 //                    stopIntake();
                     setPathState(PathState.THIRD_OPEN_GATE_INTAKE);
