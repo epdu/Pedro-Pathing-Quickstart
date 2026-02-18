@@ -698,9 +698,6 @@ public static class ShooterPIDFConfig {
                 .setLinearHeadingInterpolation(openGatePickupPose.getHeading(), shootPose.getHeading())
                 .build();
 
-
-        /// //////////////////////////////
-
         driveOffline = follower.pathBuilder()
                 .addPath(new BezierLine(shootPose, offlinePose))
                 .setLinearHeadingInterpolation(shootPose.getHeading(), offlinePose.getHeading())
@@ -881,9 +878,7 @@ public static class ShooterPIDFConfig {
                     setPathState(PathState.THIRD_OPEN_GATE_INTAKE);
                 }
                 break;
-/// //////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////
             case THIRD_OPEN_GATE_INTAKE:
                 if (pathTimer.getElapsedTimeSeconds() < .9) {
                     autoIntake();
