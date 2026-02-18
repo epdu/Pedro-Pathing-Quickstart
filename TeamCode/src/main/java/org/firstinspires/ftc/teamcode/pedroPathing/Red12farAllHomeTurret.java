@@ -26,7 +26,6 @@ import org.firstinspires.ftc.teamcode.pedroPathing.RTPAxon;
 // 姿态
 // Limelight
 // 位姿
-
 @Autonomous(name = "RED Far Twelve HOME HOME HOME HOME V1 Red9short")
 //three preload and take home twice , parking
 
