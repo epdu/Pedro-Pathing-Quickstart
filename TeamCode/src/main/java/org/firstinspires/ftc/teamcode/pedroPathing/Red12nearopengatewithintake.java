@@ -670,10 +670,10 @@ public static class ShooterPIDFConfig {
                 .addPath(new BezierCurve(thirdSpikePickupPose, shootPose))
                 .setLinearHeadingInterpolation(thirdSpikePickupPose.getHeading(), shootPose.getHeading())
                 .build();
-//        driveReadyOpenGatePickup = follower.pathBuilder()
-//                .addPath(new BezierLine(secondSpikePickupPose, readyOpenGatePickupPose))
-//                .setLinearHeadingInterpolation(secondSpikePickupPose.getHeading(), readyOpenGatePickupPose.getHeading())
-//                .build();
+        driveReadyOpenGatePickup = follower.pathBuilder()
+                .addPath(new BezierLine(shootPose, readyOpenGatePickupPose))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), readyOpenGatePickupPose.getHeading())
+                .build();
 
 //        driveReadyOpenGatePickup = follower.pathBuilder()
 //                .addPath(new BezierLine(secondSpikePickupPose, readyOpenGatePickupPose))
