@@ -635,6 +635,8 @@ public static class ShooterPIDFConfig {
                 .addPath(new BezierLine(firstSpikePickupPose, shootPose))
                 .setLinearHeadingInterpolation(firstSpikePickupPose.getHeading(), shootPose.getHeading())
                 .build();
+
+
         driveReadySecondSpikePickup = follower.pathBuilder()
                 .addPath(new BezierCurve(shootPose, secondSpikePickupCP,readySecondSpikePickupPose))
                 .setLinearHeadingInterpolation(shootPose.getHeading(), readySecondSpikePickupPose.getHeading())
@@ -642,6 +644,10 @@ public static class ShooterPIDFConfig {
         driveSecondSpikePickup = follower.pathBuilder()
                 .addPath(new BezierLine(readySecondSpikePickupPose, secondSpikePickupPose))
                 .setLinearHeadingInterpolation(readySecondSpikePickupPose.getHeading(), secondSpikePickupPose.getHeading())
+                .build();
+        driveSecondSpikePickupShoot = follower.pathBuilder()
+                .addPath(new BezierCurve(secondSpikePickupPose, secondSpikePickupCP,shootPose))
+                .setLinearHeadingInterpolation(secondSpikePickupPose.getHeading(), shootPose.getHeading())
                 .build();
 //        driveSecondPickupShoot = follower.pathBuilder()
 //                .addPath(new BezierCurve(secondPickupPose, secondPickupCP,shootPose))
