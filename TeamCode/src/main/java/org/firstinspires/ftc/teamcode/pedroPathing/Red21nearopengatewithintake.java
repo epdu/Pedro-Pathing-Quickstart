@@ -25,7 +25,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 // 姿态
 // Limelight
 // 位姿
-@Autonomous(name = "RED Near opengate with intake TWELVE  park after third loaded V1 Red9short")
+@Autonomous(name = "RED Near opengate with intake TWENTYONE  park after third loaded V1 Red9short")
 // intake second role with open gate , park at  136, 36.25 with three loaded
 //. 3 ARTIFACTS on each SPIKE MARK arranged as follows:
 //i.Near (audience side): GPP
