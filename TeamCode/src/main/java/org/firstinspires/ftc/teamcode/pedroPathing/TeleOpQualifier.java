@@ -149,12 +149,15 @@ public class TeleOpQualifier extends LinearOpMode {
             // 手柄控制拾取电机
             if (gamepad1.left_trigger > 0.1) {
                 // 吸入
+                robot.HoodArmL.setPosition(0.3);
+                robot.HoodArmR.setPosition(0.3);
 
-//                robot.axonTurretArmL.setTargetRotation(30);// ((96/20)*35/110)
+//                axonTurretArmL.setTargetRotation(30);// ((96/20)*35/110)
 //                robot.axonTurretArmR.setTargetRotation(30);
 //                robot.axonTurretArmL.setTargetRotation(0);
 
-                robot.BlockageArm.setPosition(blockageblockTele); // blockage the ball     robot.BlockageArm.setPosition(blockagereleaseposition);
+                robot.BlockageArm.setPosition(blockageblockTele);
+                // blockage the ball     robot.BlockageArm.setPosition(blockagereleaseposition);
                 robot.IntakeMotorL.setPower(intakePowerIntake);
                 robot.IntakeMotorR.setPower(intakePowerIntake);
 
