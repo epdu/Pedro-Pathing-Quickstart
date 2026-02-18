@@ -70,7 +70,6 @@ public class HardwareQualifier {
         rightRearMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         rightFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-
         leftFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftRearMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -80,7 +79,6 @@ public class HardwareQualifier {
         rightFrontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftRearMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightRearMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
 
         MasterShooterMotorL = hwMap.get(DcMotorEx.class, "MasterShooterMotorL");//11072025 expansion  hub port 2
         SlaveShooterMotorR = hwMap.get(DcMotorEx.class, "SlaveShooterMotorR"); //11072025 expansion  hub port 3
@@ -95,13 +93,11 @@ public class HardwareQualifier {
         MasterShooterMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-
         IntakeMotorL  = hwMap.get(DcMotorEx.class, "IntakeMotorL"); //11072025 expansion  hub port 0
         IntakeMotorL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         IntakeMotorR  = hwMap.get(DcMotorEx.class, "IntakeMotorR"); //01292026  expansion  hub port 1
         IntakeMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         IntakeMotorR.setDirection(DcMotorSimple.Direction.REVERSE);
-
 
         voltageCHub = hwMap.get(VoltageSensor.class, "Control Hub");
         voltageExHub = hwMap.get(VoltageSensor.class, "Expansion Hub 2");
@@ -130,23 +126,19 @@ public class HardwareQualifier {
 //        axonTurretArmR.setPidCoeffs(0.0279, 0.00000, 0.0000); //good for no load
 //        axonTurretArmR.setTargetRotation(2);
 
-
-
         BlockageArm = hwMap.get(ServoImplEx.class, "BlockageArm");// expansion  hub port 0
         BlockageArm.setPwmRange(new PwmControl.PwmRange(500, 2500));
         BlockageArm.setDirection(Servo.Direction.REVERSE);
         BlockageArm.setPosition(0.1);//
 
-//
-//        HoodArmL = hwMap.get(ServoImplEx.class, "HoodArmL");//expansion  hub port 3
-//        HoodArmL.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        HoodArmL = hwMap.get(ServoImplEx.class, "HoodArmL");//expansion  hub port 3
+        HoodArmL.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        HoodArmL.setPosition(0.3);
 
-
-//        HoodArmR.setPosition(0.3);//
-//        HoodArmR = hwMap.get(ServoImplEx.class, "HoodArmR");//expansion  hub port 5
-//        HoodArmR.setPwmRange(new PwmControl.PwmRange(500, 2500));
-//        HoodArmR.setDirection(Servo.Direction.REVERSE);
-//        HoodArmR.setPosition(0.3);//
+        HoodArmR = hwMap.get(ServoImplEx.class, "HoodArmR");//expansion  hub port 5
+        HoodArmR.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        HoodArmR.setDirection(Servo.Direction.REVERSE);
+        HoodArmR.setPosition(0.3);
 
         // HoodArm = hwMap.get(ServoImplEx.class, "HoodArm");//expansion  hub port 4
 //        initializeOArmPosition();
