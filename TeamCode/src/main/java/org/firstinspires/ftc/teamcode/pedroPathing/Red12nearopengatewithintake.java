@@ -666,11 +666,15 @@ public static class ShooterPIDFConfig {
                 .addPath(new BezierCurve(thirdSpikePickupPose, shootPose))
                 .setLinearHeadingInterpolation(thirdSpikePickupPose.getHeading(), shootPose.getHeading())
                 .build();
+//        driveReadyOpenGatePickup = follower.pathBuilder()
+//                .addPath(new BezierLine(secondSpikePickupPose, readyOpenGatePickupPose))
+//                .setLinearHeadingInterpolation(secondSpikePickupPose.getHeading(), readyOpenGatePickupPose.getHeading())
+//                .build();
 
-        driveReadyOpenGatePickup = follower.pathBuilder()
-                .addPath(new BezierLine(secondSpikePickupPose, readyOpenGatePickupPose))
-                .setLinearHeadingInterpolation(secondSpikePickupPose.getHeading(), readyOpenGatePickupPose.getHeading())
-                .build();
+//        driveReadyOpenGatePickup = follower.pathBuilder()
+//                .addPath(new BezierLine(secondSpikePickupPose, readyOpenGatePickupPose))
+//                .setLinearHeadingInterpolation(secondSpikePickupPose.getHeading(), readyOpenGatePickupPose.getHeading())
+//                .build();
         driveOpenGatePickup = follower.pathBuilder()
                 .addPath(new BezierLine(readyOpenGatePickupPose, openGatePickupPose))
                 .setLinearHeadingInterpolation(readyOpenGatePickupPose.getHeading(), openGatePickupPose.getHeading())
@@ -747,7 +751,7 @@ public static class ShooterPIDFConfig {
                 if (pathTimer.getElapsedTimeSeconds() < 1.8) {
                     autoIntake();
                 } else {
-                    follower.followPath(driveReadyOpenGatePickup);
+                    follower.followPath(driveSecondSpikePickupShoot);
                     stopShooter();
                     stopIntake();
                     setPathState(PathState.DRIVE_BACK_SECOND_SPIKE_PICKUPT_POS);
@@ -764,7 +768,7 @@ public static class ShooterPIDFConfig {
             case SHOOT_SECOND_SPIKE_PICKUP:
                 autoshoot();
                 if (autoShootState == AutoShootState.DONE) {
-                    follower.followPath(driveReadyThirdSpikePickup, 0.65, true);
+                    follower.followPath(driveReadyOpenGatePickup, 0.65, true);
                     isShooterAtSpeed = false;
                     setPathState(PathState.DRIVE_READY_FIRST_OPEN_GATE_POS);
                 }
@@ -781,7 +785,7 @@ public static class ShooterPIDFConfig {
                 if (pathTimer.getElapsedTimeSeconds() < .5) {
                     autoIntake();
                 } else {
-                    follower.followPath(driveOpenGatePickupShoot);
+                    follower.followPath(driveOpenGatePickup);
 //                    stopShooter();
 //                    stopIntake();
                     setPathState(PathState.FIRST_OPEN_GATE_INTAKE);
@@ -805,14 +809,16 @@ public static class ShooterPIDFConfig {
                     autoShootState = AutoShootState.IDLE;
                 }
                 break;
+
             case SHOOT_FIRST_OPEN_GATE_PICKUP:
                 autoshoot();
                 if (autoShootState == AutoShootState.DONE) {
-                    follower.followPath(driveReadyThirdSpikePickup, 0.65, true);
+                    follower.followPath(driveReadyOpenGatePickup, 0.65, true);
                     isShooterAtSpeed = false;
                     setPathState(PathState. DRIVE_READY_SECOND_OPEN_GATE_POS);
                 }
                 break;
+
             case DRIVE_READY_SECOND_OPEN_GATE_POS:
                 if (!follower.isBusy()) {
                     follower.followPath(driveOpenGatePickup, 0.5, true);
@@ -821,6 +827,17 @@ public static class ShooterPIDFConfig {
                 break;
 
             case SECOND_OPEN_GATE:
+                if (pathTimer.getElapsedTimeSeconds() < .9) {
+                    autoIntake();
+                } else {
+                    follower.followPath(driveOpenGatePickup);
+//                    stopShooter();
+//                    stopIntake();
+                    setPathState(PathState.SECOND_OPEN_GATE_INTAKE);
+                }
+                break;
+
+            case SECOND_OPEN_GATE_INTAKE:
                 if (pathTimer.getElapsedTimeSeconds() < .9) {
                     autoIntake();
                 } else {
@@ -837,10 +854,11 @@ public static class ShooterPIDFConfig {
                     autoShootState = AutoShootState.IDLE;
                 }
                 break;
+
             case SHOOT_SECOND_OPEN_GATE_PICKUP:
                 autoshoot();
                 if (autoShootState == AutoShootState.DONE) {
-                    follower.followPath(driveReadyThirdSpikePickup, 0.65, true);
+                    follower.followPath(driveReadyOpenGatePickup, 0.65, true);
                     isShooterAtSpeed = false;
                     setPathState(PathState. DRIVE_READY_THIRD_OPEN_GATE_POS);
                 }
@@ -855,11 +873,24 @@ public static class ShooterPIDFConfig {
 
             case THIRD_OPEN_GATE:
                 if (pathTimer.getElapsedTimeSeconds() < .9) {
-//                    autoIntake();
+                    autoIntake();
                 } else {
-                    follower.followPath(driveOpenGatePickupShoot);
+                    follower.followPath(driveOpenGatePickup);
 //                    stopShooter();
 //                    stopIntake();
+                    setPathState(PathState.THIRD_OPEN_GATE_INTAKE);
+                }
+                break;
+/// //////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////
+            case THIRD_OPEN_GATE_INTAKE:
+                if (pathTimer.getElapsedTimeSeconds() < .9) {
+                    autoIntake();
+                } else {
+                    follower.followPath(driveOpenGatePickupShoot);
+                    stopShooter();
+                    stopIntake();
                     setPathState(PathState.DRIVE_BACK_THIRD_OPEN_GATE_PICKUPT_POS);
                 }
                 break;
@@ -870,10 +901,11 @@ public static class ShooterPIDFConfig {
                     autoShootState = AutoShootState.IDLE;
                 }
                 break;
+
             case SHOOT_THIRD_OPEN_GATE_PICKUP:
                 autoshoot();
                 if (autoShootState == AutoShootState.DONE) {
-                    follower.followPath(driveReadyThirdSpikePickup, 0.65, true);
+                    follower.followPath(driveReadyOpenGatePickup, 0.65, true);
                     isShooterAtSpeed = false;
                     setPathState(PathState. DRIVE_READY_THIRD_SPIKE_PICKUPT_POS);
                 }

@@ -115,7 +115,7 @@ public class Red12nearopengatenointake extends LinearOpMode {
         DRIVE_TO_SHOOT_WAIT,
         SHOOT_PRELOAD,
         DRIVE_READY_THIRD_SPIKE_PICKUPT_POS,
-        THIRD_PICKUP,
+        THIRD_SPIKE_PICKUP,
         DRIVE_BACK_THIRD_SPIKE_PICKUPT_POS,
         SHOOT_THIRD_SPIKE_PICKUP,
         DRIVE_READY_SECOND_SPIKE_PICKUPT_POS,
@@ -758,11 +758,11 @@ public static class ShooterPIDFConfig {
             case DRIVE_READY_THIRD_SPIKE_PICKUPT_POS:
                 if (!follower.isBusy()) {
                     follower.followPath(driveThirdSpikePickup, 0.5, true);
-                    setPathState(PathState.THIRD_PICKUP);
+                    setPathState(PathState.THIRD_SPIKE_PICKUP);
                 }
                 break;
 
-            case THIRD_PICKUP:
+            case THIRD_SPIKE_PICKUP:
                 if (!firstPickupCompleted && pathTimer.getElapsedTimeSeconds() < 1.8) {
             autoIntake();
                 } else {
