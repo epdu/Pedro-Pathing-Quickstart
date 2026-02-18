@@ -31,7 +31,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 //i.Near (audience side): GPP
 //ii. Middle: PGP
 //iii. Far (GOAL side): PPG
-public class Red12nearopengatewithintake extends LinearOpMode {
+public class Red21nearopengatewithintake extends LinearOpMode {
     HardwareQualifier robot = new HardwareQualifier();
     private Limelight3A limelight;
     private volatile boolean isRunning = true;
