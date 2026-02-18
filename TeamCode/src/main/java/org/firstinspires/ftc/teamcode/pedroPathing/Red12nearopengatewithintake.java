@@ -177,7 +177,6 @@ private PathChain driveStartShoot;
 //
 //        Robot.alliance = Alliance.RED;
 //        Robot.sendHardwareMap(hardwareMap);
-
         robot.init(hardwareMap);
 //        PanelsTelemetry.INSTANCE.init(hardwareMap);
 //        robot.imu.resetYaw();
@@ -188,7 +187,6 @@ private PathChain driveStartShoot;
 //        robot.BlockageArm.setPosition(blockageblockposition);////switch with blockage case with blockage
         robot.BlockageArm.setPosition(blockageblockTele); //switch with blockage case with blockage need command
 //        follower.setStartingPose(startPose);
-
 //        limelight = hardwareMap.get(Limelight3A.class, "limelight");
 //        telemetry.setMsTransmissionInterval(11);
 //        limelight.pipelineSwitch(0);
