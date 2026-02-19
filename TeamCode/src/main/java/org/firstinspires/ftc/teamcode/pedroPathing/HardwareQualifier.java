@@ -106,14 +106,15 @@ public class HardwareQualifier {
 
 //Begin Definition and Initialization of HoodArm  and ArmR Servos
 //
-//        CRServo servoTurretArmL = hwMap.get(CRServo.class, "servoTurretArmL");//expansion  hub port 2
-//        AnalogInput encoderTurretArmL = hwMap.get(AnalogInput.class, "encoderTurretArmL");//expansion  hub c analog input devicds 0  blue
-//        axonTurretArmL = new RTPAxon(servoTurretArmL, encoderTurretArmL);
-//        servoTurretArmL.setDirection(CRServo.Direction.REVERSE);
-//        axonTurretArmL.setMaxPower(0.5);
+        CRServo servoTurretArmL = hwMap.get(CRServo.class, "servoTurretArmL");//expansion  hub port 2
+        AnalogInput encoderTurretArmL = hwMap.get(AnalogInput.class, "encoderTurretArmL");//expansion  hub c analog input devicds 0  blue
+        axonTurretArmL = new RTPAxon(servoTurretArmL, encoderTurretArmL);
+        servoTurretArmL.setDirection(CRServo.Direction.REVERSE);
+        axonTurretArmL.setMaxPower(0.5);
+        axonTurretArmL.setPidCoeffs(0.009,0, 0.0000);
 //        axonTurretArmL.setPidCoeffs(0.008,0, 0.0009);
-////        axonTurretArmL.setPidCoeffs(0.0079, 0.00000, 0.0008); //good for no load
-//        axonTurretArmL.setTargetRotation(2);
+//        axonTurretArmL.setPidCoeffs(0.0079, 0.00000, 0.0008); //good for no load
+        axonTurretArmL.setTargetRotation(2);
 
 //
 //        CRServo servoTurretArmR = hwMap.get(CRServo.class, "servoTurretArmR");//control hub port 4

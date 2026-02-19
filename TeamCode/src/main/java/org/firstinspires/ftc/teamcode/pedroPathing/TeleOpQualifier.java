@@ -128,7 +128,7 @@ public class TeleOpQualifier extends LinearOpMode {
             updateLEDs();
             updateHood();
             updateBlockage();
-//            robot.axonTurretArmL.update();
+            robot.axonTurretArmL.update();
 //            robot.axonTurretArmR.update();
 
             // 4. 更新所有遥测数据（重要！）
@@ -148,7 +148,7 @@ public class TeleOpQualifier extends LinearOpMode {
                 robot.HoodArmL.setPosition(0.3);
                 robot.HoodArmR.setPosition(0.3);
 
-//                axonTurretArmL.setTargetRotation(30);// ((96/20)*35/110)
+                robot.axonTurretArmL.setTargetRotation(30);// ((96/20)*35/110)
 //                robot.axonTurretArmR.setTargetRotation(30);
 //                robot.axonTurretArmL.setTargetRotation(0);
 
@@ -338,10 +338,9 @@ public class TeleOpQualifier extends LinearOpMode {
         double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());
         double targetVelocity = ShooterPIDFConfig.targetRPM;
         double tolerance = ShooterPIDFConfig.tolerance;
-//        telemetry.addData("changeTargetRotation ", robot.axonTurretArmL.changeTargetRotation());
-//        telemetry.addData("axonTurretArmL Servo Position", robot.axonTurretArmL.getCurrentAngle());
+        telemetry.addData("axonTurretArmL Servo Position", robot.axonTurretArmL.getCurrentAngle());
 //        telemetry.addData("axonTurretArmL Total Rotation", robot.axonTurretArmL.getTotalRotation());
-//        telemetry.addData("axonTurretArmL Target Rotation", robot.axonTurretArmL.getTargetRotation());
+        telemetry.addData("axonTurretArmL Target Rotation", robot.axonTurretArmL.getTargetRotation());
 //        telemetry.addData("axonTurretArmL.getPower()", robot.axonTurretArmL.getPower());
 //        telemetry.addData("axonTurretArmR.getPower()", robot.axonTurretArmR.getPower());
 //
