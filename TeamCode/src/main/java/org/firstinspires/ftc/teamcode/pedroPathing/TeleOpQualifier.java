@@ -15,11 +15,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.pedroPathing.RTPAxon;
 
 @Config  // 添加这个注解，让 Dashboard 可以调整参数
-@TeleOp(name = "AAA Eastern Pennsylvania Qualifier V1 02142026")
-//check speed fixed
-//two intake motors
-// new bot
-
+@TeleOp(name = "AAA Pennsylvania FTC Championship V1 02192026")
+// working on turret, and hood                check speed fixed
+//
+//
 public class TeleOpQualifier extends LinearOpMode {
     // 已有的硬件和常量定义...
     private static final double VELOCITY_TOLERANCE = 30; // RPM容差，可根据测试调整
@@ -31,21 +30,18 @@ public class TeleOpQualifier extends LinearOpMode {
     private final String LED_COLOR_READY = "GREEN";
     private final String LED_COLOR_ACCELERATING = "YELLOW";
     private final String LED_COLOR_OFF = "RED";
-
-    // RPM = (TPS * 60秒) / 每转ticks数
-//    return (tps * 60.0) / ticksPerRevolution;  28*13.7
+    // RPM = (TPS * 60秒) / 每转ticks数  return (tps * 60.0) / ticksPerRevolution;  28*13.7
     private static final double Close_SHOOTER_TARGET_RPM = 800;//  400RPM---2,557.33333333333333
-    private static final double Med_SHOOTER_TARGET_RPM = 1200;  // from 1200-1150 1666 still big 1866 kind of good for far， but a little bit too big
-    /////////////////////////////////pretty goood for close shoot /////////////////////////// 1300
-//    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
-    // use rpm as speed, the real name should be speed = 1300
-    public static double toleranceforShoot = 100;        // 转速容差
-    //1300
-//    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
     private static final double Far_SHOOTER_TARGET_RPM = 2237;  //  350RPM---2237
+    public static double toleranceforShoot = 100;        // 转速容差
+    //  private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
+    //    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
+    // use rpm as speed, the real name should be speed = 1300      //1300
     //  1000RPM---6346.67
     //  600RPM---3808
     //  500RPM---3173.3
+    /////////////////////////////////pretty goood for close shoot /////////////////////////// 1300
+    private static final double Med_SHOOTER_TARGET_RPM = 1200;  // from 1200-1150 1666 still big 1866 kind of good for far， but a little bit too big
     public float DriveTrains_ReducePOWER=1f;
     public float DriveTrains_smoothTurn=1f;
     HardwareQualifier robot = new HardwareQualifier();
@@ -341,6 +337,8 @@ public class TeleOpQualifier extends LinearOpMode {
         telemetry.addData("axonTurretArmL Servo Position", robot.axonTurretArmL.getCurrentAngle());
 //        telemetry.addData("axonTurretArmL Total Rotation", robot.axonTurretArmL.getTotalRotation());
         telemetry.addData("axonTurretArmL Target Rotation", robot.axonTurretArmL.getTargetRotation());
+        telemetry.addData("encoderTurretArmL", robot.encoderTurretArmL.getVoltage());
+        telemetry.addData("encoderTurretArmR", robot.encoderTurretArmR.getVoltage());
 //        telemetry.addData("axonTurretArmL.getPower()", robot.axonTurretArmL.getPower());
 //        telemetry.addData("axonTurretArmR.getPower()", robot.axonTurretArmR.getPower());
 //

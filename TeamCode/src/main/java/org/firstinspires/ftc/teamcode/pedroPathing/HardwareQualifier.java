@@ -46,6 +46,10 @@ public class HardwareQualifier {
     public ServoImplEx HoodArmR;
     public ServoImplEx TurretArmL;
     public ServoImplEx TurretArmR;
+    public CRServo servoTurretArmL;
+    public CRServo servoTurretArmR;
+    public AnalogInput encoderTurretArmL;
+    public AnalogInput encoderTurretArmR;
     public RTPAxon axonTurretArmL;
     public RTPAxon axonTurretArmR;
     GoBildaPinpointDriver odo;
@@ -106,26 +110,28 @@ public class HardwareQualifier {
 
 //Begin Definition and Initialization of HoodArm  and ArmR Servos
 //
-        CRServo servoTurretArmL = hwMap.get(CRServo.class, "servoTurretArmL");//expansion  hub port 2
-        AnalogInput encoderTurretArmL = hwMap.get(AnalogInput.class, "encoderTurretArmL");//expansion  hub c analog input devicds 0  blue
+        servoTurretArmL = hwMap.get(CRServo.class, "servoTurretArmL");//expansion  hub port 2
+        encoderTurretArmL = hwMap.get(AnalogInput.class, "encoderTurretArmL");//expansion  hub c analog input devicds 0  blue
         axonTurretArmL = new RTPAxon(servoTurretArmL, encoderTurretArmL);
         servoTurretArmL.setDirection(CRServo.Direction.REVERSE);
         axonTurretArmL.setMaxPower(0.5);
-        axonTurretArmL.setPidCoeffs(0.009,0, 0.0000);
-//        axonTurretArmL.setPidCoeffs(0.008,0, 0.0009);
-//        axonTurretArmL.setPidCoeffs(0.0079, 0.00000, 0.0008); //good for no load
-        axonTurretArmL.setTargetRotation(2);
+        axonTurretArmL.setPidCoeffs(0.02,0, 0.0000);
+        axonTurretArmL.setTargetRotation(1);
 
 //
-//        CRServo servoTurretArmR = hwMap.get(CRServo.class, "servoTurretArmR");//control hub port 4
-//        AnalogInput encoderTurretArmR = hwMap.get(AnalogInput.class, "encoderTurretArmR");//control hub analog input devicds 1 white
-//        axonTurretArmR = new RTPAxon(servoTurretArmR, encoderTurretArmR);
-//        servoTurretArmR.setDirection(CRServo.Direction.REVERSE);
-//        axonTurretArmR.setMaxPower(0.5);
+        servoTurretArmR = hwMap.get(CRServo.class, "servoTurretArmR");//control hub port 4
+        encoderTurretArmR = hwMap.get(AnalogInput.class, "encoderTurretArmR");//control hub analog input devicds 1 white
+        axonTurretArmR = new RTPAxon(servoTurretArmR, encoderTurretArmR);
+        servoTurretArmR.setDirection(CRServo.Direction.REVERSE);
+        axonTurretArmR.setMaxPower(0.5);
 //        axonTurretArmR.setPower(axonTurretArmL.getPower());
 //        axonTurretArmR.setPidCoeffs(0.0279, 0.00000, 0.0000);//good for no load
 //        axonTurretArmR.setPidCoeffs(0.0279, 0.00000, 0.0000); //good for no load
 //        axonTurretArmR.setTargetRotation(2);
+//        axonTurretArmL.setPidCoeffs(0.008,0, 0.0009);
+//        axonTurretArmL.setPidCoeffs(0.0079, 0.00000, 0.0008); //good for no load
+
+
 
         BlockageArm = hwMap.get(ServoImplEx.class, "BlockageArm");// expansion  hub port 0
         BlockageArm.setPwmRange(new PwmControl.PwmRange(500, 2500));
