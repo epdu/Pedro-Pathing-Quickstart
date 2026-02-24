@@ -144,11 +144,11 @@ public class TeleOpQualifier extends LinearOpMode {
                 robot.HoodArmL.setPosition(0.3);
                 robot.HoodArmR.setPosition(0.3);
 
-                robot.axonTurretArmL.setTargetRotation(30);// ((96/20)*35/110)
+//                robot.axonTurretArmL.setTargetRotation(30);// ((96/20)*35/110)
 //                robot.axonTurretArmR.setTargetRotation(30);
 //                robot.axonTurretArmL.setTargetRotation(0);
 
-                robot.BlockageArm.setPosition(blockageblockTele);
+//                robot.BlockageArm.setPosition(blockageblockTele);
                 robot.BlockageArmL.setPosition(blockageblockTele);
                 robot.BlockageArmR.setPosition(blockageblockTele);
                 // blockage the ball     robot.BlockageArm.setPosition(blockagereleaseposition);
@@ -189,7 +189,7 @@ public class TeleOpQualifier extends LinearOpMode {
             checkShooterVelocity();
             if (!robot.MasterShooterMotorL.isBusy()){
                 startShooter();
-                robot.BlockageArm.setPosition(blockagereleaseTele);
+//                robot.BlockageArm.setPosition(blockagereleaseTele);
                 robot.BlockageArmL.setPosition(blockagereleaseTele);
                 robot.BlockageArmR.setPosition(blockagereleaseTele);
             }
@@ -207,7 +207,7 @@ public class TeleOpQualifier extends LinearOpMode {
             stopShooter();
             robot.IntakeMotorL.setPower(intakePowerOff);
             robot.IntakeMotorR.setPower(intakePowerOff);
-            robot.BlockageArm.setPosition(blockageblockTele);
+//            robot.BlockageArm.setPosition(blockageblockTele);
             robot.BlockageArmL.setPosition(blockageblockTele);
             robot.BlockageArmR.setPosition(blockageblockTele);
             fireRequested = false;
@@ -262,11 +262,11 @@ public class TeleOpQualifier extends LinearOpMode {
 /// /////////////////need work
     private void updateBlockage() {
         if (gamepad1.dpad_left) {
-            robot.BlockageArm.setPosition((blockageblockTele));
+//            robot.BlockageArm.setPosition((blockageblockTele));
             robot.BlockageArmL.setPosition((blockageblockTele));
             robot.BlockageArmR.setPosition((blockageblockTele));
         }  else if(gamepad1.dpad_right) {
-            robot.BlockageArm.setPosition((blockagereleaseTele));
+//            robot.BlockageArm.setPosition((blockagereleaseTele));
             robot.BlockageArmL.setPosition((blockagereleaseTele));
             robot.BlockageArmR.setPosition((blockagereleaseTele));
 
