@@ -26,8 +26,8 @@ import org.firstinspires.ftc.teamcode.pedroPathing.RTPAxon;
 // 姿态
 // Limelight
 // 位姿
-@Autonomous(name = "RED Far Twelve HOME HOME HOME HOME V1 Red9short")
-//three preload and take home twice , parking
+@Autonomous(name = "RED Far Twelve HOME HOME HOME HOME V1")
+//multiple time and different angle to try three preload and take home twice , parking
 public class Red12farAllHomeTurret extends LinearOpMode {
     HardwareQualifier robot = new HardwareQualifier();
    private Limelight3A limelight;
@@ -164,7 +164,9 @@ public class Red12farAllHomeTurret extends LinearOpMode {
         robot.MasterShooterMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.BlockageArm.setPosition(blockageblockposition);
+//        robot.BlockageArm.setPosition(blockageblockposition);
+        robot.BlockageArmL.setPosition(blockageblockposition);
+        robot.BlockageArmR.setPosition(blockageblockposition);
 //        follower.setStartingPose(startPose);
 
 //        limelight = hardwareMap.get(Limelight3A.class, "limelight");
@@ -278,7 +280,9 @@ public class Red12farAllHomeTurret extends LinearOpMode {
         switch (autoShootState) {
 
             case IDLE:
-                robot.BlockageArm.setPosition(blockageblockposition);
+//                robot.BlockageArm.setPosition(blockageblockposition);
+                robot.BlockageArmL.setPosition(blockageblockposition);
+                robot.BlockageArmR.setPosition(blockageblockposition);
                 startShooter();
                 shooterStarted = true;
                 isShooterAtSpeed = false;
@@ -287,7 +291,9 @@ public class Red12farAllHomeTurret extends LinearOpMode {
                 break;
 
             case SPINNING_UP:
-                  robot.BlockageArm.setPosition(blockagereleaseposition);
+//                  robot.BlockageArm.setPosition(blockagereleaseposition);
+                robot.BlockageArmL.setPosition(blockagereleaseposition);
+                robot.BlockageArmR.setPosition(blockagereleaseposition);
 //                double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());//60/(28)
 //                double targetVelocity = ShooterPIDFConfig.targetVelocity;
 //                if ((!isShooterAtSpeed) && (Math.abs(currentVelocity - targetVelocity) <= ShooterPIDFConfig.toleranceofVelocity)) {
@@ -305,7 +311,9 @@ public class Red12farAllHomeTurret extends LinearOpMode {
                 if (shootTimer.getElapsedTimeSeconds()  >= 1.3) {
                     stopShooter();
                     stopIntake();
-                    robot.BlockageArm.setPosition(blockageblockposition);
+//                    robot.BlockageArm.setPosition(blockageblockposition);
+                    robot.BlockageArmL.setPosition(blockageblockposition);
+                    robot.BlockageArmR.setPosition(blockageblockposition);
 //                    isShooterAtSpeed = false;
                     autoShootState = AutoShootState.DONE;
                 }

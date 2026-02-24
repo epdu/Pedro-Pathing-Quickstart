@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.pedroPathing;
 import static org.firstinspires.ftc.teamcode.pedroPathing.TeleOpQualifier.blockageblockTele;
 import static org.firstinspires.ftc.teamcode.pedroPathing.TeleOpQualifier.blockageblockposition;
 import static org.firstinspires.ftc.teamcode.pedroPathing.TeleOpQualifier.blockagereleaseTele;
+import static org.firstinspires.ftc.teamcode.pedroPathing.TeleOpQualifier.blockagereleaseposition;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -27,7 +28,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 // 姿态
 // Limelight
 // 位姿
-@Autonomous(name = "RED Near opengate NO intake TWELVE  park after third loaded V1 Red9short")
+@Autonomous(name = "RED Near open Gate NO intake TWELVE  park after third loaded V1")
 // change name style to be FirstSpike,SecondSpike,ThirdSpike
 // intake second role with open gate , park at  136, 36.25 with three loaded
 //. 3 ARTIFACTS on each SPIKE MARK arranged as follows:
@@ -170,7 +171,10 @@ public class Red12nearopengatenointake extends LinearOpMode {
         robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        robot.BlockageArm.setPosition(blockageblockposition);////switch with blockage case with blockage
-        robot.BlockageArm.setPosition(blockageblockTele); //switch with blockage case with blockage need command
+//        robot.BlockageArm.setPosition(blockageblockTele);
+        robot.BlockageArmL.setPosition(blockageblockposition);
+        robot.BlockageArmR.setPosition(blockageblockposition);
+        //switch with blockage case with blockage need command
 //        follower.setStartingPose(startPose);
 
 //        limelight = hardwareMap.get(Limelight3A.class, "limelight");
@@ -259,7 +263,9 @@ public class Red12nearopengatenointake extends LinearOpMode {
             robot.IntakeMotorL.setPower(intakePowerIntake);
             robot.IntakeMotorR.setPower(intakePowerIntake);
 
-            robot.BlockageArm.setPosition(blockageblockTele);
+//            robot.BlockageArm.setPosition(blockageblockTele);
+            robot.BlockageArmL.setPosition(blockageblockposition);
+            robot.BlockageArmR.setPosition(blockageblockposition);
 
 
 //            robot.MasterShooterMotorL.setPower(ShooterMotorHold);//switch with blockage case with blockage need command
@@ -278,7 +284,10 @@ public class Red12nearopengatenointake extends LinearOpMode {
         switch (autoShootState) {
 
             case IDLE:
-                robot.BlockageArm.setPosition(blockageblockTele); //switch with blockage case with blockage
+//                robot.BlockageArm.setPosition(blockageblockTele);
+                robot.BlockageArmL.setPosition(blockageblockposition);
+                robot.BlockageArmR.setPosition(blockageblockposition);
+                //switch with blockage case with blockage
                 startShooter();
                 shooterStarted = true;
                 isShooterAtSpeed = false;
@@ -287,7 +296,10 @@ public class Red12nearopengatenointake extends LinearOpMode {
                 break;
 
             case SPINNING_UP:
-                  robot.BlockageArm.setPosition(blockagereleaseTele); //switch with blockage case with blockage
+//                  robot.BlockageArm.setPosition(blockagereleaseTele);
+                robot.BlockageArmL.setPosition(blockagereleaseposition);
+                robot.BlockageArmR.setPosition(blockagereleaseposition);
+                //switch with blockage case with blockage
 //                double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());//60/(28)
 //                double targetVelocity = ShooterPIDFConfig.targetVelocity;
 //                if ((!isShooterAtSpeed) && (Math.abs(currentVelocity - targetVelocity) <= ShooterPIDFConfig.toleranceofVelocity)) {
@@ -306,7 +318,11 @@ public class Red12nearopengatenointake extends LinearOpMode {
                     // from 1.9---1.6
                     stopShooter();
                     stopIntake();
-                    robot.BlockageArm.setPosition(blockageblockTele); //switch with blockage case with blockage
+//                    robot.BlockageArm.setPosition(blockageblockTele);
+                    robot.BlockageArmL.setPosition(blockageblockposition);
+                    robot.BlockageArmR.setPosition(blockageblockposition);
+
+                    //switch with blockage case with blockage
                     autoShootState = AutoShootState.DONE;
                 }
                 break;
