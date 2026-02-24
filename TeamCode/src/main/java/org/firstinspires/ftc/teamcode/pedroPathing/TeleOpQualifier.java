@@ -149,6 +149,8 @@ public class TeleOpQualifier extends LinearOpMode {
 //                robot.axonTurretArmL.setTargetRotation(0);
 
                 robot.BlockageArm.setPosition(blockageblockTele);
+                robot.BlockageArmL.setPosition(blockageblockTele);
+                robot.BlockageArmR.setPosition(blockageblockTele);
                 // blockage the ball     robot.BlockageArm.setPosition(blockagereleaseposition);
                 robot.IntakeMotorL.setPower(intakePowerIntake);
                 robot.IntakeMotorR.setPower(intakePowerIntake);
@@ -188,6 +190,8 @@ public class TeleOpQualifier extends LinearOpMode {
             if (!robot.MasterShooterMotorL.isBusy()){
                 startShooter();
                 robot.BlockageArm.setPosition(blockagereleaseTele);
+                robot.BlockageArmL.setPosition(blockagereleaseTele);
+                robot.BlockageArmR.setPosition(blockagereleaseTele);
             }
 
         }
@@ -204,6 +208,8 @@ public class TeleOpQualifier extends LinearOpMode {
             robot.IntakeMotorL.setPower(intakePowerOff);
             robot.IntakeMotorR.setPower(intakePowerOff);
             robot.BlockageArm.setPosition(blockageblockTele);
+            robot.BlockageArmL.setPosition(blockageblockTele);
+            robot.BlockageArmR.setPosition(blockageblockTele);
             fireRequested = false;
         }
 
@@ -257,8 +263,12 @@ public class TeleOpQualifier extends LinearOpMode {
     private void updateBlockage() {
         if (gamepad1.dpad_left) {
             robot.BlockageArm.setPosition((blockageblockTele));
+            robot.BlockageArmL.setPosition((blockageblockTele));
+            robot.BlockageArmR.setPosition((blockageblockTele));
         }  else if(gamepad1.dpad_right) {
             robot.BlockageArm.setPosition((blockagereleaseTele));
+            robot.BlockageArmL.setPosition((blockagereleaseTele));
+            robot.BlockageArmR.setPosition((blockagereleaseTele));
 
         } // 防止快速连击导致模式快速切换
 

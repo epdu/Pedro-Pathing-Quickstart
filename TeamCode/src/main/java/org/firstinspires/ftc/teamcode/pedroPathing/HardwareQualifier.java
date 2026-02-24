@@ -42,6 +42,8 @@ public class HardwareQualifier {
     public VoltageSensor voltageCHub;
     public VoltageSensor voltageExHub;
     public ServoImplEx BlockageArm;
+    public ServoImplEx BlockageArmL;
+    public ServoImplEx BlockageArmR;
     public ServoImplEx HoodArmL;
     public ServoImplEx HoodArmR;
     public ServoImplEx TurretArmL;
@@ -52,6 +54,7 @@ public class HardwareQualifier {
     public AnalogInput encoderTurretArmR;
     public RTPAxon axonTurretArmL;
     public RTPAxon axonTurretArmR;
+    public boolean rtp=true;
     GoBildaPinpointDriver odo;
     IMU imu;
     public static final double DriveTrains_POWER =  0.95 ;// reduced power of driving train motors
@@ -115,6 +118,7 @@ public class HardwareQualifier {
         axonTurretArmL = new RTPAxon(servoTurretArmL, encoderTurretArmL);
         servoTurretArmL.setDirection(CRServo.Direction.REVERSE);
         axonTurretArmL.setMaxPower(0.5);
+        axonTurretArmL.setRtp(rtp);
         axonTurretArmL.setPidCoeffs(0.02,0, 0.0000);
         axonTurretArmL.setTargetRotation(1);
 
@@ -124,6 +128,10 @@ public class HardwareQualifier {
         axonTurretArmR = new RTPAxon(servoTurretArmR, encoderTurretArmR);
         servoTurretArmR.setDirection(CRServo.Direction.REVERSE);
         axonTurretArmR.setMaxPower(0.5);
+        axonTurretArmR.setRtp(rtp);
+        axonTurretArmR.setPidCoeffs(0.02, 0.00000, 0.0000);//good for no load
+        axonTurretArmR.setTargetRotation(1);
+
 //        axonTurretArmR.setPower(axonTurretArmL.getPower());
 //        axonTurretArmR.setPidCoeffs(0.0279, 0.00000, 0.0000);//good for no load
 //        axonTurretArmR.setPidCoeffs(0.0279, 0.00000, 0.0000); //good for no load
@@ -137,6 +145,17 @@ public class HardwareQualifier {
         BlockageArm.setPwmRange(new PwmControl.PwmRange(500, 2500));
         BlockageArm.setDirection(Servo.Direction.REVERSE);
         BlockageArm.setPosition(0.1);//
+
+        BlockageArmL = hwMap.get(ServoImplEx.class, "BlockageArmL");// expansion  hub port 0
+        BlockageArmL.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        BlockageArmL.setDirection(Servo.Direction.REVERSE);
+        BlockageArmL.setPosition(0.1);//
+
+        BlockageArmR = hwMap.get(ServoImplEx.class, "BlockageArmR");// expansion  hub port 1
+        BlockageArmR.setPwmRange(new PwmControl.PwmRange(500, 2500));
+//        BlockageArmR.setDirection(Servo.Direction.REVERSE);
+        BlockageArmR.setPosition(0.1);//
+
 
         HoodArmL = hwMap.get(ServoImplEx.class, "HoodArmL");//expansion  hub port 3
         HoodArmL.setPwmRange(new PwmControl.PwmRange(500, 2500));
