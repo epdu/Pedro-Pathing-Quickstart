@@ -23,9 +23,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.pedroPathing.RTPAxon;
-// 姿态
 // Limelight
-// 位姿
 @Autonomous(name = "RED Far Twelve HOME HOME HOME HOME V1")
 //multiple time and different angle to try three preload and take home twice , parking
 public class Red12farAllHomeTurret extends LinearOpMode {
