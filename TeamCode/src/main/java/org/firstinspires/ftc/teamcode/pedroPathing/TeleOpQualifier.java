@@ -12,7 +12,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.teamcode.pedroPathing.RTPAxon;
+//import org.firstinspires.ftc.teamcode.pedroPathing.RTPAxon;
+import org.firstinspires.ftc.teamcode.pedroPathing.RTPAxonRev;
 
 @Config  // 添加这个注解，让 Dashboard 可以调整参数
 @TeleOp(name = "AAA Pennsylvania FTC Championship V1 02192026")
@@ -124,9 +125,11 @@ public class TeleOpQualifier extends LinearOpMode {
             updateLEDs();
             updateHood();
             updateBlockage();
-            robot.axonTurretArmL.update();
-//            robot.axonTurretArmR.update();
 
+//            robot.axonTurretArmL.update();
+
+//            robot.axonTurretArmR.update();
+//            robot.TurretArmL.update();
             // 4. 更新所有遥测数据（重要！）
             telemetry.update();
             // 5. 添加短暂延迟避免过于频繁的更新
@@ -144,7 +147,13 @@ public class TeleOpQualifier extends LinearOpMode {
                 robot.HoodArmL.setPosition(0.3);
                 robot.HoodArmR.setPosition(0.3);
 
+//                robot.TurretArmL.setPosition(0.7);
+//                robot.TurretArmR.setPosition(0.7);
+//                robot.TurretArmL.setPosition(0.9)
+//                robot.TurretArmL.setPosition(0.9);
 //                robot.axonTurretArmL.setTargetRotation(30);// ((96/20)*35/110)
+//                robot.axonTurretArm.setTargetRotation(30);
+
 //                robot.axonTurretArmR.setTargetRotation(30);
 //                robot.axonTurretArmL.setTargetRotation(0);
 
@@ -344,11 +353,13 @@ public class TeleOpQualifier extends LinearOpMode {
         double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());
         double targetVelocity = ShooterPIDFConfig.targetRPM;
         double tolerance = ShooterPIDFConfig.tolerance;
-        telemetry.addData("axonTurretArmL Servo Position", robot.axonTurretArmL.getCurrentAngle());
-//        telemetry.addData("axonTurretArmL Total Rotation", robot.axonTurretArmL.getTotalRotation());
-        telemetry.addData("axonTurretArmL Target Rotation", robot.axonTurretArmL.getTargetRotation());
-        telemetry.addData("encoderTurretArmL", robot.encoderTurretArmL.getVoltage());
-        telemetry.addData("encoderTurretArmR", robot.encoderTurretArmR.getVoltage());
+//        telemetry.addData("axonTurretArmL Servo Position", robot.axonTurretArmL.getCurrentAngle());
+////        telemetry.addData("axonTurretArmL Total Rotation", robot.axonTurretArmL.getTotalRotation());
+//        telemetry.addData("axonTurretArmL Target Rotation", robot.axonTurretArmL.getTargetRotation());
+//        telemetry.addData("encoderTurretArmL", robot.encoderTurretArmL.getVoltage());
+//        telemetry.addData("encoderTurretArmR", robot.encoderTurretArmR.getVoltage());
+//        telemetry.addData("axonTurretArm getCurrentAngle", robot.axonTurretArmL.getCurrentAngle());
+//        telemetry.addData("encoderTurret .getCurrentPosition()", robot.encoderTurret.getCurrentPosition());
 //        telemetry.addData("axonTurretArmL.getPower()", robot.axonTurretArmL.getPower());
 //        telemetry.addData("axonTurretArmR.getPower()", robot.axonTurretArmR.getPower());
 //
