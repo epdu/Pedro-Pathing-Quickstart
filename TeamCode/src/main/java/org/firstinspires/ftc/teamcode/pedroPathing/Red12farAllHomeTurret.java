@@ -598,7 +598,7 @@ public static class ShooterPIDFConfig {
                 .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
                 .build();
         driveReadyFirstHomePickup = follower.pathBuilder()
-                .addPath(new BezierCurve(shootPose, readyFirstHomePickupPose))
+                .addPath(new BezierLine(shootPose, readyFirstHomePickupPose))
                 .setLinearHeadingInterpolation(shootPose.getHeading(), readyFirstHomePickupPose.getHeading())
                 .build();
         driveFirstHomePickup = follower.pathBuilder()
@@ -610,7 +610,7 @@ public static class ShooterPIDFConfig {
                 .setLinearHeadingInterpolation(firstHomePickupPose.getHeading(), shootPose.getHeading())
                 .build();
         driveReadyFirstPickup = follower.pathBuilder()
-                .addPath(new BezierCurve(shootPose, readyFirstPickupPose))
+                .addPath(new BezierLine(shootPose, readyFirstPickupPose))
                 .setLinearHeadingInterpolation(shootPose.getHeading(), readyFirstPickupPose.getHeading())
                 .build();
         driveFirstPickup = follower.pathBuilder()
@@ -618,11 +618,11 @@ public static class ShooterPIDFConfig {
                 .setLinearHeadingInterpolation(readyFirstPickupPose.getHeading(), firstPickupPose.getHeading())
                 .build();
         driveFirstPickupShoot = follower.pathBuilder()
-                .addPath(new BezierCurve(firstPickupPose,  shootPose))
+                .addPath(new BezierLine(firstPickupPose,  shootPose))
                 .setLinearHeadingInterpolation(firstPickupPose.getHeading(), shootPose.getHeading())
                 .build();
         driveReadySecondHomePickup = follower.pathBuilder()
-                .addPath(new BezierCurve(shootPose, readySecondHomePickupPose))
+                .addPath(new BezierLine(shootPose, readySecondHomePickupPose))
                 .setLinearHeadingInterpolation(shootPose.getHeading(), readySecondHomePickupPose.getHeading())
                 .build();
         driveSecondHomePickup = follower.pathBuilder()
@@ -634,7 +634,7 @@ public static class ShooterPIDFConfig {
                 .setLinearHeadingInterpolation(secondHomePickupPose.getHeading(), shootPose.getHeading())
                 .build();
         driveReadyThirdHomePickup = follower.pathBuilder()
-                .addPath(new BezierCurve(shootPose, readyThirdHomePickupPose))
+                .addPath(new BezierLine(shootPose, readyThirdHomePickupPose))
                 .setLinearHeadingInterpolation(shootPose.getHeading(), readyThirdHomePickupPose.getHeading())
                 .build();
         driveThirdHomePickup = follower.pathBuilder()
