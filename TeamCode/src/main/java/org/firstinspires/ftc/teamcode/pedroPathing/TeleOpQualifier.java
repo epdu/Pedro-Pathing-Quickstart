@@ -147,9 +147,9 @@ public class TeleOpQualifier extends LinearOpMode {
                 robot.HoodArmL.setPosition(0.3);
                 robot.HoodArmR.setPosition(0.3);
 
-//                robot.TurretArmL.setPosition(0.7);
-//                robot.TurretArmR.setPosition(0.7);
-//                robot.TurretArmL.setPosition(0.9)
+                robot.TurretArmL.setPosition(0.7);
+                robot.TurretArmR.setPosition(0.7);
+//                robot.TurretArmL.setPosition(0.9);
 //                robot.TurretArmL.setPosition(0.9);
 //                robot.axonTurretArmL.setTargetRotation(30);// ((96/20)*35/110)
 //                robot.axonTurretArm.setTargetRotation(30);
@@ -353,13 +353,14 @@ public class TeleOpQualifier extends LinearOpMode {
         double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());
         double targetVelocity = ShooterPIDFConfig.targetRPM;
         double tolerance = ShooterPIDFConfig.tolerance;
+        telemetry.addData("encoderTurret .getCurrentPosition()", robot.encoderTurret.getCurrentPosition());
 //        telemetry.addData("axonTurretArmL Servo Position", robot.axonTurretArmL.getCurrentAngle());
 ////        telemetry.addData("axonTurretArmL Total Rotation", robot.axonTurretArmL.getTotalRotation());
 //        telemetry.addData("axonTurretArmL Target Rotation", robot.axonTurretArmL.getTargetRotation());
 //        telemetry.addData("encoderTurretArmL", robot.encoderTurretArmL.getVoltage());
 //        telemetry.addData("encoderTurretArmR", robot.encoderTurretArmR.getVoltage());
 //        telemetry.addData("axonTurretArm getCurrentAngle", robot.axonTurretArmL.getCurrentAngle());
-//        telemetry.addData("encoderTurret .getCurrentPosition()", robot.encoderTurret.getCurrentPosition());
+
 //        telemetry.addData("axonTurretArmL.getPower()", robot.axonTurretArmL.getPower());
 //        telemetry.addData("axonTurretArmR.getPower()", robot.axonTurretArmR.getPower());
 //

@@ -125,7 +125,7 @@ public class HardwareQualifier {
         TurretArmR.setPwmRange(new PwmControl.PwmRange(500, 2500));
 //        TurretArmR.setDirection(Servo.Direction.REVERSE);
         TurretArmR.setPosition(0.5);//
-
+        encoderTurret = hwMap.get(DcMotorEx.class, "RBMotor");// encoderTurret control  hub motor encoder port 3
 
 /////////////////////////////////////CRServo///////////////////////////////////////
 //        servoTurretArmL = hwMap.get(CRServo.class, "servoTurretArmL");//expansion  hub port 2
