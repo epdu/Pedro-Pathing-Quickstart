@@ -655,7 +655,7 @@ public static class ShooterPIDFConfig {
 //                .build();
 
         driveReadyThirdSpikePickup = follower.pathBuilder()
-                .addPath(new BezierCurve(shootPose, readyThirdSpikePickupPose))
+                .addPath(new BezierLine(shootPose, readyThirdSpikePickupPose))
                 .setLinearHeadingInterpolation(shootPose.getHeading(), readyThirdSpikePickupPose.getHeading())
                 .build();
         driveThirdSpikePickup = follower.pathBuilder()
@@ -663,7 +663,7 @@ public static class ShooterPIDFConfig {
                 .setLinearHeadingInterpolation(readyThirdSpikePickupPose.getHeading(), thirdSpikePickupPose.getHeading())
                 .build();
         driveThirdSpikePickupShoot = follower.pathBuilder()
-                .addPath(new BezierCurve(thirdSpikePickupPose, shootPose))
+                .addPath(new BezierLine(thirdSpikePickupPose, shootPose))
                 .setLinearHeadingInterpolation(thirdSpikePickupPose.getHeading(), shootPose.getHeading())
                 .build();
 
