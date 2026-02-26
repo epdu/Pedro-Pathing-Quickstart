@@ -640,7 +640,7 @@ public static class ShooterPIDFConfig {
                 .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
                 .build();
         driveReadyFirstSpikePickup = follower.pathBuilder()
-                .addPath(new BezierCurve(shootPose, readyFirstSpikePickupPose))
+                .addPath(new BezierLine(shootPose, readyFirstSpikePickupPose))
                 .setLinearHeadingInterpolation(shootPose.getHeading(), readyFirstSpikePickupPose.getHeading())
                 .build();
 //        driveReadyFirstPickup = follower.pathBuilder()
