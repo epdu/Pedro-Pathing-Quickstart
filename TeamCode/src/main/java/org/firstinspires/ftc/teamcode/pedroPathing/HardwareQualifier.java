@@ -141,8 +141,8 @@ public class HardwareQualifier {
         axonTurretArmL.setRtp(rtp);
         axonTurretArmR.setMaxPower(0.5);
         axonTurretArmR.setRtp(rtp);
-        axonTurretArmL.setPidCoeffs(0.017,0.000, 0.0009);
-        axonTurretArmR.setPidCoeffs(0.017, 0.000, 0.0009);//good for no load
+        axonTurretArmL.setPidCoeffs(0.02,0.000, 0.0018);
+        axonTurretArmR.setPidCoeffs(0.02, 0.000, 0.0018);//good for no load
 //        axonTurretArmL.setPidCoeffs(0.0079, 0.00000, 0.0008); //good for no load
 //
 //        //        TurretArmR.setPosition(0.5);//
