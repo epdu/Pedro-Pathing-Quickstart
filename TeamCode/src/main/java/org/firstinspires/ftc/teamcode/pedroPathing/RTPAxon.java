@@ -6,13 +6,13 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class RTPAxon {
     // Encoder for servo position feedback
-    private final AnalogInput servoEncoder;
+    private final DcMotorEx servoEncoder;
     // Continuous rotation servo
     private final CRServo servo;
     // Run-to-position mode flag
@@ -54,7 +54,7 @@ public class RTPAxon {
     // region constructors
 
     // Basic constructor, defaults to FORWARD direction
-    public RTPAxon(CRServo servo, AnalogInput encoder) {
+    public RTPAxon(CRServo servo, DcMotorEx encoder) {
         rtp = true;
         this.servo = servo;
         servoEncoder = encoder;
@@ -63,7 +63,7 @@ public class RTPAxon {
     }
 
     // Constructor with explicit direction
-    public RTPAxon(CRServo servo, AnalogInput encoder, Direction direction) {
+    public RTPAxon(CRServo servo, DcMotorEx encoder, Direction direction) {
         this(servo, encoder);
         this.direction = direction;
         initialize();
@@ -95,8 +95,8 @@ public class RTPAxon {
         homeAngle = previousAngle;
 
         // Default PID coefficients
-        kP = 0.015;
-        kI = 0.0005;
+        kP = 0.015; 
+        kI = 0.0005; 
         kD = 0.0025;
         integralSum = 0.0;
         lastError = 0.0;
@@ -156,7 +156,7 @@ public class RTPAxon {
     // Set PID I coefficient and reset integral
     public void setKI(double kI) {
         this.kI = kI;
-        resetIntegral();
+        resetIntegral(); 
     }
 
     // Set PID D coefficient
@@ -230,7 +230,9 @@ public class RTPAxon {
     // Get current angle from encoder (in degrees)
     public double getCurrentAngle() {
         if (servoEncoder == null) return 0;
-        return (servoEncoder.getVoltage() / 3.3) * (direction.equals(Direction.REVERSE) ? -360 : 360);
+//        return (servoEncoder.getCurrentPosition()/8192.0) * (direction.equals(Direction.FORWARD) ? -360 : 360);
+        return (servoEncoder.getCurrentPosition()/16384.0) * (direction.equals(Direction.FORWARD) ? -360 : 360);
+//        return (servoEncoder.getCurrentPosition()/4046.0) * (direction.equals(Direction.REVERSE) ? -360 : 360);
     }
 
     // Check if servo is at target (default tolerance)
@@ -334,7 +336,7 @@ public class RTPAxon {
                         "Current Power: %.3f\n" +
                         "PID Values: P=%.3f I=%.3f D=%.3f\n" +
                         "PID Terms: Error=%.2f Integral=%.2f",
-                servoEncoder.getVoltage(),
+                servoEncoder.getCurrentPosition(),
                 getCurrentAngle(),
                 totalRotation,
                 targetRotation,
@@ -346,14 +348,14 @@ public class RTPAxon {
     }
 
     // TeleOp test class for manual tuning and testing
-    @TeleOp(name = "Cont. Rotation Axon Test", group = "test")
-    public static class CRAxonTest extends LinearOpMode {
+    @TeleOp(name = "Cont. Rotation Axon REV Test", group = "test")
+    public static class CRAxonTestRev extends LinearOpMode {
 
         @Override
         public void runOpMode() throws InterruptedException {
             telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
             CRServo crservo = hardwareMap.crservo.get("rightHorizSlide");
-            AnalogInput encoder = hardwareMap.get(AnalogInput.class, "rightHorizSlideEncoder");
+            DcMotorEx encoder = hardwareMap.get(DcMotorEx.class, "rightHorizSlideEncoder");
             GamepadPair gamepads = new GamepadPair(gamepad1, gamepad2);
             RTPAxon servo = new RTPAxon(crservo, encoder);
 

@@ -19,7 +19,6 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 import org.firstinspires.ftc.teamcode.pedroPathing.RTPAxon;
 
 public class HardwareQualifier {
@@ -55,7 +54,7 @@ public class HardwareQualifier {
     public DcMotorEx encoderTurret;
     public RTPAxon axonTurretArmL;
     public RTPAxon axonTurretArmR;
-    public RTPAxonRev axonTurretArm;
+    public RTPAxon axonTurretArm;
     public boolean rtp=true;
     GoBildaPinpointDriver odo;
     IMU imu;
@@ -116,23 +115,47 @@ public class HardwareQualifier {
 //Begin Definition and Initialization of HoodArm  and ArmR Servos
 //
 
-
-        TurretArmL = hwMap.get(ServoImplEx.class, "servoTurretArmL");//expansion  hub port 2
-        TurretArmL.setPwmRange(new PwmControl.PwmRange(500, 2500));
-//        TurretArmL.setDirection(Servo.Direction.REVERSE);
-        TurretArmL.setPosition(0.5);//
-        TurretArmR = hwMap.get(ServoImplEx.class, "servoTurretArmR");//expansion  hub port 4
-        TurretArmR.setPwmRange(new PwmControl.PwmRange(500, 2500));
-//        TurretArmR.setDirection(Servo.Direction.REVERSE);
-        TurretArmR.setPosition(0.5);//
-        encoderTurret = hwMap.get(DcMotorEx.class, "RBMotor");// encoderTurret control  hub motor encoder port 3
-
-/////////////////////////////////////CRServo///////////////////////////////////////
-//        servoTurretArmL = hwMap.get(CRServo.class, "servoTurretArmL");//expansion  hub port 2
+//////////////////////////////servo mode good/////////////////////
+//        TurretArmL = hwMap.get(ServoImplEx.class, "servoTurretArmL");//expansion  hub port 2
+//        TurretArmL.setPwmRange(new PwmControl.PwmRange(500, 2500));
+////        TurretArmL.setDirection(Servo.Direction.REVERSE);
+//        TurretArmL.setPosition(0.5);//
+//        TurretArmR = hwMap.get(ServoImplEx.class, "servoTurretArmR");//expansion  hub port 4
+//        TurretArmR.setPwmRange(new PwmControl.PwmRange(500, 2500));
+////        TurretArmR.setDirection(Servo.Direction.REVERSE);
+//        TurretArmR.setPosition(0.5);//
 //        encoderTurret = hwMap.get(DcMotorEx.class, "RBMotor");// encoderTurret control  hub motor encoder port 3
 //        encoderTurretArmL = hwMap.get(AnalogInput.class, "encoderTurretArmL");//expansion  hub c analog input devicds 0  blue
-//        axonTurretArmL = new RTPAxon(servoTurretArmL, encoderTurretArmL);
-//        axonTurretArm = new RTPAxonRev(servoTurretArmL, encoderTurret);
+//////////////////////////////servo mode good/////////////////////
+
+
+/////////////////////////////////////CRServo///////////////////////////////////////
+        servoTurretArmL = hwMap.get(CRServo.class, "servoTurretArmL");//expansion  hub port 2
+        encoderTurret = hwMap.get(DcMotorEx.class, "RBMotor");// encoderTurret control  hub motor encoder port 3
+        axonTurretArmL = new RTPAxon(servoTurretArmL, encoderTurret);
+//      servoTurretArmL.setDirection(CRServo.Direction.REVERSE);
+        servoTurretArmR = hwMap.get(CRServo.class, "servoTurretArmR");//control hub port 4
+        axonTurretArmR = new RTPAxon(servoTurretArmR, encoderTurret);
+//       servoTurretArmR.setDirection(CRServo.Direction.REVERSE);
+        axonTurretArmL.setMaxPower(0.5);
+        axonTurretArmL.setRtp(rtp);
+        axonTurretArmR.setMaxPower(0.5);
+        axonTurretArmR.setRtp(rtp);
+        axonTurretArmL.setPidCoeffs(0.017,0.000, 0.0009);
+        axonTurretArmR.setPidCoeffs(0.017, 0.000, 0.0009);//good for no load
+//        axonTurretArmL.setPidCoeffs(0.0079, 0.00000, 0.0008); //good for no load
+//
+//        //        TurretArmR.setPosition(0.5);//
+////        encoderTurret = hwMap.get(DcMotorEx.class, "RBMotor");// encoderTurret control  hub motor encoder port 3
+// //       encoderTurretArmL = hwMap.get(AnalogInput.class, "encoderTurretArmL");//expansion  hub c analog input devicds 0  blue
+//        servoTurretArmL = hwMap.get(CRServo.class, "servoTurretArmL");//expansion  hub port 2
+//        encoderTurret = hwMap.get(DcMotorEx.class, "RBMotor");// encoderTurret control  hub motor encoder port 3
+////        encoderTurretArmL = hwMap.get(AnalogInput.class, "encoderTurretArmL");//expansion  hub c analog input devicds 0  blue
+////        axonTurretArmL = new RTPAxon(servoTurretArmL, encoderTurretArmL);
+//        axonTurretArmL = new RTPAxon(servoTurretArmL, encoderTurret);
+//        servoTurretArmR = hwMap.get(CRServo.class, "servoTurretArmR");//control hub port 4
+////        encoderTurretArmR = hwMap.get(AnalogInput.class, "encoderTurretArmR");//control hub analog input devicds 1 white
+//        axonTurretArmR = new RTPAxon(servoTurretArmR, encoderTurret);
 //        servoTurretArmL.setDirection(CRServo.Direction.REVERSE);
 //        axonTurretArmL.setMaxPower(0.5);
 //        axonTurretArmL.setRtp(rtp);
@@ -141,8 +164,8 @@ public class HardwareQualifier {
 //
 ////
 //        servoTurretArmR = hwMap.get(CRServo.class, "servoTurretArmR");//control hub port 4
-//        encoderTurretArmR = hwMap.get(AnalogInput.class, "encoderTurretArmR");//control hub analog input devicds 1 white
-//        axonTurretArmR = new RTPAxon(servoTurretArmR, encoderTurretArmR);
+////        encoderTurretArmR = hwMap.get(AnalogInput.class, "encoderTurretArmR");//control hub analog input devicds 1 white
+//        axonTurretArmR = new RTPAxon(servoTurretArmR, encoderTurret);
 //        servoTurretArmR.setDirection(CRServo.Direction.REVERSE);
 //        axonTurretArmR.setMaxPower(0.5);
 //        axonTurretArmR.setRtp(rtp);
