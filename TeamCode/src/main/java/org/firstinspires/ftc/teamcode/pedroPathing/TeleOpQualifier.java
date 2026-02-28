@@ -3,17 +3,23 @@ package org.firstinspires.ftc.teamcode.pedroPathing;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.arcrobotics.ftclib.controller.PIDFController;
+import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServoImplEx;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.pedroPathing.RTPAxon;
-
+import org.firstinspires.ftc.teamcode.pedroPathing.Alliance;
 
 @Config  // 添加这个注解，让 Dashboard 可以调整参数
 @TeleOp(name = "AAA Pennsylvania FTC Championship V1 02192026")
@@ -68,6 +74,16 @@ public class TeleOpQualifier extends LinearOpMode {
 
     public static final double blockageblockTele=0.1; // from .18 -0.1 for tele
     public static final double blockagereleaseTele=0.24;
+    ///////////////turret///////////
+    private Pose robotPose;
+    private double turretAngle = Math.PI / 2.0;
+    private double turretSetpoint = 0.0;
+    private double turretPower = 0.0;
+//    private final Gamepad gamepad1;
+//    public static final double GEAR_RATIO = .5;
+//    private DriveSubsystem driveSubsystem;
+//    private static TurretSubsystem instance;
+/// ////////////////////////////////////////////////////////////////
     public static final double HoodArmfarposition=0.3;
     public static final double HoodArmcloseposition=0.35;
     public static final double HoodArmPositionInit = 0.1;
@@ -95,6 +111,8 @@ public class TeleOpQualifier extends LinearOpMode {
     @Override
     public void runOpMode() {
         robot.init(hardwareMap);
+//        robot.alliance = Alliance.BLUE;
+        robot.alliance = Alliance.RED;
         initShooterPIDF();
 //        robot.axonTurretArmL.setTargetRotation(0);
 //        robot.axonTurretArmL.setMaxPower(0.5);
@@ -141,69 +159,69 @@ public class TeleOpQualifier extends LinearOpMode {
 
     } //end of run mode
 
+///  //////////////////////////////////////////methods/////////////////////////
 
+public double findPosition() {
+    double x, y;
+    double robotHeading;
+    double overallAngle;
+
+    if (robot.alliance == Alliance.BLUE) {
+        x = robotPose.getX();
+        y = 144 - robotPose.getY();
+
+        robotHeading = robotPose.getHeading();
+        overallAngle = Math.PI - Math.atan2(y, x);
+
+    } else if (robot.alliance == Alliance.RED) {
+        x = 144 - robotPose.getX();
+        y = 144 - robotPose.getY();
+
+        robotHeading = robotPose.getHeading();
+        overallAngle = Math.atan2(y, x);
+
+    } else {
+        return 0.0;
+    }
+
+    double target = overallAngle - robotHeading;
+
+    if (target < -Math.PI / 2.0 || target > Math.PI / 2.0) {
+        return 0.0;
+    }
+
+    return target;
+}
+
+
+    public double getPosition() {
+        int ticksPerRev = 8192;
+        double revolutions = (double) robot.encoderTurret.getCurrentPosition() / ticksPerRev;
+
+        return -revolutions * 2 * Math.PI * TurretConstants.GEAR_RATIO;
+    }
+
+//    public void setPosition(double pos) {
+//        turretPower = -pidController.calculate(getPosition(), pos);
+//        setTurretPower(turretPower);
+//    }
+/// //////////////////////////////////////////////////////////////////////////
     public void updateIntake() {
             // 手柄控制拾取电机
             if (gamepad1.left_trigger > 0.1) {
                 /// ///////////////////////////////////for debug//////////////////////
-//                robot.BlockageArmL.setPosition(blockageblockposition);
-//                robot.BlockageArmR.setPosition(blockageblockposition);
-//
-//                robot.IntakeMotorL.setPower(intakePowerIntake);
-//                robot.IntakeMotorR.setPower(intakePowerIntake);
+                robot.BlockageArmL.setPosition(blockageblockposition);
+                robot.BlockageArmR.setPosition(blockageblockposition);
+
+                robot.IntakeMotorL.setPower(intakePowerIntake);
+                robot.IntakeMotorR.setPower(intakePowerIntake);
                 /// ///////////////////////////////////for debug//////////////////////
-                robot.axonTurretArmL.setTargetRotation(90);// ((96/20)*35/110)
-
-                robot.axonTurretArmR.setTargetRotation(90);
-//                robot.axonTurretArm.setTargetRotation(30);
-//   //                robot.TurretArmL.setPosition(0.45);
-////                robot.TurretArmR.setPosition(0.45);
-//y = 0.45452 -0.00677*H43^1 + -9.37853E-4*H43^2 -4.69942E-5*H43^3 + -1.24595E-6*H43^4 -1.74452E-8*H43^5 + -1.05357E-10*H43^6
-// servoPosition = servoPosition + SERVO_STEP;
-//                if (servoPosition >= 1.0) {
-//                    servoPosition = 0.99; // 限制最大值
-//                }
+//                robot.axonTurretArmL.setTargetRotation(90);// ((96/20)*35/110)
 //
-//                robot.TurretArmL.setPosition(servoPosition);
-//                robot.TurretArmR.setPosition(servoPosition);
-//                telemetry.addData("Servo Position", servoPosition);
-//                telemetry.update();
-//                sleep(200);
-                //            if (gamepad1.left_trigger > 0.3) {
-//                servoPosition = servoPosition + SERVO_STEP;
-//                if (servoPosition >= 1.0) {
-//                    servoPosition = 0.99; // 限制最大值
-//                }
-//                robot.TServo.setPosition(servoPosition);
-//                telemetry.addData("Servo Position", servoPosition);
-//                telemetry.update();
-//                sleep(200);
-//            }
-//            if (gamepad1.right_trigger > 0.3) {
-//                servoPosition = servoPosition - SERVO_STEP;
-//                if (servoPosition <= 0.0) {
-//                    servoPosition = 0.01; // 限制最小值
-//                }
-//                robot.TServo.setPosition(servoPosition);
-//                telemetry.addData("Servo Position", servoPosition);
-//                telemetry.update();
-//                sleep(200);
-//            }
+//                robot.axonTurretArmR.setTargetRotation(90);
 
+//y = 0.45452 -0.00677*H43^1 + -9.37853E-4*H43^2 -4.69942E-5*H43^3 + -1.24595E-6*H43^4 -1.74452E-8*H43^5 + -1.05357E-10*H43^6
 
-//                robot.TurretArmL.setPosition(0.45);
-//                robot.TurretArmR.setPosition(0.45);
-//                robot.TurretArmL.setPosition(0.9);
-//                robot.TurretArmL.setPosition(0.9);
-//                robot.axonTurretArmL.setTargetRotation(30);// ((96/20)*35/110)
-//                robot.axonTurretArm.setTargetRotation(30);
-//                robot.axonTurretArmR.setTargetRotation(30);
-//                robot.axonTurretArmL.setTargetRotation(0);
-//                robot.BlockageArm.setPosition(blockageblockTele);
-                // blockage the ball     robot.BlockageArm.setPosition(blockagereleaseposition);
-//                robot.MasterShooterMotorL.setPower(ShooterMotorHold);
-//                robot.SlaveShooterMotorR.setPower(ShooterMotorHold);
-                // Non-blocking delay to prevent rapid mode switching
 //                robot.HoodArmL.setPosition(0.3);
 //                robot.HoodArmR.setPosition(0.3);
 
@@ -346,6 +364,8 @@ public class TeleOpQualifier extends LinearOpMode {
 private void startShooter() {
     robot.IntakeMotorL.setPower(0);
     robot.IntakeMotorR.setPower(0);
+    robot.axonTurretArmL.setTargetRotation(0);
+    robot.axonTurretArmR.setTargetRotation(0);
     if (robot.MasterShooterMotorL instanceof DcMotorEx) {
         DcMotorEx shooter = (DcMotorEx) robot.MasterShooterMotorL;
         DcMotorEx shooterR = (DcMotorEx) robot.SlaveShooterMotorR;
@@ -355,7 +375,18 @@ private void startShooter() {
     }
 
 }
+/// ////////////////////////////////////////////////////////////////////////////////
+    private void moveTurret() {
+        robot.IntakeMotorL.setPower(0);
+        robot.IntakeMotorR.setPower(0);
+        if (robot.MasterShooterMotorL instanceof DcMotorEx) {/// ////////////////////
+            robot.axonTurretArmL.setTargetRotation(90);// ((96/20)*35/110)
+            robot.axonTurretArmR.setTargetRotation(90);
 
+        }
+
+    }
+/// ////////////////////////////////////////////////////////////////////////////////////
     /**
      * 检查射击电机速度（使用 Dashboard 调整的容差）
      */

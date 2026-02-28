@@ -20,10 +20,11 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.pedroPathing.RTPAxon;
+import org.firstinspires.ftc.teamcode.pedroPathing.Alliance;
 
 public class HardwareQualifier {
     HardwareMap hwMap =  null;
-
+    public Alliance alliance;
     public DcMotorEx rightFrontMotor;
     public DcMotorEx leftFrontMotor;
     public DcMotorEx rightRearMotor;
