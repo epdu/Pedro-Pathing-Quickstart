@@ -113,7 +113,6 @@ public class TeleOpChampionship extends LinearOpMode {
     public static final double blockagereleaseposition=0.18;
     public double servoPosition=0.5;
     public static final double SERVO_STEP=-0.005;
-
     public static final double blockageblockTele=0.1; // from .18 -0.1 for tele
     public static final double blockagereleaseTele=0.24;
     ///////////////turret///////////
