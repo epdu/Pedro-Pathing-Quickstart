@@ -9,7 +9,7 @@
 //import org.firstinspires.ftc.teamcode.pedroPathing.Alliance;
 //
 //@Configurable
-//public class Robot {
+//public class Robotdoesnotuse {
 //    public static Alliance alliance = Alliance.UNKNOWN;
 //    public static boolean tuningMode = false;
 //

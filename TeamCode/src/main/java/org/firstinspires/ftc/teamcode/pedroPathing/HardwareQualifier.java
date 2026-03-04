@@ -93,8 +93,8 @@ public class HardwareQualifier {
         SlaveShooterMotorR = hwMap.get(DcMotorEx.class, "SlaveShooterMotorR"); //11072025 expansion  hub port 3
         MasterShooterMotorL.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        MasterShooterMotorL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        SlaveShooterMotorR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        MasterShooterMotorL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        SlaveShooterMotorR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         double ShooterMotorLVelo =MasterShooterMotorL.getVelocity();
         double ShooterMotorRVelo =SlaveShooterMotorR.getVelocity();
@@ -107,6 +107,8 @@ public class HardwareQualifier {
         IntakeMotorR  = hwMap.get(DcMotorEx.class, "IntakeMotorR"); //01292026  expansion  hub port 1
         IntakeMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         IntakeMotorR.setDirection(DcMotorSimple.Direction.REVERSE);
+        IntakeMotorL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        IntakeMotorR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         voltageCHub = hwMap.get(VoltageSensor.class, "Control Hub");
         voltageExHub = hwMap.get(VoltageSensor.class, "Expansion Hub 2");

@@ -22,7 +22,47 @@ android {
         jniLibs.useLegacyPackaging true
     }
 }
+//buildscript {
+//    repositories {
+//        mavenCentral()
+//        google()
+//    }
+//    dependencies {
+//        // Note for FTC Teams: Do not modify this yourself.
+//        //noinspection AndroidGradlePluginVersion
+//        classpath 'com.android.tools.build:gradle:8.7.0'
+//        classpath 'io.deepmedia.tools:deployer:0.1.0'
+//    }
+//}
+allprojects {
+    repositories {
+        mavenCentral()
+        google()
+        jcenter()
+//        maven { url 'https://jitpack.io' }
+//        maven { url = 'https://raw.githubusercontent.com/skeletonarmy/marrow/mvn-repo/' }
+//        // 添加 OpenFTC 仓库
+//        maven { url = 'https://maven.brott.dev/' }
+//        maven { url = 'https://mymaven.bylazar.com/releases'}
+//        maven { url = 'https://jitpack.io' }
+//        maven { url = 'https://skeletonarmy.github.io/marrow' }
+maven { url = 'https://raw.githubusercontent.com/seattlesolvers/solverslib/mvn-repo/' }
+        maven {
+            url = "https://mymaven.bylazar.com/releases"
+        }
 
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+//subprojects {
+//    apply(plugin = "com.android.library")
+////    apply(plugin = "io.deepmedia.tools.deployer")
+//
+//    // ... 其余代码保持不变
+//}
 dependencies {
     implementation project(':FtcRobotController')
 
@@ -43,6 +83,12 @@ dependencies {
     implementation 'org.firstinspires.ftc:FtcCommon:10.2.0'
     implementation 'org.firstinspires.ftc:Vision:10.2.0'
     implementation 'androidx.appcompat:appcompat:1.2.0'
+//    implementation 'com.skeletonarmy:marrow:1.0.0'
+//    implementation 'com.github.skeletonarmy:marrow:main-SNAPSHOT'
+//    implementation 'com.skeletonarmyftc.marrow:core:1.0.0'
+    // 替换原来的 libs.deepmedia
+//    implementation("com.example:deepmedia:1.0.0")  // 使用实际的依赖坐标
 
+//    implementation 'com.seattlesolvers:solverslib:1.0.0'
 
 }
