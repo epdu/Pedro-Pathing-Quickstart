@@ -1,0 +1,63 @@
+package org.firstinspires.ftc.teamcode.opmode.TeleOp;
+
+import com.pedropathing.follower.Follower;
+import com.pedropathing.follower.FollowerConstants;
+import com.pedropathing.ftc.FollowerBuilder;
+import com.pedropathing.ftc.drivetrains.MecanumConstants;
+import com.pedropathing.ftc.localization.constants.PinpointConstants;
+import com.pedropathing.paths.PathConstraints;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
+public class Constants {
+    public static FollowerConstants followerConstants = new FollowerConstants()
+            .mass(12.11)
+            .lateralZeroPowerAcceleration(-59.39382)
+            .forwardZeroPowerAcceleration(-32.17968);
+
+
+//    public static FollowerConstants followerConstants = new FollowerConstants()
+//            .mass(9.117);
+    public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
+
+    public static Follower createFollower(HardwareMap hardwareMap) {
+        return new FollowerBuilder(followerConstants, hardwareMap)
+                .pathConstraints(pathConstraints)
+                .mecanumDrivetrain(driveConstants)
+                .pinpointLocalizer(localizerConstants)
+                .build();
+    }
+    public static MecanumConstants driveConstants = new MecanumConstants()
+            .maxPower(0.8)
+            .rightFrontMotorName("RFMotor")
+            .rightRearMotorName("RBMotor")
+            .leftRearMotorName("LBMotor")
+            .leftFrontMotorName("LFMotor")
+            .leftFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
+            .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
+            .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
+            .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
+            .xVelocity(64.599)
+            .yVelocity(51.33016);
+
+    public static PinpointConstants localizerConstants = new PinpointConstants()
+            .forwardPodY(-1.9685)
+            .strafePodX(-8.033)
+            .distanceUnit(DistanceUnit.INCH)
+            .hardwareMapName("odo")
+            .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
+            .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD)
+            .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED);// changed from forward tobe reversed 0130843pm
+//    public static PinpointConstants localizerConstants = new PinpointConstants()
+//            .forwardPodY(-1.9685)
+//            .strafePodX(-7.08661)
+//            .distanceUnit(DistanceUnit.INCH)
+//            .hardwareMapName("odo")
+//            .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
+//            .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD)
+//            .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED);
+
+}
