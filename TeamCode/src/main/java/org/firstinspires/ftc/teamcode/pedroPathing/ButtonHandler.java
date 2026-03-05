@@ -6,12 +6,21 @@ public class ButtonHandler {
     private boolean isLongPressHandled = false;
     private int clickCount = 0;
     private long lastClickTime = 0;
+    private boolean wasPressedFlag = false;
+    private boolean previousButtonState = false;
 
     private static final long LONG_PRESS_THRESHOLD = 500; // Long press time threshold (milliseconds)
     private static final long DOUBLE_CLICK_INTERVAL = 300;// Long press time threshold (milliseconds)
 
     public void update(boolean isButtonPressed) {
         long currentTime = System.currentTimeMillis();
+        // 新增：检测 wasPressed (上升沿检测)
+        if (isButtonPressed && !previousButtonState) {
+            wasPressedFlag = true;
+        } else {
+            wasPressedFlag = false;
+        }
+        previousButtonState = isButtonPressed;
 
         if (isButtonPressed) {
             if (!isPressed) { // The button was just pressed
@@ -54,5 +63,9 @@ public class ButtonHandler {
         clickCount = 0;
         isPressed= false;
         isLongPressHandled = false;
+    }
+
+    public boolean wasPressed() {
+        return wasPressedFlag;
     }
 }
