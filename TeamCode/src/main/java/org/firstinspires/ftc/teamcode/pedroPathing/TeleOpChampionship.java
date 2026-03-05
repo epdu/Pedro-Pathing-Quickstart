@@ -76,31 +76,12 @@ public class TeleOpChampionship extends LinearOpMode {
     private final String LED_COLOR_READY = "GREEN";
     private final String LED_COLOR_ACCELERATING = "YELLOW";
     private final String LED_COLOR_OFF = "RED";
-    // RPM = (TPS * 60秒) / 每转ticks数  return (tps * 60.0) / ticksPerRevolution;  28*13.7
-    private static final double Close_SHOOTER_TARGET_RPM = 800;//  400RPM---2,557.33333333333333
-    private static final double Far_SHOOTER_TARGET_RPM = 2237;  //  350RPM---2237
-    public static double toleranceforShoot = 100;        // 转速容差
-    //  private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
-    //    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
-    // use rpm as speed, the real name should be speed = 1300      //1300
-    //  1000RPM---6346.67
-    //  600RPM---3808
-    //  500RPM---3173.3
     /////////////////////////////////pretty goood for close shoot /////////////////////////// 1300
     private static final double Med_SHOOTER_TARGET_RPM = 1200;  // from 1200-1150 1666 still big 1866 kind of good for far， but a little bit too big
     public float DriveTrains_ReducePOWER=1f;
     public float DriveTrains_smoothTurn=1f;
-    HardwareQualifier robot = new HardwareQualifier();
-//    TelemetryData telemetryData = new TelemetryData(new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()));
-
-//    private final Robot solverrobot = Robot.getInstance();
-    //    public String fieldOrRobotCentric = "robot";
-    public String fieldOrRobotCentric = "field";
-    private double powerMultiplier = 0.9;
-    boolean move = false;
-    int controlMode = 1;
     public float  intakePowerIntake=0.9f;//push blocker too much from 99-90
-    public float  intakePowerShoot=0.7f;
+    public float  intakePowerShoot=0.95f;
     public float  intakePowerDump=-0.65f;
     public float  intakePowerOff=0.0f;
     public float  ShooterMotorShootFar=0.95f;
@@ -131,6 +112,27 @@ public class TeleOpChampionship extends LinearOpMode {
     public static final double HoodArmPositionCloseShoot = 0.3;
     public static final double HoodArmPositionMedShoot = 0.2;
     public static final double HoodArmPositionFarShoot = 0.1;
+    // RPM = (TPS * 60秒) / 每转ticks数  return (tps * 60.0) / ticksPerRevolution;  28*13.7
+    private static final double Close_SHOOTER_TARGET_RPM = 800;//  400RPM---2,557.33333333333333
+    private static final double Far_SHOOTER_TARGET_RPM = 2237;  //  350RPM---2237
+    public static double toleranceforShoot = 100;        // 转速容差
+    //  private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
+    //    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
+    // use rpm as speed, the real name should be speed = 1300      //1300
+    //  1000RPM---6346.67
+    //  600RPM---3808
+    //  500RPM---3173.3
+
+    HardwareQualifier robot = new HardwareQualifier();
+//    TelemetryData telemetryData = new TelemetryData(new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()));
+
+//    private final Robot solverrobot = Robot.getInstance();
+    //    public String fieldOrRobotCentric = "robot";
+    public String fieldOrRobotCentric = "field";
+    private double powerMultiplier = 0.9;
+    boolean move = false;
+    int controlMode = 1;
+
     private ElapsedTime imuResetTimer = new ElapsedTime();
     private boolean imuResetInCooldown = false;
     private static final long IMU_RESET_COOLDOWN_MS = 300; // 1秒冷却时间
@@ -191,7 +193,7 @@ public class TeleOpChampionship extends LinearOpMode {
             updateBlockage();
 //            updateAutoAim();
             robot.axonTurretArmL.update();
-            robot.axonTurretArmR.update();
+//            robot.axonTurretArmR.update();
             telemetry.update();
             sleep(20);
 
@@ -216,7 +218,7 @@ public class TeleOpChampionship extends LinearOpMode {
 
 
     public double findPosition() {
-        double x, y;
+         double x, y;
         double robotHeading;
         double overallAngle;
 
@@ -344,21 +346,32 @@ public class TeleOpChampionship extends LinearOpMode {
     }
 
     public static class ShooterPIDFConfig {
-        public static double kP = 100;     // 比例增益0.10.350.651.0655
+        public static double kP = 0.0;   // 比例增益0.10.350.651.0655
         public static double kI = 0.0;      // 积分增益
         public static double kD = 0.0;      // 微分增益
-        public static double kF = 17;      // 前馈增益0.050.08
+        public static double kF = 0.0001;      // 前馈增益0.050.08
         public static double targetRPM =Med_SHOOTER_TARGET_RPM; // 目标转速
         public static double tolerance = 30;
+        /////////////////////We have the exact same setup (although our wheel may be built differently).
+        //The Ziegler-Nichols method did not work for us. Our speeds are in RPS, and our PIDF is 0.0084 0.000017 0.85 0.01.
+        //////////////////before add more weight
+//        public static double kP = 100;     // 比例增益0.10.350.651.0655
+//        public static double kI = 0.0;      // 积分增益
+//        public static double kD = 0.0;      // 微分增益
+//        public static double kF = 17;      // 前馈增益0.050.08
     }
 
     private void initShooterPIDF() {
         // 初始化时调用一次
         if (robot.MasterShooterMotorL instanceof DcMotorEx) {
             DcMotorEx shooter = (DcMotorEx) robot.MasterShooterMotorL;
+            DcMotorEx shooterR = (DcMotorEx) robot.SlaveShooterMotorR;
+            // 直接使用setVelocity，它会使用已配置的PIDF
             // 设置运行模式
             shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            shooterR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            shooterR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             // 设置PIDF参数
             PIDFCoefficients pidf = new PIDFCoefficients(
                     ShooterPIDFConfig.kP,
@@ -367,6 +380,7 @@ public class TeleOpChampionship extends LinearOpMode {
                     ShooterPIDFConfig.kF
             );
             shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+            shooterR.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
             telemetry.addData("Shooter PIDF", "Initialized");
         }
     }
@@ -419,14 +433,12 @@ public class TeleOpChampionship extends LinearOpMode {
         robot.IntakeMotorL.setPower(0);
         robot.IntakeMotorR.setPower(0);
         robot.axonTurretArmL.setTargetRotation(0);
-        robot.axonTurretArmR.setTargetRotation(0);
+//        robot.axonTurretArmR.setTargetRotation(0);
         if (robot.MasterShooterMotorL instanceof DcMotorEx) {
             DcMotorEx shooter = (DcMotorEx) robot.MasterShooterMotorL;
             DcMotorEx shooterR = (DcMotorEx) robot.SlaveShooterMotorR;
             // 直接使用setVelocity，它会使用已配置的PIDF
-
 //            shooter.setVelocity(ShooterPIDFConfig.targetRPM)
-
             shooter.setVelocity(Math.abs(ShooterPIDFConfig.targetRPM));
             shooterR.setVelocity(Math.abs(ShooterPIDFConfig.targetRPM));
         }
@@ -438,7 +450,7 @@ public class TeleOpChampionship extends LinearOpMode {
         robot.IntakeMotorR.setPower(0);
         if (robot.MasterShooterMotorL instanceof DcMotorEx) {/// ////////////////////
             robot.axonTurretArmL.setTargetRotation(90);// ((96/20)*35/110)
-            robot.axonTurretArmR.setTargetRotation(90);
+//            robot.axonTurretArmR.setTargetRotation(90);
 
         }
 
@@ -529,12 +541,12 @@ public class TeleOpChampionship extends LinearOpMode {
 //        telemetry.addData("At Speed?", isShooterAtSpeed ? "YES" : "NO");
 //        telemetry.addData("Power", "%.2f", shooterPower);
 //        // PIDF 参数值
-//        telemetry.addLine("=== PIDF PARAMETERS ===");
-//        telemetry.addData("kP", "%.4f", ShooterPIDFConfig.kP);
-////        telemetry.addData("kI", "%.4f", ShooterPIDFConfig.kI);
-////        telemetry.addData("kD", "%.4f", ShooterPIDFConfig.kD);
-//        telemetry.addData("kF", "%.4f", ShooterPIDFConfig.kF);
-//        telemetry.addData("Tolerance", "%.0f RPM", ShooterPIDFConfig.tolerance);
+        telemetry.addLine("=== PIDF PARAMETERS ===");
+        telemetry.addData("kP", "%.4f", ShooterPIDFConfig.kP);
+//        telemetry.addData("kI", "%.4f", ShooterPIDFConfig.kI);
+        telemetry.addData("kD", "%.4f", ShooterPIDFConfig.kD);
+        telemetry.addData("kF", "%.4f", ShooterPIDFConfig.kF);
+        telemetry.addData("Tolerance", "%.0f RPM", ShooterPIDFConfig.tolerance);
 //
 //        // 从电机状态
 //        telemetry.addLine("=== SLAVE MOTOR ===");
