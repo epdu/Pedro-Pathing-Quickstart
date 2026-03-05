@@ -268,7 +268,6 @@ public class TeleOpChampionship extends LinearOpMode {
             /// ///////////////////////////////////for debug//////////////////////
             robot.BlockageArmL.setPosition(blockageblockposition);
             robot.BlockageArmR.setPosition(blockageblockposition);
-
             robot.IntakeMotorL.setPower(intakePowerIntake);
             robot.IntakeMotorR.setPower(intakePowerIntake);
             /// ///////////////////////////////////for debug//////////////////////
