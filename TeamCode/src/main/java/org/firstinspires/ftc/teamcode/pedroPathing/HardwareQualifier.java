@@ -18,9 +18,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.pedroPathing.RTPAxon;
-import org.firstinspires.ftc.teamcode.pedroPathing.Alliance;
 
 public class HardwareQualifier {
     HardwareMap hwMap =  null;
@@ -31,6 +30,8 @@ public class HardwareQualifier {
     public DcMotorEx leftRearMotor;
     public DcMotorEx MasterShooterMotorL;
     public DcMotorEx SlaveShooterMotorR;
+    public DcMotorEx shooterL ;
+    public DcMotorEx shooterR;
     public Servo blocker;
 
     public DcMotorEx IntakeMotorL;
@@ -95,7 +96,8 @@ public class HardwareQualifier {
 
         MasterShooterMotorL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         SlaveShooterMotorR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-
+        shooterL =  MasterShooterMotorL;
+        shooterR =  SlaveShooterMotorR;
         double ShooterMotorLVelo =MasterShooterMotorL.getVelocity();
         double ShooterMotorRVelo =SlaveShooterMotorR.getVelocity();
 
