@@ -165,8 +165,7 @@ public class HardwareQualifier {
 //        axonTurretArmL.setMaxPower(0.5);
 //        axonTurretArmL.setRtp(rtp);
 //        axonTurretArmL.setPidCoeffs(0.02,0, 0.0000);
-//        axonTurretArmL.setTargetRotation(1);
-//
+//        axonTurretArmL.setTargetRotation(1);//
 ////
 //        servoTurretArmR = hwMap.get(CRServo.class, "servoTurretArmR");//control hub port 4
 ////        encoderTurretArmR = hwMap.get(AnalogInput.class, "encoderTurretArmR");//control hub analog input devicds 1 white
