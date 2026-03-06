@@ -242,7 +242,7 @@ public double turp() {
 //        double dy = goalY - currentPose.getY();
 
 
-    int ticks = 8192;
+    int ticks = 8192/2;
     double goalX = 144;
     double goalY = 144;
     double dx = goalX - (robotPose.getX());
@@ -255,7 +255,7 @@ public double turp() {
     double robotHeadingDegrees = Math.toDegrees(robotHeading);
 
     double turretTargetAngle = goalHeadingFieldDegrees - robotHeadingDegrees;
-    double turretAngle = robot.encoderTurret.getCurrentPosition() / ticks;
+    double turretAngle = robot.encoderTurret.getCurrentPosition() * (360/ticks);
 
 
 //    double target = normA(turretTargetAngle);
@@ -274,7 +274,7 @@ public double turp() {
     double tolerance = 2;
 
     if (Math.abs(error) < tolerance) {
-        turretPower = 0;
+        turretPower = 0.5;
     }
     robot.servoTurretArmL.setPower(turretPower/2);
     robot.servoTurretArmR.setPower(turretPower/2);
@@ -409,12 +409,19 @@ public double turp() {
 
 
 
+
+
+
+
         if (gamepad1.x) {
             turp();
         } else {
-            robot.servoTurretArmL.setPower(0);
-            robot.servoTurretArmR.setPower(0);
+            robot.servoTurretArmL.setPower(0.5);
+            robot.servoTurretArmR.setPower(0.5);
         }
+
+
+
 
 
 
