@@ -22,7 +22,7 @@ public class GDTeleOpChampionship extends LinearOpMode {
 
 
 
-    PIDController turretController = new PIDController(0.01, 0, 0.00044);
+    PIDController turretController = new PIDController(0.015, 0, 0);
 
 
 
@@ -270,13 +270,19 @@ public double turp() {
 
     double turretPower = (turretController.calculate(turretAngle, target));
 //    double turretPower = (calculate(turretAngle, target));
+    double error = target - turretAngle;
+    double tolerance = 2;
 
-
+    if (Math.abs(error) < tolerance) {
+        turretPower = 0;
+    }
     robot.servoTurretArmL.setPower(turretPower/2);
     robot.servoTurretArmR.setPower(turretPower/2);
 
 //    robot.axonTurretArmL.setTargetRotation(180-goalHeadingFieldDegrees - robotHeadingDegrees);
 //    robot.axonTurretArmR.setTargetRotation(180-goalHeadingFieldDegrees - robotHeadingDegrees);
+    telemetry.addData("encoderTurret .getCurrentPosition()", robot.encoderTurret.getCurrentPosition());
+    telemetry.addData("encoderTurret target angle-turret angle", target-turretAngle);
 
     return goalX;
 }
@@ -288,7 +294,9 @@ public double turp() {
 
 
 
-/// ///////////////////////////////////////////
+
+
+
 
 
 
