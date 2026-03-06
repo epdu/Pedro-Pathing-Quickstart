@@ -430,10 +430,10 @@ public class TeleOpChampionship extends LinearOpMode {
 
 
     public static class ShooterPIDFConfig {
-        public static double kP = 100.0;        // 比例增益0.10.350.651.0655
+        public static double kP = 0.0;        // 比例增益0.10.350.651.0655
         public static double kI = 0.0;        // 积分增益
         public static double kD = 0.0;        // 微分增益
-        public static double kF = 14.0;      // 14 --- 90%-95% of 1200    15.1 V=1160 low battery
+        public static double kF = 15.0;      // 14 --- 90%-95% of 1200  15.0  15.1 V=1160 low battery
  /*       //To tune the feedforward controller, increase the velocity feedforward gain until
   the flywheel approaches the correct setpoint over time. If the flywheel overshoots, reduce .
 

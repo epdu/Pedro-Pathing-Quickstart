@@ -241,8 +241,8 @@ public double turp() {
 //        double dx = goalX - currentPose.getX();
 //        double dy = goalY - currentPose.getY();
 
-
-    int ticks = 8192;
+    int ticks = 16384;
+//    int ticks = 8192;
     double goalX = 144;
     double goalY = 144;
     double dx = goalX - (robotPose.getX());
