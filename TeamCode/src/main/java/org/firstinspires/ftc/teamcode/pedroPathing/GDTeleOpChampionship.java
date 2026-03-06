@@ -161,8 +161,9 @@ public class GDTeleOpChampionship extends LinearOpMode {
             updateHood();
             updateBlockage();
 //            updateAutoAim();
+//             turp();
             robot.axonTurretArmL.update();
-//            robot.axonTurretArmR.update();
+            robot.axonTurretArmR.update();
             telemetry.update();
             sleep(20);
 
@@ -188,7 +189,7 @@ public class GDTeleOpChampionship extends LinearOpMode {
 
 
 
-
+/// ////////////////////////////////////////////////
 
 
     public class turretController {
@@ -232,7 +233,15 @@ public class GDTeleOpChampionship extends LinearOpMode {
     public double normA(double angle) {angle %= 360; if (angle < -180) angle += 360; else if (angle > 180) angle -= 360;return angle;}
 
 
-public double turp () {
+public double turp() {
+
+        robotPose = new Pose(70, 70, 0);
+        // 或者直接使用，不存储到成员变量
+//        Pose currentPose = robot.drive.getPose();
+//        double dx = goalX - currentPose.getX();
+//        double dy = goalY - currentPose.getY();
+
+
     int ticks = 8192;
     double goalX = 144;
     double goalY = 144;
@@ -260,9 +269,15 @@ public double turp () {
     }
 
     double turretPower = (turretController.calculate(turretAngle, target));
+//    double turretPower = (calculate(turretAngle, target));
 
 
     robot.servoTurretArmL.setPower(turretPower/2);
+    robot.servoTurretArmR.setPower(turretPower/2);
+
+//    robot.axonTurretArmL.setTargetRotation(180-goalHeadingFieldDegrees - robotHeadingDegrees);
+//    robot.axonTurretArmR.setTargetRotation(180-goalHeadingFieldDegrees - robotHeadingDegrees);
+
     return goalX;
 }
 
@@ -273,7 +288,7 @@ public double turp () {
 
 
 
-
+/// ///////////////////////////////////////////
 
 
 
@@ -381,7 +396,7 @@ public double turp () {
             fireRequested = false;
         }
 
-
+/// ////////////////////////////////////////
 
 
 
@@ -390,12 +405,13 @@ public double turp () {
             turp();
         } else {
             robot.servoTurretArmL.setPower(0);
+            robot.servoTurretArmR.setPower(0);
         }
 
 
 
 
-
+/// /////////////////////////////////////////////
 
 
         if (!gamepad1.right_bumper && !robot.MasterShooterMotorL.isBusy()) {
@@ -472,7 +488,7 @@ public double turp () {
         robot.IntakeMotorL.setPower(0);
         robot.IntakeMotorR.setPower(0);
         robot.axonTurretArmL.setTargetRotation(0);
-//        robot.axonTurretArmR.setTargetRotation(0);
+        robot.axonTurretArmR.setTargetRotation(0);
         if (robot.MasterShooterMotorL instanceof DcMotorEx) {
             DcMotorEx shooter = (DcMotorEx) robot.MasterShooterMotorL;
             DcMotorEx shooterR = (DcMotorEx) robot.SlaveShooterMotorR;
@@ -489,7 +505,7 @@ public double turp () {
         robot.IntakeMotorR.setPower(0);
         if (robot.MasterShooterMotorL instanceof DcMotorEx) {/// ////////////////////
             robot.axonTurretArmL.setTargetRotation(90);// ((96/20)*35/110)
-//            robot.axonTurretArmR.setTargetRotation(90);
+            robot.axonTurretArmR.setTargetRotation(90);
 
         }
 

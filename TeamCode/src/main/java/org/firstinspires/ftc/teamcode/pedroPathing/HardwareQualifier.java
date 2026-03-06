@@ -5,7 +5,6 @@ import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.C
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -55,7 +54,7 @@ public class HardwareQualifier {
 //    public AnalogInput encoderTurretArmR;
     public DcMotorEx encoderTurret;
     public RTPAxon axonTurretArmL;
-//    public RTPAxon axonTurretArmR;
+    public RTPAxon axonTurretArmR;
     public RTPAxon axonTurretArm;
     public boolean rtp=true;
     GoBildaPinpointDriver odo;
@@ -140,14 +139,14 @@ public class HardwareQualifier {
         axonTurretArmL = new RTPAxon(servoTurretArmL, encoderTurret);
 //      servoTurretArmL.setDirection(CRServo.Direction.REVERSE);
         servoTurretArmR = hwMap.get(CRServo.class, "servoTurretArmR");//control hub port 4
-//        axonTurretArmR = new RTPAxon(servoTurretArmR, encoderTurret);
+        axonTurretArmR = new RTPAxon(servoTurretArmR, encoderTurret);
 ////       servoTurretArmR.setDirection(CRServo.Direction.REVERSE);
         axonTurretArmL.setMaxPower(0.5);
         axonTurretArmL.setRtp(rtp);
-//        axonTurretArmR.setMaxPower(0.5);
-//        axonTurretArmR.setRtp(rtp);
+        axonTurretArmR.setMaxPower(0.5);
+        axonTurretArmR.setRtp(rtp);
         axonTurretArmL.setPidCoeffs(0.01,0.000, 0.00044);//  0.02   0.0025
-//        axonTurretArmR.setPidCoeffs(0.01,0.000, 0.00044);//good for no load
+        axonTurretArmR.setPidCoeffs(0.01,0.000, 0.00044);//good for no load
 //        axonTurretArmL.setPidCoeffs(0.0079, 0.00000, 0.0008); //good for no load
 //
 //        //        TurretArmR.setPosition(0.5);//
