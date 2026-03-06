@@ -274,7 +274,7 @@ public double turp() {
     double tolerance = 2;
 
     if (Math.abs(error) < tolerance) {
-        turretPower = 0.5;
+        turretPower = 0;
     }
     robot.servoTurretArmL.setPower(turretPower/2);
     robot.servoTurretArmR.setPower(turretPower/2);
@@ -416,8 +416,8 @@ public double turp() {
         if (gamepad1.x) {
             turp();
         } else {
-            robot.servoTurretArmL.setPower(0.5);
-            robot.servoTurretArmR.setPower(0.5);
+            robot.servoTurretArmL.setPower(0);
+            robot.servoTurretArmR.setPower(0);
         }
 
 
