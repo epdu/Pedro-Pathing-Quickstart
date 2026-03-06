@@ -52,10 +52,15 @@ public class HardwareQualifier {
     public CRServo servoTurretArmR;
 //    public AnalogInput encoderTurretArmL;
 //    public AnalogInput encoderTurretArmR;
+
     public DcMotorEx encoderTurret;
     public RTPAxon axonTurretArmL;
     public RTPAxon axonTurretArmR;
     public RTPAxon axonTurretArm;
+    public DcMotorEx servoEncoder;
+    // Continuous rotation servo
+    public CRServo servo;
+    // Continuous rotation servo
     public boolean rtp=true;
     GoBildaPinpointDriver odo;
     IMU imu;

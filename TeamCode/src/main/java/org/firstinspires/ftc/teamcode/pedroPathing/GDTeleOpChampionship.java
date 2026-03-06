@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -11,6 +12,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
@@ -20,18 +22,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 public class GDTeleOpChampionship extends LinearOpMode {
 
-
-
     PIDController turretController = new PIDController(0.015, 0, 0);
-
-
-
-
-
-
-
-
-
 
 
 
@@ -70,6 +61,38 @@ public class GDTeleOpChampionship extends LinearOpMode {
     private double turretAngle = Math.PI / 2.0;
     private double turretSetpoint = 0.0;
     private double turretPower = 0.0;
+    private Follower follower;
+
+    // Run-to-position mode flag
+    private boolean rtp;
+    // Current power applied to servo
+    private double power;
+    // Maximum allowed power
+    private double maxPower;
+    // Direction of servo movement
+    private RTPAxon.Direction direction;
+    // Last measured angle
+    private double previousAngle;
+    // Accumulated rotation in degrees
+    private double totalRotation;
+    // Target rotation in degrees
+    private double targetRotation;
+
+    // PID controller coefficients and state
+    private double kP;
+    private double kI;
+    private double kD;
+    private double integralSum;
+    private double lastError;
+    private double maxIntegralSum;
+    private ElapsedTime pidTimer;
+
+    // Initialization and debug fields
+    public double STARTPOS;
+    public int ntry = 0;
+    public int cliffs = 0;
+    public double homeAngle;
+
 //    private final Gamepad gamepad1;
 //    public static final double GEAR_RATIO = .5;
 //    private DriveSubsystem driveSubsystem;
@@ -123,7 +146,19 @@ public class GDTeleOpChampionship extends LinearOpMode {
     @Override
     public void runOpMode() {
         robot.init(hardwareMap);
+        initializeTurret();
 //        robot.alliance = Alliance.BLUE;
+        follower = Constants.createFollower(hardwareMap);
+        // 设置初始位置（通常在 opMode 的初始化阶段）
+        Pose startPose = new Pose(70, 70, 0);  // 或其他起始坐标
+        follower.setStartingPose(startPose);
+        telemetry.addData("setStartingPose", startPose.getX());
+        telemetry.addData("setStartingPose", startPose.getY());
+        telemetry.addData("setStartingPose", startPose.getHeading());
+        telemetry.addData("follower.getPose().getX()", follower.getPose().getX());
+        telemetry.addData("follower.getPose().getX()", follower.getPose().getY());
+        telemetry.addData("follower.getPose().getX()", follower.getPose().getHeading());
+        telemetry.update();
         robot.alliance = org.firstinspires.ftc.teamcode.pedroPathing.Alliance.RED;
         initShooterPIDF();
 //        if (gamepad1.dpad_right) {
@@ -224,49 +259,170 @@ public class GDTeleOpChampionship extends LinearOpMode {
     }
 
 
+/////////////////////////////
+
+// Main update loop: updates rotation, computes PID, applies power update ----updateTurret
+public synchronized void updateTurret() {
+    double currentAngle = getCurrentAngle();
+    double angleDifference = currentAngle - previousAngle;
+
+    // Handle wraparound at 0/360 degrees
+    if (angleDifference > 180) {
+        angleDifference -= 360;
+        cliffs--;
+    } else if (angleDifference < -180) {
+        angleDifference += 360;
+        cliffs++;
+    }
+
+    // Update total rotation with wraparound correction
+    totalRotation = currentAngle - homeAngle + cliffs * 360;
+    previousAngle = currentAngle;
+
+    if (!rtp) return;
+
+    double dt = pidTimer.seconds();
+    pidTimer.reset();
+
+    // Ignore unreasonable dt values
+    if (dt < 0.001 || dt > 1.0) {
+        return;
+    }
+
+    double error = targetRotation - totalRotation;
+
+    // PID integral calculation with clamping
+    integralSum += error * dt;
+    integralSum = Math.max(-maxIntegralSum, Math.min(maxIntegralSum, integralSum));
+
+    // Integral wind-down in deadzone
+    final double INTEGRAL_DEADZONE = 2.0;
+    if (Math.abs(error) < INTEGRAL_DEADZONE) {
+        integralSum *= 0.95;
+    }
+
+    // PID derivative calculation
+    double derivative = (error - lastError) / dt;
+    lastError = error;
+
+    // PID output calculation
+    double pTerm = kP * error;
+    double iTerm = kI * integralSum;
+    double dTerm = kD * derivative;
+
+    double output = pTerm + iTerm + dTerm;
+
+    // Deadzone for output
+    final double DEADZONE = 0.5;
+    if (Math.abs(error) > DEADZONE) {
+        double power = Math.min(maxPower, Math.abs(output)) * Math.signum(output);
+        robot.servoTurretArmL.setPower(power);
+        robot.servoTurretArmR.setPower(power);
+    } else {
+        robot.servoTurretArmL.setPower(0);
+        robot.servoTurretArmR.setPower(0);
+    }
+}
+
+/// ///////////////////////
+
+// Initialization logic for servo and encoder  initialize ----initializeTurret
+private void initializeTurret() {
+    robot.servoTurretArmL.setPower(0);
+    robot.servoTurretArmR.setPower(0);
+    try {
+        Thread.sleep(50);
+    } catch (InterruptedException ignored) {
+    }
+
+    // Try to get a valid starting position
+    do {
+        STARTPOS = getCurrentAngle();
+        if (Math.abs(STARTPOS) > 1) {
+            previousAngle = getCurrentAngle();
+        } else {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException ignored) {
+            }
+        }
+        ntry++;
+    } while (Math.abs(previousAngle) < 0.2 && (ntry < 50));
+
+    totalRotation = 0;
+    homeAngle = previousAngle;
+
+    // Default PID coefficients
+    kP = 0.015;
+    kI = 0.0005;
+    kD = 0.0025;
+    integralSum = 0.0;
+    lastError = 0.0;
+    maxIntegralSum = 100.0;
+    pidTimer = new ElapsedTime();
+    pidTimer.reset();
+
+    maxPower = 0.25;
+    cliffs = 0;
+}
+    // endregion
 
 
-
-
-
-
-    public double normA(double angle) {angle %= 360; if (angle < -180) angle += 360; else if (angle > 180) angle -= 360;return angle;}
+public double getCurrentAngle() {
+    if (robot.servoEncoder == null) return 0;
+    return (robot.servoEncoder.getCurrentPosition()/16384.0) * (direction.equals(RTPAxon.Direction.FORWARD) ? -360 : 360);
+}
+/// ////////////////////////////////////////////////////
+    public double normA(double angle) {
+        angle %= 360;
+        if (angle < -180) angle += 360;
+        else if (angle > 180) angle -= 360;
+        return angle;
+    }
 
 
 public double turp() {
 
-        robotPose = new Pose(70, 70, 0);
-        // 或者直接使用，不存储到成员变量
+//        robotPose = new Pose(70, 70, 0);
+      Pose currentPose = follower.getPose();
+    // 或者直接使用，不存储到成员变量
 //        Pose currentPose = robot.drive.getPose();
 //        double dx = goalX - currentPose.getX();
 //        double dy = goalY - currentPose.getY();
 
     int ticks = 16384;
 //    int ticks = 8192;
+//    only for RED
+
     double goalX = 144;
     double goalY = 144;
-    double dx = goalX - (robotPose.getX());
-    double dy = goalY - (robotPose.getY());
+    double dx = (currentPose.getX()) -goalX;
+    double dy = goalY - (currentPose.getY());
 
-    double goalHeadingField = Math.atan2(-dy, -dx);
+    double goalHeadingField = Math.atan2(dy, dx);
     double goalHeadingFieldDegrees = Math.toDegrees(goalHeadingField);
 
-    double robotHeading = robotPose.getHeading();
+    double robotHeading =currentPose.getHeading();
+//    robotPose.getHeading();follower.getPose()
     double robotHeadingDegrees = Math.toDegrees(robotHeading);
 
-    double turretTargetAngle = goalHeadingFieldDegrees - robotHeadingDegrees;
-    double turretAngle = robot.encoderTurret.getCurrentPosition() / ticks;
-
+    double turretTargetAngle = 180 - goalHeadingFieldDegrees - robotHeadingDegrees;
+    telemetry.addData("turretTargetAngle", turretTargetAngle);
+//    double turretAngle = (robot.encoderTurret.getCurrentPosition())/ticks;
+    double turretAngle = getCurrentAngle();
 
 //    double target = normA(turretTargetAngle);
     double target = normA(turretTargetAngle);
-
-
-    if (target > 150) {
-        target = 150;
-    } else if (target < -150) {
-        target = -150;
-    }
+/// ////////////
+    target = interpolateAngle(target);
+    telemetry.addData("target", target);
+    telemetry.addData("urretAngle", turretAngle);
+    /// ////////
+//    if (target > 150) {
+//        target = 150;
+//    } else if (target < -150) {
+//        target = -150;
+//    }
 
     double turretPower = (turretController.calculate(turretAngle, target));
 //    double turretPower = (calculate(turretAngle, target));
@@ -279,16 +435,29 @@ public double turp() {
     robot.servoTurretArmL.setPower(turretPower/2);
     robot.servoTurretArmR.setPower(turretPower/2);
 
-//    robot.axonTurretArmL.setTargetRotation(180-goalHeadingFieldDegrees - robotHeadingDegrees);
-//    robot.axonTurretArmR.setTargetRotation(180-goalHeadingFieldDegrees - robotHeadingDegrees);
+//    robot.axonTurretArmL.setTargetRotation(target - turretAngle);
+//    robot.axonTurretArmR.setTargetRotation(target - turretAngle);
+//    robot.axonTurretArmL.changeTargetRotation(target - turretAngle);
+//    robot.axonTurretArmR.changeTargetRotation(target - turretAngle);
+
     telemetry.addData("encoderTurret .getCurrentPosition()", robot.encoderTurret.getCurrentPosition());
     telemetry.addData("encoderTurret target angle-turret angle", target-turretAngle);
-
+    telemetry.update();
     return goalX;
 }
 
 
+    private double interpolateAngle(double angle) {
+        angle = AngleUnit.normalizeDegrees(angle);
+        if (angle > 165) {
+            angle = 165;
+        } else if (angle < -155) {
+            angle = -155;
+        }
 
+        return (angle + 155) / 320;
+
+    }
 
 
 
@@ -543,8 +712,13 @@ public double turp() {
         double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());
         double targetVelocity = ShooterPIDFConfig.targetRPM;
         double tolerance = ShooterPIDFConfig.tolerance;
+        telemetry.addLine("=== TURRET  STATUS ===");
+        telemetry.addData("follower.getPose().getX()", follower.getPose().getX());
+        telemetry.addData("follower.getPose().getY()", follower.getPose().getY());
+//        telemetry.addData("turretTargetAngle", turretTargetAngle);
+
 //        telemetry.addData("Servo Position", servoPosition);
-        telemetry.addData("encoderTurret .getCurrentPosition()", robot.encoderTurret.getCurrentPosition());
+//        telemetry.addData("encoderTurret .getCurrentPosition()", robot.encoderTurret.getCurrentPosition());
 //        telemetry.addData("encoderTurret .getCurrentPosition()/4046.0", robot.encoderTurret.getCurrentPosition()/4046.0);
         telemetry.addData("encoderTurret .getCurrentAngle", robot.axonTurretArmL.getCurrentAngle());
 //        telemetry.addData("axonTurretArmL Target Rotation", robot.axonTurretArmL.getTargetRotation());
@@ -567,22 +741,22 @@ public double turp() {
 //        telemetry.addData("Total Rotation", robot.axonTurretArmR.getTotalRotation());
 //        telemetry.addData("Target Rotation", robot.axonTurretArmR.getTargetRotation());
 
-        telemetry.addLine("=== SHOOTER PIDF TUNING ===");
-        telemetry.addData("Target RPM", "%.0f", ShooterPIDFConfig.targetRPM);
-        telemetry.addData("Current RPM", "%.0f", shooterVelocity);
-        telemetry.addData("currentVelocity", currentVelocity);
-        telemetry.addData("targetVelocity", targetVelocity);
+//        telemetry.addLine("=== SHOOTER PIDF TUNING ===");
+//        telemetry.addData("Target RPM", "%.0f", ShooterPIDFConfig.targetRPM);
+//        telemetry.addData("Current RPM", "%.0f", shooterVelocity);
+//        telemetry.addData("currentVelocity", currentVelocity);
+//        telemetry.addData("targetVelocity", targetVelocity);
 //        double targetVelocity = ShooterPIDFConfig.targetRPM;
 //        telemetry.addData("Error", "%.0f RPM", Math.abs(ShooterPIDFConfig.targetRPM - shooterVelocity));
 //        telemetry.addData("At Speed?", isShooterAtSpeed ? "YES" : "NO");
 //        telemetry.addData("Power", "%.2f", shooterPower);
 //        // PIDF 参数值
-        telemetry.addLine("=== PIDF PARAMETERS ===");
-        telemetry.addData("kP", "%.4f", ShooterPIDFConfig.kP);
-//        telemetry.addData("kI", "%.4f", ShooterPIDFConfig.kI);
-        telemetry.addData("kD", "%.4f", ShooterPIDFConfig.kD);
-        telemetry.addData("kF", "%.4f", ShooterPIDFConfig.kF);
-        telemetry.addData("Tolerance", "%.0f RPM", ShooterPIDFConfig.tolerance);
+//        telemetry.addLine("=== PIDF PARAMETERS ===");
+//        telemetry.addData("kP", "%.4f", ShooterPIDFConfig.kP);
+////        telemetry.addData("kI", "%.4f", ShooterPIDFConfig.kI);
+//        telemetry.addData("kD", "%.4f", ShooterPIDFConfig.kD);
+//        telemetry.addData("kF", "%.4f", ShooterPIDFConfig.kF);
+//        telemetry.addData("Tolerance", "%.0f RPM", ShooterPIDFConfig.tolerance);
 //
 //        // 从电机状态
 //        telemetry.addLine("=== SLAVE MOTOR ===");
