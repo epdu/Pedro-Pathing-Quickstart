@@ -3,8 +3,10 @@ package org.firstinspires.ftc.teamcode.pedroPathing;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.arcrobotics.ftclib.controller.PIDController;
+import com.arcrobotics.ftclib.controller.PIDFController;
+import com.arcrobotics.ftclib.geometry.Pose2d;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.PedroCoordinates;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -17,12 +19,13 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
+
 @Config
 @TeleOp(name = "GD Pennsylvania FTC Championship V1 02192026")
 
 public class GDTeleOpChampionship extends LinearOpMode {
 
-    PIDController turretController = new PIDController(0.015, 0, 0);
+
 
 
 
@@ -58,10 +61,15 @@ public class GDTeleOpChampionship extends LinearOpMode {
     public static final double blockagereleaseTele=0.24;
     ///////////////turret///////////
     private Pose robotPose;
+    private Pose pose;
+
+    private double lastHeading = 0;
     private double turretAngle = Math.PI / 2.0;
     private double turretSetpoint = 0.0;
     private double turretPower = 0.0;
     private Follower follower;
+    private PIDFController pidController;
+
 
     // Run-to-position mode flag
     private boolean rtp;
@@ -147,20 +155,24 @@ public class GDTeleOpChampionship extends LinearOpMode {
     public void runOpMode() {
         robot.init(hardwareMap);
         initializeTurret();
+        initShooterPIDF();
 //        robot.alliance = Alliance.BLUE;
+        robot.alliance = Alliance.RED;
         follower = Constants.createFollower(hardwareMap);
+//        follower = Constants.createFollower(hardwareMap);
         // 设置初始位置（通常在 opMode 的初始化阶段）
         Pose startPose = new Pose(70, 70, 0);  // 或其他起始坐标
         follower.setStartingPose(startPose);
-        telemetry.addData("setStartingPose", startPose.getX());
-        telemetry.addData("setStartingPose", startPose.getY());
-        telemetry.addData("setStartingPose", startPose.getHeading());
-        telemetry.addData("follower.getPose().getX()", follower.getPose().getX());
-        telemetry.addData("follower.getPose().getX()", follower.getPose().getY());
-        telemetry.addData("follower.getPose().getX()", follower.getPose().getHeading());
-        telemetry.update();
-        robot.alliance = org.firstinspires.ftc.teamcode.pedroPathing.Alliance.RED;
-        initShooterPIDF();
+
+
+        pidController = new PIDFController(
+                TurretConstants.kP,
+                TurretConstants.kI,
+                TurretConstants.kD,
+                TurretConstants.kF
+        );
+
+
 //        if (gamepad1.dpad_right) {
 //            solverrobot.turret.setTurret(Turret.TurretState.GOAL_LOCK_CONTROL, 0);
 //        } else if(gamepad1.dpad_left){
@@ -174,11 +186,26 @@ public class GDTeleOpChampionship extends LinearOpMode {
 //        robot.axonTurretArmR.setMaxPower(0.5);  // Limit max power to 50%
 //        robot.axonTurretArmR.setPidCoeffs(0.02, 0.0005, 0.0025);
 
+
+
+
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         FtcDashboard Dashboard = FtcDashboard.getInstance();
         Telemetry dashboardTelemetry = Dashboard.getTelemetry();
         // 设置 Dashboard 更新频率
         Dashboard.setTelemetryTransmissionInterval(100); // 100ms 更新一次
+
+        telemetry.addData("setStartingPose", startPose.getX());
+        telemetry.addData("setStartingPose", startPose.getY());
+        telemetry.addData("setStartingPose", startPose.getHeading());
+        telemetry.addData("follower.getPose().getX()", follower.getPose().getX());
+        telemetry.addData("follower.getPose().getX()", follower.getPose().getY());
+        telemetry.addData("follower.getPose().getX()", follower.getPose().getHeading());
+        telemetry.addData("follower", "OK");
+        telemetry.addData("Start Pose", "X:%.1f Y:%.1f H:%.1f",
+                startPose.getX(), startPose.getY(), startPose.getHeading());
+
+        telemetry.update();
 
         waitForStart();
         runtime.reset();
@@ -196,9 +223,16 @@ public class GDTeleOpChampionship extends LinearOpMode {
             updateHood();
             updateBlockage();
 //            updateAutoAim();
+
 //             turp();
-            robot.axonTurretArmL.update();
-            robot.axonTurretArmR.update();
+            // Always update measured position
+//            robotPose = follower.getPose();
+//            setTurretPosition(0);
+            turretAngle = getPosition();
+            turretupdate();
+            setTurretPosition(turretSetpoint);
+//            robot.axonTurretArmL.update();
+//            robot.axonTurretArmR.update();
             telemetry.update();
             sleep(20);
 
@@ -225,39 +259,136 @@ public class GDTeleOpChampionship extends LinearOpMode {
 
 
 /// ////////////////////////////////////////////////
+private void turretupdate() {
+    if (gamepad1.x) {
+        turretSetpoint = findPosition();
+        telemetry.addData("turretSetpoint ", turretSetpoint);
+
+    } else {
+        turretSetpoint = 0.0;
+        telemetry.addData("X not", "NO X");
+    }
+}
 
 
-    public class turretController {
 
-        double kP;
-        double kI;
-        double kD;
+    public double findPosition() {
+        double x, y;
+        double robotHeading;
+        double overallAngle;
 
-        double lastError = 0;
-        double integral = 0;
+        if (robot.alliance == org.firstinspires.ftc.teamcode.pedroPathing.Alliance.BLUE) {
+            x = follower.getPose().getX();
+            y = 144 - follower.getPose().getY();
 
-        public turretController(double p, double i, double d) {
-            kP = p;
-            kI = i;
-            kD = d;
+            robotHeading = follower.getPose().getHeading();
+            overallAngle = Math.PI - Math.atan2(y, x);
+
+        } else if (robot.alliance == Alliance.RED) {
+            x = 144 - follower.getPose().getX();
+            y = 144 - follower.getPose().getY();
+
+            robotHeading = follower.getPose().getHeading();
+            overallAngle = Math.atan2(y, x);
+
+        } else {
+            return 0.0;
         }
 
-        public double calculate(double current, double target) {
+        double target = overallAngle - robotHeading;
 
-            double error = target - current;
-
-            integral += error;
-
-            double derivative = error - lastError;
-
-            lastError = error;
-
-            double output = (kP * error) + (kI * integral) + (kD * derivative);
-
-            return output;
+        if (target < -Math.PI / 2.0 || target > Math.PI / 2.0) {
+            return 0.0;
         }
+        telemetry.addData("target", target);
+        return target;
     }
 
+
+    public double getPosition() {
+        int ticksPerRev = 8192;
+        double revolutions = (double) robot.encoderTurret.getCurrentPosition() / ticksPerRev;
+        telemetry.addData(" -revolutions * 2 * Math.PI * TurretConstants.GEAR_RATIO ",  -revolutions * 2 * Math.PI * TurretConstants.GEAR_RATIO);
+        return -revolutions * 2 * Math.PI * TurretConstants.GEAR_RATIO;
+
+    }
+    public void stopturret() { // stop --- stopturret
+        turretPower = 0.0;
+        robot.servoTurretArmL.setPower(0.0);
+        robot.servoTurretArmR.setPower(0.0);
+    }
+
+
+
+
+
+
+
+    public Pose getPose() {
+    return new Pose(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading() + lastHeading, PedroCoordinates.INSTANCE);
+}
+
+public void setTurretPosition(double pos) {
+    turretPower = pidController.calculate(getPosition(), pos);
+//    robot.servoTurretArmL.setPower(turretPower);
+//    robot.servoTurretArmR.setPower(turretPower);
+    setTurretPower(turretPower);
+}
+
+    public void setTurretPower(double power) {
+        turretPower = power;
+        robot.servoTurretArmL.setPower(power);
+        robot.servoTurretArmR.setPower(power);
+
+
+
+    }
+
+
+
+//public enum TurretState {
+//    GOAL_LOCK_CONTROL,
+//    ANGLE_CONTROL,
+//    OFF,
+//}
+//    public static PIDFCoefficients TURRET_LARGE_PIDF_COEFFICIENTS = new PIDFCoefficients(0.01,0.000, 0.00044, 0.0); // Coefficients for radians
+private Pose2d turretPose = null;
+//    public static TurretState turretState = TurretState.GOAL_LOCK_CONTROL;
+
+//    PIDController turretController = new PIDController(0.015, 0, 0);
+//    public PIDFController turretController = new PIDFController(TURRET_LARGE_PIDF_COEFFICIENTS);
+    public static double targetVel = 0;
+//    public class turretController {
+//
+//        double kP;
+//        double kI;
+//        double kD;
+//
+//        double lastError = 0;
+//        double integral = 0;
+//
+//        public turretController(double p, double i, double d) {
+//            kP = p;
+//            kI = i;
+//            kD = d;
+//        }
+//
+//        public double calculate(double current, double target) {
+//
+//            double error = target - current;
+//
+//            integral += error;
+//
+//            double derivative = error - lastError;
+//
+//            lastError = error;
+//
+//            double output = (kP * error) + (kI * integral) + (kD * derivative);
+//
+//            return output;
+//        }
+//    }
+//
 
 /////////////////////////////
 
@@ -381,71 +512,74 @@ public double getCurrentAngle() {
     }
 
 
-public double turp() {
-
-//        robotPose = new Pose(70, 70, 0);
-      Pose currentPose = follower.getPose();
-    // 或者直接使用，不存储到成员变量
-//        Pose currentPose = robot.drive.getPose();
-//        double dx = goalX - currentPose.getX();
-//        double dy = goalY - currentPose.getY();
-
-    int ticks = 16384;
-//    int ticks = 8192;
-//    only for RED
-
-    double goalX = 144;
-    double goalY = 144;
-    double dx = (currentPose.getX()) -goalX;
-    double dy = goalY - (currentPose.getY());
-
-    double goalHeadingField = Math.atan2(dy, dx);
-    double goalHeadingFieldDegrees = Math.toDegrees(goalHeadingField);
-
-    double robotHeading =currentPose.getHeading();
-//    robotPose.getHeading();follower.getPose()
-    double robotHeadingDegrees = Math.toDegrees(robotHeading);
-
-    double turretTargetAngle = 180 - goalHeadingFieldDegrees - robotHeadingDegrees;
-    telemetry.addData("turretTargetAngle", turretTargetAngle);
-//    double turretAngle = (robot.encoderTurret.getCurrentPosition())/ticks;
-    double turretAngle = getCurrentAngle();
-
+//public double turp() {
+//
+////        robotPose = new Pose(70, 70, 0);
+//      Pose currentPose = follower.getPose();
+//    // 或者直接使用，不存储到成员变量
+////        Pose currentPose = robot.drive.getPose();
+////        double dx = goalX - currentPose.getX();
+////        double dy = goalY - currentPose.getY();
+//
+//    int ticks = 16384;
+////    int ticks = 8192;
+////    only for RED
+//
+//    double goalX = 144;
+//    double goalY = 144;
+//    double dx = (currentPose.getX()) -goalX;
+//    double dy = goalY - (currentPose.getY());
+//
+//    double goalHeadingField = Math.atan2(dy, dx);
+//    double goalHeadingFieldDegrees = Math.toDegrees(goalHeadingField);
+//
+//    double robotHeading =currentPose.getHeading();
+////    robotPose.getHeading();follower.getPose()
+//    double robotHeadingDegrees = Math.toDegrees(robotHeading);
+//
+//    double turretTargetAngle = 180 - goalHeadingFieldDegrees - robotHeadingDegrees;
+//    telemetry.addData("turretTargetAngle", turretTargetAngle);
+////    double turretAngle = (robot.encoderTurret.getCurrentPosition())/ticks;
+//    double turretAngle = getCurrentAngle();
+//
+////    double target = normA(turretTargetAngle);
 //    double target = normA(turretTargetAngle);
-    double target = normA(turretTargetAngle);
-/// ////////////
-    target = interpolateAngle(target);
-    telemetry.addData("target", target);
-    telemetry.addData("urretAngle", turretAngle);
-    /// ////////
-//    if (target > 150) {
-//        target = 150;
-//    } else if (target < -150) {
-//        target = -150;
+///// ////////////
+//    target = interpolateAngle(target);
+//    telemetry.addData("target", target);
+//    telemetry.addData("urretAngle", turretAngle);
+//    /// ////////
+////    if (target > 150) {
+////        target = 150;
+////    } else if (target < -150) {
+////        target = -150;
+////    }
+//
+//    double turretPower = (turretController.calculate(turretAngle, target));
+////    double turretPower = (calculate(turretAngle, target));
+//    double error = target - turretAngle;
+//    double tolerance = 2;
+//
+//    if (Math.abs(error) < tolerance) {
+//        turretPower = 0;
 //    }
-
-    double turretPower = (turretController.calculate(turretAngle, target));
-//    double turretPower = (calculate(turretAngle, target));
-    double error = target - turretAngle;
-    double tolerance = 2;
-
-    if (Math.abs(error) < tolerance) {
-        turretPower = 0;
-    }
-    robot.servoTurretArmL.setPower(turretPower/2);
-    robot.servoTurretArmR.setPower(turretPower/2);
-
-//    robot.axonTurretArmL.setTargetRotation(target - turretAngle);
-//    robot.axonTurretArmR.setTargetRotation(target - turretAngle);
-//    robot.axonTurretArmL.changeTargetRotation(target - turretAngle);
-//    robot.axonTurretArmR.changeTargetRotation(target - turretAngle);
-
-    telemetry.addData("encoderTurret .getCurrentPosition()", robot.encoderTurret.getCurrentPosition());
-    telemetry.addData("encoderTurret target angle-turret angle", target-turretAngle);
-    telemetry.update();
-    return goalX;
-}
-
+////    robot.servoTurretArmL.setPower(turretPower);
+////    robot.servoTurretArmR.setPower(turretPower);
+//    robot.servoTurretArmL.setPower(target - turretAngle);
+//    robot.servoTurretArmR.setPower(target - turretAngle);
+////    robot.axonTurretArmL.setTargetRotation(target - turretAngle);
+////    robot.axonTurretArmR.setTargetRotation(target - turretAngle);
+////    robot.axonTurretArmL.changeTargetRotation(target - turretAngle);
+////    robot.axonTurretArmR.changeTargetRotation(target - turretAngle);
+//
+//    telemetry.addData("encoderTurret .getCurrentPosition()", robot.encoderTurret.getCurrentPosition());
+//    telemetry.addData("encoderTurret target angle-turret angle", target-turretAngle);
+//    telemetry.update();
+//    return goalX;
+//}
+//    private double normaltoservopower(double errorofangle){
+//
+//    }
 
     private double interpolateAngle(double angle) {
         angle = AngleUnit.normalizeDegrees(angle);
@@ -469,50 +603,7 @@ public double turp() {
 
 
 
-    public double findPosition() {
-        double x, y;
-        double robotHeading;
-        double overallAngle;
 
-        if (robot.alliance == org.firstinspires.ftc.teamcode.pedroPathing.Alliance.BLUE) {
-            x = robotPose.getX();
-            y = 144 - robotPose.getY();
-
-            robotHeading = robotPose.getHeading();
-            overallAngle = Math.PI - Math.atan2(y, x);
-
-        } else if (robot.alliance == Alliance.RED) {
-            x = 144 - robotPose.getX();
-            y = 144 - robotPose.getY();
-
-            robotHeading = robotPose.getHeading();
-            overallAngle = Math.atan2(y, x);
-
-        } else {
-            return 0.0;
-        }
-
-        double target = overallAngle - robotHeading;
-
-        if (target < -Math.PI / 2.0 || target > Math.PI / 2.0) {
-            return 0.0;
-        }
-
-        return target;
-    }
-
-
-    public double getPosition() {
-        int ticksPerRev = 8192;
-        double revolutions = (double) robot.encoderTurret.getCurrentPosition() / ticksPerRev;
-
-        return -revolutions * 2 * Math.PI * TurretConstants.GEAR_RATIO;
-    }
-
-//    public void setPosition(double pos) {
-//        turretPower = -pidController.calculate(getPosition(), pos);
-//        setTurretPower(turretPower);
-//    }
     /// //////////////////////////////////////////////////////////////////////////
     public void updateIntake() {
         // 手柄控制拾取电机
@@ -578,12 +669,12 @@ public double turp() {
 
 
 
-        if (gamepad1.x) {
-            turp();
-        } else {
-            robot.servoTurretArmL.setPower(0);
-            robot.servoTurretArmR.setPower(0);
-        }
+//        if (gamepad1.x) {
+//            turp();
+//        } else {
+//            robot.servoTurretArmL.setPower(0);
+//            robot.servoTurretArmR.setPower(0);
+//        }
 
 
 
