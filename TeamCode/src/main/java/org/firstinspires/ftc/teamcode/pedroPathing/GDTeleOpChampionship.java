@@ -162,6 +162,7 @@ public class GDTeleOpChampionship extends LinearOpMode {
 //        follower = Constants.createFollower(hardwareMap);
         // 设置初始位置（通常在 opMode 的初始化阶段）
         Pose startPose = new Pose(70, 70, 0);  // 或其他起始坐标
+        //auto off line 112, 92.25
         follower.setStartingPose(startPose);
 
 
@@ -195,13 +196,13 @@ public class GDTeleOpChampionship extends LinearOpMode {
         // 设置 Dashboard 更新频率
         Dashboard.setTelemetryTransmissionInterval(100); // 100ms 更新一次
 
-        telemetry.addData("setStartingPose", startPose.getX());
-        telemetry.addData("setStartingPose", startPose.getY());
-        telemetry.addData("setStartingPose", startPose.getHeading());
-        telemetry.addData("follower.getPose().getX()", follower.getPose().getX());
-        telemetry.addData("follower.getPose().getX()", follower.getPose().getY());
-        telemetry.addData("follower.getPose().getX()", follower.getPose().getHeading());
-        telemetry.addData("follower", "OK");
+//        telemetry.addData("setStartingPose", startPose.getX());
+//        telemetry.addData("setStartingPose", startPose.getY());
+//        telemetry.addData("setStartingPose", startPose.getHeading());
+//        telemetry.addData("follower.getPose().getX()", follower.getPose().getX());
+//        telemetry.addData("follower.getPose().getX()", follower.getPose().getY());
+//        telemetry.addData("follower.getPose().getX()", follower.getPose().getHeading());
+//        telemetry.addData("follower", "OK");
         telemetry.addData("Start Pose", "X:%.1f Y:%.1f H:%.1f",
                 startPose.getX(), startPose.getY(), startPose.getHeading());
 
@@ -266,7 +267,7 @@ private void turretupdate() {
 
     } else {
         turretSetpoint = 0.0;
-        telemetry.addData("X not", "NO X");
+//        telemetry.addData("X not", "NO X");
     }
 }
 
@@ -277,19 +278,21 @@ private void turretupdate() {
         double robotHeading;
         double overallAngle;
 
-        if (robot.alliance == org.firstinspires.ftc.teamcode.pedroPathing.Alliance.BLUE) {
+        if (robot.alliance == Alliance.BLUE) {
             x = follower.getPose().getX();
             y = 144 - follower.getPose().getY();
 
             robotHeading = follower.getPose().getHeading();
             overallAngle = Math.PI - Math.atan2(y, x);
-
+            telemetry.addData("Alliance.BLUE",Alliance.BLUE);
         } else if (robot.alliance == Alliance.RED) {
             x = 144 - follower.getPose().getX();
             y = 144 - follower.getPose().getY();
-
+            telemetry.addData("Alliance.RED", Alliance.RED);
             robotHeading = follower.getPose().getHeading();
             overallAngle = Math.atan2(y, x);
+            telemetry.addData("robotHeading", robotHeading);
+            telemetry.addData("overallAngle", overallAngle);
 
         } else {
             return 0.0;
@@ -304,47 +307,56 @@ private void turretupdate() {
         return target;
     }
 
-
     public double getPosition() {
-        int ticksPerRev = 8192;
+        int ticksPerRev = 8192;//16384
         double revolutions = (double) robot.encoderTurret.getCurrentPosition() / ticksPerRev;
-        telemetry.addData(" -revolutions * 2 * Math.PI * TurretConstants.GEAR_RATIO ",  -revolutions * 2 * Math.PI * TurretConstants.GEAR_RATIO);
+//        telemetry.addData(" -revolutions * 2 * Math.PI * TurretConstants.GEAR_RATIO ",  -revolutions * 2 * Math.PI * TurretConstants.GEAR_RATIO);
         return -revolutions * 2 * Math.PI * TurretConstants.GEAR_RATIO;
 
+    }
+public void setTurretPosition(double pos) {
+    turretPower = - pidController.calculate(getPosition(), pos);
+//    robot.servoTurretArmL.setPower(turretPower);
+//    robot.servoTurretArmR.setPower(turretPower);
+
+    telemetry.addData("pos ",  pos);
+    telemetry.addData("getPosition()  ",  getPosition());
+    telemetry.addData(" turretPower ",  turretPower);
+    telemetry.addData(" getPosition(), pos ",  pos - getPosition());
+
+    setTurretPower(turretPower);
+}
+
+    public void setTurretPower(double power) {
+        double clampedPower = Math.max(-0.5, Math.min(0.5, power)); // 可以是-1  +1 区间
+
+        telemetry.addData("Original Power", power);
+        telemetry.addData("Clamped Power", clampedPower);
+
+        turretPower = clampedPower;
+        robot.servoTurretArmL.setPower(clampedPower);
+        robot.servoTurretArmR.setPower(clampedPower);
+
+//        telemetry.addData("Final Power", turretPower);
+//        telemetry.addData(" BturretPower ",  turretPower);
+//        telemetry.addData(" turretPower ",  power);
+//        turretPower = power;
+//        telemetry.addData(" AturretPower ",  turretPower);
+//        telemetry.addData(" turretPower ",  power);
+//        robot.servoTurretArmL.setPower(power);
+//        robot.servoTurretArmR.setPower(power);
+
+
+
+    }
+    public Pose getPose() {
+        return new Pose(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading() + lastHeading, PedroCoordinates.INSTANCE);
     }
     public void stopturret() { // stop --- stopturret
         turretPower = 0.0;
         robot.servoTurretArmL.setPower(0.0);
         robot.servoTurretArmR.setPower(0.0);
     }
-
-
-
-
-
-
-
-    public Pose getPose() {
-    return new Pose(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading() + lastHeading, PedroCoordinates.INSTANCE);
-}
-
-public void setTurretPosition(double pos) {
-    turretPower = pidController.calculate(getPosition(), pos);
-//    robot.servoTurretArmL.setPower(turretPower);
-//    robot.servoTurretArmR.setPower(turretPower);
-    setTurretPower(turretPower);
-}
-
-    public void setTurretPower(double power) {
-        turretPower = power;
-        robot.servoTurretArmL.setPower(power);
-        robot.servoTurretArmR.setPower(power);
-
-
-
-    }
-
-
 
 //public enum TurretState {
 //    GOAL_LOCK_CONTROL,
@@ -932,10 +944,10 @@ public double getCurrentAngle() {
 //        if (isShooterAtSpeed) {
         if (isShooterAtSpeed) {
             setLEDColor(LED_COLOR_READY);
-            telemetry.addData("LED Status", "READY (GREEN) - Press A to Fire");
+//            telemetry.addData("LED Status", "READY (GREEN) - Press A to Fire");
         }  else {
             setLEDColor(LED_COLOR_OFF);
-            telemetry.addData("LED Status", "OFF (RED)");
+//            telemetry.addData("LED Status", "OFF (RED)");
         }
 //            wasShooterAtSpeed = false;
 //        }

@@ -142,10 +142,10 @@ public class HardwareQualifier {
         servoTurretArmL = hwMap.get(CRServo.class, "servoTurretArmL");//expansion  hub port 2
         encoderTurret = hwMap.get(DcMotorEx.class, "RBMotor");// encoderTurret control  hub motor encoder port 3
         axonTurretArmL = new RTPAxon(servoTurretArmL, encoderTurret);
-//      servoTurretArmL.setDirection(CRServo.Direction.REVERSE);
+      servoTurretArmL.setDirection(CRServo.Direction.REVERSE);
         servoTurretArmR = hwMap.get(CRServo.class, "servoTurretArmR");//control hub port 4
         axonTurretArmR = new RTPAxon(servoTurretArmR, encoderTurret);
-////       servoTurretArmR.setDirection(CRServo.Direction.REVERSE);
+       servoTurretArmR.setDirection(CRServo.Direction.REVERSE);
         axonTurretArmL.setMaxPower(0.5);
         axonTurretArmL.setRtp(rtp);
         axonTurretArmR.setMaxPower(0.5);
