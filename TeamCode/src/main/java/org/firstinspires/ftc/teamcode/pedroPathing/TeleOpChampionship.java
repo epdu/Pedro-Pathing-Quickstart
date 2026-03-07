@@ -355,9 +355,9 @@ public class TeleOpChampionship extends LinearOpMode {
             robot.IntakeMotorL.setPower(intakePowerIntake);
             robot.IntakeMotorR.setPower(intakePowerIntake);
             /// ///////////////////////////////////for debug//////////////////////
-                robot.axonTurretArmL.setTargetRotation(90);// ((96/20)*35/110)
+                robot.axonTurretArmL.setTargetRotation(180);// ((96/20)*35/110)
 
-                robot.axonTurretArmR.setTargetRotation(90);
+                robot.axonTurretArmR.setTargetRotation(180);
 
 //y = 0.45452 -0.00677*H43^1 + -9.37853E-4*H43^2 -4.69942E-5*H43^3 + -1.24595E-6*H43^4 -1.74452E-8*H43^5 + -1.05357E-10*H43^6
 

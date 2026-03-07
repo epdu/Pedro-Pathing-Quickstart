@@ -16,49 +16,49 @@
 //import com.qualcomm.robotcore.hardware.HardwareMap;
 //import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 //import com.qualcomm.robotcore.util.ElapsedTime;
-//import com.seattlesolvers.solverslib.command.InstantCommand;
-//import com.seattlesolvers.solverslib.command.Robot;
-//import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
+////import com.seattlesolvers.solverslib.command.InstantCommand;
+////import com.seattlesolvers.solverslib.command.Robot;
+////import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 //
 //import org.firstinspires.ftc.robotcore.external.Telemetry;
 //import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 //import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-//import org.firstinspires.ftc.teamcode.commandbase.subsystems.Turret;
+////import org.firstinspires.ftc.teamcode.commandbase.subsystems.Turret;
 //import org.firstinspires.ftc.teamcode.pedroPathing.RTPAxon;
 //import org.firstinspires.ftc.teamcode.pedroPathing.Alliance;
 //import static com.qualcomm.robotcore.hardware.Gamepad.LED_DURATION_CONTINUOUS;
-//import static org.firstinspires.ftc.teamcode.globals.Constants.*;
+////import static org.firstinspires.ftc.teamcode.globals.Constants.*;
 //
-//import com.acmerobotics.dashboard.FtcDashboard;
-//import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-//import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-//import com.qualcomm.robotcore.util.ElapsedTime;
-//import com.seattlesolvers.solverslib.command.CommandOpMode;
-//import com.seattlesolvers.solverslib.command.CommandScheduler;
-//import com.seattlesolvers.solverslib.command.ConditionalCommand;
-//import com.seattlesolvers.solverslib.command.InstantCommand;
-//import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
-//import com.seattlesolvers.solverslib.command.UninterruptibleCommand;
-//import com.seattlesolvers.solverslib.gamepad.GamepadEx;
-//import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
-//import com.seattlesolvers.solverslib.gamepad.SlewRateLimiter;
-//import com.seattlesolvers.solverslib.geometry.Pose2d;
-//import com.seattlesolvers.solverslib.geometry.Rotation2d;
-//import com.seattlesolvers.solverslib.geometry.Translation2d;
-//import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
-//import com.seattlesolvers.solverslib.kinematics.wpilibkinematics.ChassisSpeeds;
-//import com.seattlesolvers.solverslib.util.TelemetryData;
+////import com.acmerobotics.dashboard.FtcDashboard;
+////import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+////import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+////import com.qualcomm.robotcore.util.ElapsedTime;
+////import com.seattlesolvers.solverslib.command.CommandOpMode;
+////import com.seattlesolvers.solverslib.command.CommandScheduler;
+////import com.seattlesolvers.solverslib.command.ConditionalCommand;
+////import com.seattlesolvers.solverslib.command.InstantCommand;
+////import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
+////import com.seattlesolvers.solverslib.command.UninterruptibleCommand;
+////import com.seattlesolvers.solverslib.gamepad.GamepadEx;
+////import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
+////import com.seattlesolvers.solverslib.gamepad.SlewRateLimiter;
+////import com.seattlesolvers.solverslib.geometry.Pose2d;
+////import com.seattlesolvers.solverslib.geometry.Rotation2d;
+////import com.seattlesolvers.solverslib.geometry.Translation2d;
+////import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
+////import com.seattlesolvers.solverslib.kinematics.wpilibkinematics.ChassisSpeeds;
+////import com.seattlesolvers.solverslib.util.TelemetryData;
 //
 //import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-//import org.firstinspires.ftc.teamcode.commandbase.commands.CancelCommand;
-//import org.firstinspires.ftc.teamcode.commandbase.commands.ClearLaunch;
-//import org.firstinspires.ftc.teamcode.commandbase.commands.SetIntake;
-//import org.firstinspires.ftc.teamcode.commandbase.subsystems.Drive;
-//import org.firstinspires.ftc.teamcode.globals.SolverLogger;
-//import org.firstinspires.ftc.teamcode.commandbase.commands.StationaryAimbotFullLaunch;
-//import org.firstinspires.ftc.teamcode.commandbase.subsystems.Intake;
-//import org.firstinspires.ftc.teamcode.commandbase.subsystems.Turret;
-//import org.firstinspires.ftc.teamcode.globals.Constants;
+////import org.firstinspires.ftc.teamcode.commandbase.commands.CancelCommand;
+////import org.firstinspires.ftc.teamcode.commandbase.commands.ClearLaunch;
+////import org.firstinspires.ftc.teamcode.commandbase.commands.SetIntake;
+////import org.firstinspires.ftc.teamcode.commandbase.subsystems.Drive;
+////import org.firstinspires.ftc.teamcode.globals.SolverLogger;
+////import org.firstinspires.ftc.teamcode.commandbase.commands.StationaryAimbotFullLaunch;
+////import org.firstinspires.ftc.teamcode.commandbase.subsystems.Intake;
+////import org.firstinspires.ftc.teamcode.commandbase.subsystems.Turret;
+////import org.firstinspires.ftc.teamcode.globals.Constants;
 ////import org.firstinspires.ftc.teamcode.globals.Robot;
 //
 //@Config  // 添加这个注解，让 Dashboard 可以调整参数
@@ -92,7 +92,7 @@
 //    public float DriveTrains_ReducePOWER=1f;
 //    public float DriveTrains_smoothTurn=1f;
 //    HardwareQualifier robot = new HardwareQualifier();
-//    private final Robot solverrobot = Robot.getInstance();
+////    private final Robot solverrobot = Robot.getInstance();
 ////    public String fieldOrRobotCentric = "robot";
 //    public String fieldOrRobotCentric = "field";
 //    private double powerMultiplier = 0.9;
@@ -156,12 +156,12 @@
 //        robot.alliance = Alliance.RED;
 //        initShooterPIDF();
 //
-//        if (gamepad1.dpad_right) {
-//            solverrobot.turret.setTurret(Turret.TurretState.GOAL_LOCK_CONTROL, 0);
-//        }
-//        else if(gamepad1.dpad_left){
-//            solverrobot.turret.setTurret(Turret.TurretState.OFF, 0);
-//        }
+////        if (gamepad1.dpad_right) {
+////            solverrobot.turret.setTurret(Turret.TurretState.GOAL_LOCK_CONTROL, 0);
+////        }
+////        else if(gamepad1.dpad_left){
+////            solverrobot.turret.setTurret(Turret.TurretState.OFF, 0);
+////        }
 //
 ////        robot.axonTurretArmL.setTargetRotation(0);
 ////        robot.axonTurretArmL.setMaxPower(0.5);
@@ -339,10 +339,10 @@
 //    }
 //
 //    public static class ShooterPIDFConfig {
-//        public static double kP = 100;     // 比例增益0.10.350.651.0655
+//        public static double kP = 300;     // 比例增益0.10.350.651.0655
 //        public static double kI = 0.0;      // 积分增益
 //        public static double kD = 0.0;      // 微分增益
-//        public static double kF = 17;      // 前馈增益0.050.08
+//        public static double kF = 15;      // 前馈增益0.050.08
 //        public static double targetRPM =Med_SHOOTER_TARGET_RPM; // 目标转速
 //        public static double tolerance = 30;
 //    }

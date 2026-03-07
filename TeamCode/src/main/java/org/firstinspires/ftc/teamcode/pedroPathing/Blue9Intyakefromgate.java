@@ -27,14 +27,14 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 // 姿态
 // Limelight
 // 位姿
-@Autonomous(name = "RED Near open Gate WITH intake TWENTY-FIRST  park after third loaded V1")
+@Autonomous(name = "Blue Intake from gate")
 //no enough time to finish all backup 03032026
 //intake second role with open gate , park at  136, 36.25 with three loaded
 //. 3 ARTIFACTS on each SPIKE MARK arranged as follows:
 //i.Near (audience side): GPP
 //ii. Middle: PGP
 //iii. Far (GOAL side): PPG
-public class Red21nearopengatewithintake extends LinearOpMode {
+public class Blue9Intyakefromgate extends LinearOpMode {
     HardwareQualifier robot = new HardwareQualifier();
     private Limelight3A limelight;
     private volatile boolean isRunning = true;
@@ -52,13 +52,13 @@ public class Red21nearopengatewithintake extends LinearOpMode {
     private final String LED_COLOR_READY = "GREEN";
     private final String LED_COLOR_ACCELERATING = "YELLOW";
     private final String LED_COLOR_OFF = "RED";
-//  RPM = (TPS * 60秒) / 每转ticks数
+    //  RPM = (TPS * 60秒) / 每转ticks数
 //  return (tps * 60.0) / ticksPerRevolution;  28*13.7     28*13.7-----28 6000RPM
 //  TPS=RPM/60*ticksPerRevolution=RPM*28*13.7/60；
     private static final double Close_SHOOTER_TARGET_RPM = 100;//  400RPM---2,557.33333333333333
-//    private static final double Med_SHOOTER_TARGET_RPM = 204;   //1598 white tri a little bit too far//  250RPM---1586.67
+    //    private static final double Med_SHOOTER_TARGET_RPM = 204;   //1598 white tri a little bit too far//  250RPM---1586.67
     private static final double Med_SHOOTER_TARGET_RPM = 2785;   //1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
-//    private static final double Med_SHOOTER_TARGET_Velocity = 1300;
+    //    private static final double Med_SHOOTER_TARGET_Velocity = 1300;
     private static final double Far_SHOOTER_TARGET_RPM = 350;  //  350RPM---2237
 //   private static final double Close_SHOOTER_TARGET_RPM = 800;//  400RPM---2,557.33333333333333
 //    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
@@ -69,12 +69,12 @@ public class Red21nearopengatewithintake extends LinearOpMode {
     public float  intakePowerShoot=0.9f;//0.9
     public float DriveTrains_ReducePOWER=0.75f;
     public float DriveTrains_smoothTurn=0.55f;
-//    public String fieldOrRobotCentric = "robot";
+    //    public String fieldOrRobotCentric = "robot";
     public String fieldOrRobotCentric = "field";
     private double powerMultiplier = 0.9;
     boolean move = false;
     int controlMode = 1;
-//    public float  intakePowerIntake=0.75f;//0.95
+    //    public float  intakePowerIntake=0.75f;//0.95
 //    public float  intakePowerShoot=0.85f;//0.9
 //    public float  intakePowerShoot=0.8f;//0.9
     public float  intakePowerDump=-0.6f;
@@ -101,11 +101,11 @@ public class Red21nearopengatewithintake extends LinearOpMode {
     private boolean hasPathStarted = false;
     private PathState pathState;
     private AutoShootState autoShootState;
-//    ShooterSubsystem shooterSubsystem;
+    //    ShooterSubsystem shooterSubsystem;
 //    FlywheelSubsystem flywheelSubsystem;
 //    FeederSubsystem feederSubsystem;
 //    IntakeSubsystem intakeSubsystem;
-private PathChain driveStartShoot;
+    private PathChain driveStartShoot;
     private PathChain driveReadyThirdSpikePickup, driveThirdSpikePickup, driveThirdSpikePickupShoot;
     private PathChain driveReadyOpenGatePickup, driveOpenGatePickup,driveOpenGatePickupAdjust,driveOpenGatePickupShoot;
     private PathChain driveReadySecondSpikePickup,driveSecondSpikePickup, driveSecondSpikePickupShoot;
@@ -146,31 +146,31 @@ private PathChain driveStartShoot;
         DRIVE_OFFLINE,
         END
     }
-    private final Pose startPose = new Pose(127.5,118.75, Math.toRadians(0)); // Start Pose further zone of our robot.
-    private final Pose shootPose = new Pose(92, 92.25, Math.toRadians(45)); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
-    private final Pose scoreEnd = new Pose(92, 92.25, Math.toRadians(0)); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
-    private final Pose readyThirdSpikePickupPose = new Pose(92, 86.25, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
-    private final Pose readySecondSpikePickupPose = new Pose(92, 62.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose readyFirstSpikePickupPose = new Pose(92, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
-    private final Pose readyOpenGatePickupPose = new Pose(124.5,67.5,Math.toRadians(0)); // 63--64  PGP Middle (Second Set) of Artifacts from the Spike Mark.
-/// //////////////////////////////////
-    private final Pose readyOpenGateForPickPickupPose = new Pose(123.5,64.5,Math.toRadians(18));
-    private final Pose thirdSpikePickupPose = new Pose(127, 86.25, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
-    private final Pose secondSpikePickupPose = new Pose(133, 62.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose secondSpikePickupCP = new Pose(72, 76, Math.toRadians(0));
-    private final Pose openGatePickupCP = new Pose(72, 76, Math.toRadians(0));
+    private final Pose startPose = new Pose(127.5,118.75, Math.toRadians(0)).mirror(); // Start Pose further zone of our robot.
+    private final Pose shootPose = new Pose(92, 92.25, Math.toRadians(45)).mirror(); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
+    private final Pose scoreEnd = new Pose(92, 92.25, Math.toRadians(0)).mirror(); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
+    private final Pose readyThirdSpikePickupPose = new Pose(92, 86.25, Math.toRadians(0)).mirror(); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
+    private final Pose readySecondSpikePickupPose = new Pose(92, 62.25, Math.toRadians(0)).mirror(); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose readyFirstSpikePickupPose = new Pose(92, 36.25, Math.toRadians(0)).mirror(); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
+    private final Pose readyOpenGatePickupPose = new Pose(124.5,67.5,Math.toRadians(0)).mirror(); // 63--64  PGP Middle (Second Set) of Artifacts from the Spike Mark.
+    /// //////////////////////////////////
+    private final Pose readyOpenGateForPickPickupPose = new Pose(123.5,64.5,Math.toRadians(18)).mirror();
+    private final Pose thirdSpikePickupPose = new Pose(127, 86.25, Math.toRadians(0)).mirror(); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
+    private final Pose secondSpikePickupPose = new Pose(133, 62.25, Math.toRadians(0)).mirror(); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose secondSpikePickupCP = new Pose(72, 76, Math.toRadians(0)).mirror();
+    private final Pose openGatePickupCP = new Pose(72, 76, Math.toRadians(0)).mirror();
     ////////////////////////
-    private final Pose openGateForPickPickupCP = new Pose(72, 76, Math.toRadians(18));
-    private final Pose secondSpikePickupPoseControlPoint = new Pose(125, 64.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose firstSpikePickupPose = new Pose(134, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
-    private final Pose openGatePickupPose = new Pose(133, 69, Math.toRadians(0));  //63--61
+    private final Pose openGateForPickPickupCP = new Pose(72, 76, Math.toRadians(18)).mirror();
+    private final Pose secondSpikePickupPoseControlPoint = new Pose(125, 64.25, Math.toRadians(0)).mirror(); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose firstSpikePickupPose = new Pose(134, 36.25, Math.toRadians(0)).mirror(); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
+    private final Pose openGatePickupPose = new Pose(133, 69, Math.toRadians(0)).mirror();  //63--61
     /// /////////////////////////////////////////
-    private final Pose openGateForPickPickupPose = new Pose(130, 64, Math.toRadians(18));
+    private final Pose openGateForPickPickupPose = new Pose(130, 64, Math.toRadians(18)).mirror();
     //increased 2 inches Winston Z: 2/18/26
-    private final Pose openGateForPickPickupPoseAdjust = new Pose(130,62,Math.toRadians(26));
+    private final Pose openGateForPickPickupPoseAdjust = new Pose(130,62,Math.toRadians(26)).mirror();
 
     //    private final Pose PARKPose = new Pose(120, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
-    private final Pose offlinePose = new Pose(112, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
+    private final Pose offlinePose = new Pose(112, 92.25, Math.toRadians(0)).mirror(); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     // Initialize variables for paths
 //    private final Pose offlinePoseofFirst = new Pose(136, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     // Initialize variables for paths
@@ -181,6 +181,7 @@ private PathChain driveStartShoot;
 //        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 ///////////////////////////////////////////////////////
 //
+        
 //        Robot.alliance = Alliance.RED;
 //        Robot.sendHardwareMap(hardwareMap);
         robot.init(hardwareMap);
@@ -195,7 +196,7 @@ private PathChain driveStartShoot;
         robot.BlockageArmL.setPosition(blockageblockposition);
         robot.BlockageArmR.setPosition(blockageblockposition);
 
-    //switch with blockage case with blockage need command
+        //switch with blockage case with blockage need command
 //        follower.setStartingPose(startPose);
 //        limelight = hardwareMap.get(Limelight3A.class, "limelight");
 //        telemetry.setMsTransmissionInterval(11);
@@ -276,21 +277,21 @@ private PathChain driveStartShoot;
         }
     }
 
-////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////
 
     public void autoIntake() {
-           // 吸入
-            robot.IntakeMotorL.setPower(intakePowerIntake);
-            robot.IntakeMotorR.setPower(intakePowerIntake);
+        // 吸入
+        robot.IntakeMotorL.setPower(intakePowerIntake);
+        robot.IntakeMotorR.setPower(intakePowerIntake);
 
 //            robot.BlockageArm.setPosition(blockageblockTele);
-            robot.BlockageArmL.setPosition(blockageblockposition);
-            robot.BlockageArmR.setPosition(blockageblockposition);
+        robot.BlockageArmL.setPosition(blockageblockposition);
+        robot.BlockageArmR.setPosition(blockageblockposition);
 
 
 //            robot.MasterShooterMotorL.setPower(ShooterMotorHold);//switch with blockage case with blockage need command
 //            robot.SlaveShooterMotorR.setPower(ShooterMotorHold); //switch with blockage case with blockage need command
-            telemetry.update();
+        telemetry.update();
     }
 
     enum AutoShootState {
@@ -320,7 +321,7 @@ private PathChain driveStartShoot;
 //                robot.BlockageArm.setPosition(blockagereleaseTele);
                 robot.BlockageArmL.setPosition(blockagereleaseposition);
                 robot.BlockageArmR.setPosition(blockagereleaseposition);
-                  //switch with blockage case with blockage
+                //switch with blockage case with blockage
 //                double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());//60/(28)
 //                double targetVelocity = ShooterPIDFConfig.targetVelocity;
 //                if ((!isShooterAtSpeed) && (Math.abs(currentVelocity - targetVelocity) <= ShooterPIDFConfig.toleranceofVelocity)) {
@@ -364,24 +365,24 @@ private PathChain driveStartShoot;
         }
     }
 
-private void startShooter() {
-    robot.IntakeMotorL.setPower(0);
-    robot.IntakeMotorR.setPower(0);
-    if (robot.MasterShooterMotorL instanceof DcMotorEx) {
-        DcMotorEx shooter = (DcMotorEx) robot.MasterShooterMotorL;
-        DcMotorEx shooterR = (DcMotorEx) robot.SlaveShooterMotorR;
-        // 直接使用setVelocity，它会使用已配置的PIDF
-        shooter.setVelocity(Math.abs(ShooterPIDFConfig.targetVelocity));
-        shooterR.setVelocity(Math.abs(ShooterPIDFConfig.targetVelocity));
+    private void startShooter() {
+        robot.IntakeMotorL.setPower(0);
+        robot.IntakeMotorR.setPower(0);
+        if (robot.MasterShooterMotorL instanceof DcMotorEx) {
+            DcMotorEx shooter = (DcMotorEx) robot.MasterShooterMotorL;
+            DcMotorEx shooterR = (DcMotorEx) robot.SlaveShooterMotorR;
+            // 直接使用setVelocity，它会使用已配置的PIDF
+            shooter.setVelocity(Math.abs(ShooterPIDFConfig.targetVelocity));
+            shooterR.setVelocity(Math.abs(ShooterPIDFConfig.targetVelocity));
+        }
+        shooterStarted=true;
+
     }
-    shooterStarted=true;
-
-}
 
 
-/// ///////////////////////////////
-@Config
-public static class ShooterPIDFConfig {
+    /// ///////////////////////////////
+    @Config
+    public static class ShooterPIDFConfig {
         public static double kP = 300;     // 比例增益0.10.350.651.0655
         public static double kI = 0.0;      // 积分增益
         public static double kD = 0.0;      // 微分增益
@@ -393,7 +394,7 @@ public static class ShooterPIDFConfig {
 //        public static double targetRPM =Close_SHOOTER_TARGET_RPM;
 //        public static double targetRPM =Med_SHOOTER_TARGET_RPM; // 目标转速
         public static double targetVelocity =Med_SHOOTER_TARGET_Velocity;
-//        public static double toleranceofRPM = 100;    // 转速容差 5RPM---30TPS
+        //        public static double toleranceofRPM = 100;    // 转速容差 5RPM---30TPS
         public static double toleranceofVelocity = 70;
         public static double tolerance = 50;
 
@@ -734,13 +735,13 @@ public static class ShooterPIDFConfig {
                 .build();
 
         driveOfflineofFirst = follower.pathBuilder()
-            .addPath(new BezierLine(shootPose, offlinePose))
-            .setLinearHeadingInterpolation(shootPose.getHeading(), offlinePose.getHeading())
-            .build();
+                .addPath(new BezierLine(shootPose, offlinePose))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), offlinePose.getHeading())
+                .build();
     }
 
     /* ---------------- STATE MACHINE ---------------- */
-/// /////////////////////////keep working here/////////////////////////12172025///////////
+    /// /////////////////////////keep working here/////////////////////////12172025///////////
     private void setPathState(PathState newState) {
         pathState = newState;
         pathTimer.resetTimer();
@@ -759,13 +760,13 @@ public static class ShooterPIDFConfig {
                 break;
 
             case SHOOT_PRELOAD:
-             autoshoot();
-               if (autoShootState == AutoShootState.DONE) {
-                   follower.followPath(driveReadySecondSpikePickup, 0.65, true);
-                   isShooterAtSpeed = false;
-                   setPathState(PathState.DRIVE_READY_SECOND_SPIKE_PICKUPT_POS);
-                    }
-               break;
+                autoshoot();
+                if (autoShootState == AutoShootState.DONE) {
+                    follower.followPath(driveReadySecondSpikePickup, 0.65, true);
+                    isShooterAtSpeed = false;
+                    setPathState(PathState.DRIVE_READY_SECOND_SPIKE_PICKUPT_POS);
+                }
+                break;
 
             case DRIVE_READY_SECOND_SPIKE_PICKUPT_POS:
                 if (!follower.isBusy()) {
@@ -945,7 +946,7 @@ public static class ShooterPIDFConfig {
 
             case THIRD_SPIKE_PICKUP:
                 if (!firstPickupCompleted && pathTimer.getElapsedTimeSeconds() < 1.8) {
-            autoIntake();
+                    autoIntake();
                 } else {
                     follower.followPath(driveThirdSpikePickupShoot);
                     stopShooter();
