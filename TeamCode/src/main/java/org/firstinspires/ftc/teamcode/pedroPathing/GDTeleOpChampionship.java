@@ -29,6 +29,7 @@ public class GDTeleOpChampionship extends LinearOpMode {
 
 
 
+
     // 已有的硬件和常量定义...
     private static final double VELOCITY_TOLERANCE = 30; // RPM容差，可根据测试调整
     // 状态变量
