@@ -117,7 +117,7 @@ public class TeleOpChampionship extends LinearOpMode {
     private static final double VELOCITY_TOLERANCE = 30; // RPM容差，可根据测试调整
     // 状态变量
     private boolean isShooterAtSpeed = false;
-    private boolean wasShooterAtSpeed = false; // 用于检测状态变化
+    private boolean wasShooterAtSpeed = false; // 用于7检测状态变化
     private boolean fireRequested = false;
     // LED颜色常量（根据你的LED库调整）
     private final String LED_COLOR_READY = "GREEN";
@@ -355,9 +355,12 @@ public class TeleOpChampionship extends LinearOpMode {
             robot.IntakeMotorL.setPower(intakePowerIntake);
             robot.IntakeMotorR.setPower(intakePowerIntake);
             /// ///////////////////////////////////for debug//////////////////////
-                robot.axonTurretArmL.setTargetRotation(180);// ((96/20)*35/110)
+//                robot.axonTurretArmL.setTargetRotation(180);// ((96/20)*35/110)
+//
+//                robot.axonTurretArmR.setTargetRotation(180);
+            robot.axonTurretArmL.setTargetRotation(0);// ((96/20)*35/110)
 
-                robot.axonTurretArmR.setTargetRotation(180);
+            robot.axonTurretArmR.setTargetRotation(0);
 
 //y = 0.45452 -0.00677*H43^1 + -9.37853E-4*H43^2 -4.69942E-5*H43^3 + -1.24595E-6*H43^4 -1.74452E-8*H43^5 + -1.05357E-10*H43^6
 
@@ -496,17 +499,18 @@ Tuning the combined flywheel controller is simple - we first tune the feedforwar
     private void startShooter() {
         robot.IntakeMotorL.setPower(0);
         robot.IntakeMotorR.setPower(0);
-        robot.axonTurretArmL.setTargetRotation(0);
-        robot.axonTurretArmR.setTargetRotation(0);
+//        robot.axonTurretArmL.setTargetRotation(0);
+//        robot.axonTurretArmR.setTargetRotation(0);
+      //  03072026
         if (robot.MasterShooterMotorL instanceof DcMotorEx||robot.SlaveShooterMotorR instanceof DcMotorEx) {
              // 直接使用setVelocity，它会使用已配置的PIDF
             robot.shooterL.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEED));
             robot.shooterR.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEED));
         }
-        if(PIDFTimerStart){
-            PIDFTimer.reset();
-            PIDFTimerStart=false;
-        }
+//        if(PIDFTimerStart){
+//            PIDFTimer.reset();
+//            PIDFTimerStart=false;
+//        }
     }
     /// ///////////////////////////////////////////////////////////////////////////////
     /// /// ///////////need fix
@@ -556,8 +560,8 @@ Tuning the combined flywheel controller is simple - we first tune the feedforwar
         robot.IntakeMotorL.setPower(0);
         robot.IntakeMotorR.setPower(0);
         if (robot.MasterShooterMotorL instanceof DcMotorEx) {/// ////////////////////
-            robot.axonTurretArmL.setTargetRotation(90);// ((96/20)*35/110)
-            robot.axonTurretArmR.setTargetRotation(90);
+//            robot.axonTurretArmL.setTargetRotation(90);// ((96/20)*35/110)
+//            robot.axonTurretArmR.setTargetRotation(90);
 
         }
 
@@ -612,6 +616,8 @@ Tuning the combined flywheel controller is simple - we first tune the feedforwar
         double shooterPower = robot.MasterShooterMotorL.getPower();
         double shooterCurrent = robot.MasterShooterMotorL.getCurrent(CurrentUnit.AMPS); // 如果有电流传感器
         double currentVelocityL = Math.abs(robot.MasterShooterMotorL.getVelocity());
+        double shooterL = Math.abs(robot.shooterL.getVelocity());
+        double shooterR = Math.abs(robot.shooterR.getVelocity());
         double targetVelocityL = ShooterPIDFConfig.targetSPEED;
         double currentVelocityR = Math.abs(robot.SlaveShooterMotorR.getVelocity());
         double targetVelocityR = ShooterPIDFConfig.targetSPEED;
@@ -649,6 +655,10 @@ Tuning the combined flywheel controller is simple - we first tune the feedforwar
         telemetry.addData("kP Increased ", "Increased to %.2f", ShooterPIDFConfig.kP);
         telemetry.addData("currentVelocityLeft", currentVelocityL);
         telemetry.addData("currentVelocityRight", currentVelocityR);
+        telemetry.addData("shooterL", shooterL);
+        telemetry.addData("shooterR", shooterR);
+
+
 //        telemetry.addData("Current RPM", "%.0f", shooterVelocity);
 //        telemetry.addData("targetVelocity", targetVelocityL);
 //        telemetry.addData("targetVelocity", targetVelocityR);

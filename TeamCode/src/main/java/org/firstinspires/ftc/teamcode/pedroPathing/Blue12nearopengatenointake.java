@@ -75,7 +75,7 @@ public class Blue12nearopengatenointake extends LinearOpMode {
 
 //    public float  intakePowerIntake=0.75f;//0.95
 //    public float  intakePowerShoot=0.85f;//0.9
-public static final double blockageblockposition=0.10; //for auto
+    public static final double blockageblockposition=0.10; //for auto
     public static final double blockagereleaseposition=0.18;
     //    public float  intakePowerShoot=0.8f;//0.9
     public float  intakePowerDump=-0.6f;
@@ -170,7 +170,9 @@ public static final double blockageblockposition=0.10; //for auto
         robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        robot.BlockageArm.setPosition(blockageblockposition);////switch with blockage case with blockage
-        robot.BlockageArm.setPosition(blockageblockposition); //switch with blockage case with blockage need command
+//        robot.BlockageArm.setPosition(blockageblockposition); //switch with blockage case with blockage need command
+        robot.BlockageArmL.setPosition(blockageblockposition);
+        robot.BlockageArmR.setPosition(blockageblockposition);
 //        follower.setStartingPose(startPose);
 
 
@@ -261,7 +263,9 @@ public static final double blockageblockposition=0.10; //for auto
         robot.IntakeMotorL.setPower(intakePowerIntake);
         robot.IntakeMotorR.setPower(intakePowerIntake);
 
-        robot.BlockageArm.setPosition(blockageblockposition);
+//        robot.BlockageArm.setPosition(blockageblockposition);
+        robot.BlockageArmL.setPosition(blockageblockposition);
+        robot.BlockageArmR.setPosition(blockageblockposition);
 
 
 //            robot.MasterShooterMotorL.setPower(ShooterMotorHold);//switch with blockage case with blockage need command
@@ -282,7 +286,9 @@ public static final double blockageblockposition=0.10; //for auto
 
 
             case IDLE:
-                robot.BlockageArm.setPosition(blockageblockposition); //switch with blockage case with blockage
+//                robot.BlockageArm.setPosition(blockageblockposition); //switch with blockage case with blockage
+                robot.BlockageArmL.setPosition(blockageblockposition);
+                robot.BlockageArmR.setPosition(blockageblockposition);
                 startShooter();
                 shooterStarted = true;
                 isShooterAtSpeed = false;
@@ -291,7 +297,9 @@ public static final double blockageblockposition=0.10; //for auto
                 break;
 
             case SPINNING_UP:
-                robot.BlockageArm.setPosition(blockageblockposition); //switch with blockage case with blockage
+//                robot.BlockageArm.setPosition(blockageblockposition); //switch with blockage case with blockage
+                robot.BlockageArmL.setPosition(blockageblockposition);
+                robot.BlockageArmR.setPosition(blockageblockposition);
 //                double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());//60/(28)
 //                double targetVelocity = ShooterPIDFConfig.targetVelocity;
 //                if ((!isShooterAtSpeed) && (Math.abs(currentVelocity - targetVelocity) <= ShooterPIDFConfig.toleranceofVelocity)) {
@@ -310,7 +318,9 @@ public static final double blockageblockposition=0.10; //for auto
                     // from 1.9---1.6
                     stopShooter();
                     stopIntake();
-                    robot.BlockageArm.setPosition(blockageblockposition); //switch with blockage case with blockage
+//                    robot.BlockageArm.setPosition(blockageblockposition); //switch with blockage case with blockage
+                    robot.BlockageArmL.setPosition(blockageblockposition);
+                    robot.BlockageArmR.setPosition(blockageblockposition);
                     autoShootState = AutoShootState.DONE;
                 }
                 break;
@@ -610,7 +620,7 @@ public static final double blockageblockposition=0.10; //for auto
                 .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
                 .build();
         driveReadyFirstPickup = follower.pathBuilder()
-                .addPath(new BezierCurve(shootPose, readyFirstPickupPose))
+                .addPath(new BezierLine(shootPose, readyFirstPickupPose))
                 .setLinearHeadingInterpolation(shootPose.getHeading(), readyFirstPickupPose.getHeading())
                 .build();
 //        driveReadyFirstPickup = follower.pathBuilder()
@@ -643,7 +653,7 @@ public static final double blockageblockposition=0.10; //for auto
 //                .build();
 
         driveReadyThirdPickup = follower.pathBuilder()
-                .addPath(new BezierCurve(shootPose, readyThirdPickupPose))
+                .addPath(new BezierLine(shootPose, readyThirdPickupPose))
                 .setLinearHeadingInterpolation(shootPose.getHeading(), readyThirdPickupPose.getHeading())
                 .build();
         driveThirdPickup = follower.pathBuilder()
@@ -651,7 +661,7 @@ public static final double blockageblockposition=0.10; //for auto
                 .setLinearHeadingInterpolation(readyThirdPickupPose.getHeading(), thirdPickupPose.getHeading())
                 .build();
         driveThirdPickupShoot = follower.pathBuilder()
-                .addPath(new BezierCurve(thirdPickupPose, shootPose))
+                .addPath(new BezierLine(thirdPickupPose, shootPose))
                 .setLinearHeadingInterpolation(thirdPickupPose.getHeading(), shootPose.getHeading())
                 .build();
 
