@@ -231,7 +231,7 @@ public class GDTeleOpChampionship extends LinearOpMode {
 //            setTurretPosition(0);
             turretAngle = getPosition();
             turretupdate();
-            setTurretPosition(turretSetpoint);
+//            setTurretPosition(turretSetpoint);
 //            robot.axonTurretArmL.update();
 //            robot.axonTurretArmR.update();
             telemetry.update();
@@ -299,11 +299,17 @@ private void turretupdate() {
         }
 
         double target = overallAngle - robotHeading;
+        //代替power PIDF 使用 angle PID
+//        robot.axonTurretArmL.setTargetRotation(overallAngle);
+//        robot.axonTurretArmR.setTargetRotation(overallAngle);
+        robot.axonTurretArmL.changeTargetRotation(target);
+        robot.axonTurretArmR.changeTargetRotation(target);
+        telemetry.addData("target ", target);
 
         if (target < -Math.PI / 2.0 || target > Math.PI / 2.0) {
             return 0.0;
         }
-        telemetry.addData("target", target);
+        telemetry.addData("tMath.toDegrees(target) ",  Math.toDegrees(target));
         return target;
     }
 
@@ -334,8 +340,8 @@ public void setTurretPosition(double pos) {
         telemetry.addData("Clamped Power", clampedPower);
 
         turretPower = clampedPower;
-        robot.servoTurretArmL.setPower(clampedPower);
-        robot.servoTurretArmR.setPower(clampedPower);
+//        robot.servoTurretArmL.setPower(clampedPower);
+//        robot.servoTurretArmR.setPower(clampedPower);
 
 //        telemetry.addData("Final Power", turretPower);
 //        telemetry.addData(" BturretPower ",  turretPower);
@@ -579,10 +585,10 @@ public double getCurrentAngle() {
 ////    robot.servoTurretArmR.setPower(turretPower);
 //    robot.servoTurretArmL.setPower(target - turretAngle);
 //    robot.servoTurretArmR.setPower(target - turretAngle);
-////    robot.axonTurretArmL.setTargetRotation(target - turretAngle);
-////    robot.axonTurretArmR.setTargetRotation(target - turretAngle);
-////    robot.axonTurretArmL.changeTargetRotation(target - turretAngle);
-////    robot.axonTurretArmR.changeTargetRotation(target - turretAngle);
+//    robot.axonTurretArmL.setTargetRotation(overallAngle);
+//    robot.axonTurretArmR.setTargetRotation(overallAngle);
+//    robot.axonTurretArmL.changeTargetRotation(target - turretAngle);
+//    robot.axonTurretArmR.changeTargetRotation(target - turretAngle);
 //
 //    telemetry.addData("encoderTurret .getCurrentPosition()", robot.encoderTurret.getCurrentPosition());
 //    telemetry.addData("encoderTurret target angle-turret angle", target-turretAngle);

@@ -14,13 +14,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-//import org.firstinspires.ftc.teamcode.commandbase.subsystems.Turret;
-//import org.firstinspires.ftc.teamcode.pedroPathing.Alliance;
-//import org.firstinspires.ftc.teamcode.globals.Robot;
-//import com.seattlesolvers.solverslib.util.TelemetryData;
-//import org.firstinspires.ftc.teamcode.commandbase.commands.ClearLaunch;
-
-//import org.firstinspires.ftc.teamcode.pedroPathing.RTPAxon;
 //import com.qualcomm.robotcore.hardware.Gamepad;
 //import com.qualcomm.robotcore.hardware.HardwareMap;
 //import com.qualcomm.robotcore.hardware.CRServoImplEx;
