@@ -192,8 +192,8 @@ public class TeleOpChampionship extends LinearOpMode {
             updateBlockage();
             updateTuningPIDF();
 //            updateAutoAim();
-            robot.axonTurretArmL.update();
-            robot.axonTurretArmR.update();
+//            robot.axonTurretArmL.update();
+//            robot.axonTurretArmR.update();
             telemetry.update();
             sleep(20);
 
@@ -221,15 +221,15 @@ public class TeleOpChampionship extends LinearOpMode {
         // 模式选择：用左扳机+方向键选择要调整的参数
 
             // 调整 kP
-            if (gamepad1.dpad_up) {
-                ShooterPIDFConfig.kF += ShooterPIDFConfig.kF_STEP;
-                updateShooter();
-                telemetry.addData("Tuning Mode", "Adjusting kF ++++");
-            } else if (gamepad1.dpad_down) {
-                ShooterPIDFConfig.kF -= ShooterPIDFConfig.kF_STEP;
-                updateShooter();
-                telemetry.addData("Tuning Mode", "Adjusting kF ---- ");
-            }
+//            if (gamepad1.dpad_up) {
+//                ShooterPIDFConfig.kF += ShooterPIDFConfig.kF_STEP;
+//                updateShooter();
+//                telemetry.addData("Tuning Mode", "Adjusting kF ++++");
+//            } else if (gamepad1.dpad_down) {
+//                ShooterPIDFConfig.kF -= ShooterPIDFConfig.kF_STEP;
+//                updateShooter();
+//                telemetry.addData("Tuning Mode", "Adjusting kF ---- ");
+//            }
 
         // 调整 kP
 //        if (gamepad1.dpad_up) {
