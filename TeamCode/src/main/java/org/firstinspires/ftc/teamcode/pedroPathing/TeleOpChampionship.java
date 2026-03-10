@@ -129,9 +129,6 @@ public class TeleOpChampionship extends LinearOpMode {
     //  private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
     //    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
     // use rpm as speed, the real name should be speed = 1300      //1300
-    //  1000RPM---6346.67
-    //  600RPM---3808
-    //  500RPM---3173.3
 
     private ElapsedTime imuResetTimer = new ElapsedTime();
     private boolean imuResetInCooldown = false;
