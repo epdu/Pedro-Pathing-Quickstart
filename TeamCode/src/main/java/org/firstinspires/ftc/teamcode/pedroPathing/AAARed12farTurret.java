@@ -26,7 +26,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 // Limelight
 // 位姿
 
-@Autonomous(name = "RED Far Twelve FIRST HOME HOME HOME V1 Red9short")
+@Autonomous(name = "AAA RED Far Twelve FIRST HOME HOME HOME V1 Red9short")
 //three preload and take home twice and one first role, parking
 
 public class AAARed12farTurret extends LinearOpMode {

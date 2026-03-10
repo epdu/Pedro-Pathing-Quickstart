@@ -27,7 +27,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 // 姿态
 // Limelight
 // 位姿
-@Autonomous(name = "RED Near open Gate WITH intake TWENTY-FIRST  park after third loaded 03092026 V1")
+@Autonomous(name = "AAA RED Near open Gate WITH intake TWENTY-FIRST  park after third loaded 03092026 V1")
 //no enough time to finish all backup 03032026
 //intake second role with open gate , park at  136, 36.25 with three loaded
 //. 3 ARTIFACTS on each SPIKE MARK arranged as follows:
