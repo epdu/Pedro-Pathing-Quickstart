@@ -53,7 +53,7 @@ public class HardwareQualifier {
 //    public AnalogInput encoderTurretArmL;
 //    public AnalogInput encoderTurretArmR;
 
-    public DcMotorEx encoderTurret;
+    public DcMotorEx revEncoder;
     public RTPAxon axonTurretArmL;
     public RTPAxon axonTurretArmR;
     public RTPAxon axonTurretArm;
@@ -62,6 +62,9 @@ public class HardwareQualifier {
     public CRServo servo;
     // Continuous rotation servo
     public boolean rtp=true;
+    public double  finalAutoX;
+    public double  finalAutoY;
+    public double  finalAutoHeading;
     GoBildaPinpointDriver odo;
     IMU imu;
     public static final double DriveTrains_POWER =  0.95 ;// reduced power of driving train motors
@@ -140,11 +143,11 @@ public class HardwareQualifier {
 
 /////////////////////////////////////CRServo///////////////////////////////////////
         servoTurretArmL = hwMap.get(CRServo.class, "servoTurretArmL");//expansion  hub port 2
-        encoderTurret = hwMap.get(DcMotorEx.class, "RBMotor");// encoderTurret control  hub motor encoder port 3
-        axonTurretArmL = new RTPAxon(servoTurretArmL, encoderTurret);
+        revEncoder = hwMap.get(DcMotorEx.class, "RBMotor");// encoderTurret control  hub motor encoder port 3
+        axonTurretArmL = new RTPAxon(servoTurretArmL, revEncoder);
 //      servoTurretArmL.setDirection(CRServo.Direction.REVERSE);
         servoTurretArmR = hwMap.get(CRServo.class, "servoTurretArmR");//control hub port 4
-        axonTurretArmR = new RTPAxon(servoTurretArmR, encoderTurret);
+        axonTurretArmR = new RTPAxon(servoTurretArmR, revEncoder);
 //       servoTurretArmR.setDirection(CRServo.Direction.REVERSE);
         axonTurretArmL.setMaxPower(0.5);
         axonTurretArmL.setRtp(rtp);

@@ -230,8 +230,9 @@ public class RTPAxon {
     // Get current angle from encoder (in degrees)
     public double getCurrentAngle() {
         if (servoEncoder == null) return 0;
+//        return (servoEncoder.getCurrentPosition()/16384.0) * (direction.equals(Direction.FORWARD) ? -360 : 360);
+        return (servoEncoder.getCurrentPosition()/16384.0) * (direction.equals(Direction.REVERSE) ? -360 : 360);
 //        return (servoEncoder.getCurrentPosition()/8192.0) * (direction.equals(Direction.FORWARD) ? -360 : 360);
-        return (servoEncoder.getCurrentPosition()/16384.0) * (direction.equals(Direction.FORWARD) ? -360 : 360);
 //        return (servoEncoder.getCurrentPosition()/4046.0) * (direction.equals(Direction.REVERSE) ? -360 : 360);
     }
 

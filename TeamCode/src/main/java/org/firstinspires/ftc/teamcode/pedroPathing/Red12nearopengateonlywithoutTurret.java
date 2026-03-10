@@ -1,6 +1,6 @@
 //package org.firstinspires.ftc.teamcode.pedroPathing;
 //
-//import static org.firstinspires.ftc.teamcode.pedroPathing.TeleOpQualifier.blockageblockposition;
+////import static org.firstinspires.ftc.teamcode.pedroPathing.TeleOpQualifier.blockageblockposition;
 //
 //import com.acmerobotics.dashboard.FtcDashboard;
 //import com.acmerobotics.dashboard.config.Config;
@@ -25,7 +25,7 @@
 //// 姿态
 //// Limelight
 //// 位姿
-//@Autonomous(name = "RED Near opengate only TWELVE  no taking without turret V1 Red9short")
+//@Autonomous(name = "RED Near opengate only TWELVE  no taking without turret 03092026 V1 Red9short")
 //// intake second role with open gate only did not try to intake,
 //// blockage does not work well, switch back to flywheel reverse
 ////. 3 ARTIFACTS on each SPIKE MARK arranged as follows:
@@ -83,6 +83,8 @@
 //    public static final double HoodArmPositionInit = 0.1;
 //    public static final double HoodArmPositionCloseShoot = 0.3;
 //    public static final double HoodArmPositionMedShoot = 0.2;
+//    public static final double blockageblockposition=0.10; //for auto
+//    public static final double blockagereleaseposition=0.18;
 //    // Other variables
 //    private Pose currentPose; // Current pose of the robot
 //    private Follower follower; // Pedro Pathing follower
@@ -174,8 +176,10 @@
 //        robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //        robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 ////        robot.BlockageArm.setPosition(blockageblockposition);////switch with blockage case with blockage
-//        robot.BlockageArm.setPosition(blockageblockposition); //switch with blockage case with blockage need command
-////        follower.setStartingPose(startPose);
+////        robot.BlockageArm.setPosition(blockageblockposition); //switch with blockage case with blockage need command
+//        robot.BlockageArmL.setPosition(blockageblockposition);
+//        robot.BlockageArmR.setPosition(blockageblockposition);
+//        //        follower.setStartingPose(startPose);
 //
 ////        limelight = hardwareMap.get(Limelight3A.class, "limelight");
 ////        telemetry.setMsTransmissionInterval(11);
@@ -262,8 +266,10 @@
 //           // 吸入
 //            robot.IntakeMotorL.setPower(intakePowerIntake);
 //            robot.IntakeMotorR.setPower(intakePowerIntake);
-//            robot.MasterShooterMotorL.setPower(ShooterMotorHold);//switch with blockage case with blockage need command
-//            robot.SlaveShooterMotorR.setPower(ShooterMotorHold); //switch with blockage case with blockage need command
+//        robot.BlockageArmL.setPosition(blockageblockposition);
+//        robot.BlockageArmR.setPosition(blockageblockposition);
+////            robot.MasterShooterMotorL.setPower(ShooterMotorHold);//switch with blockage case with blockage need command
+////            robot.SlaveShooterMotorR.setPower(ShooterMotorHold); //switch with blockage case with blockage need command
 //            telemetry.update();
 //    }
 //
