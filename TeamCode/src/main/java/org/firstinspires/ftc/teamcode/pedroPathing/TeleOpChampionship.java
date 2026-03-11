@@ -133,7 +133,7 @@ public class TeleOpChampionship extends LinearOpMode {
     private ElapsedTime imuResetTimer = new ElapsedTime();
     private boolean imuResetInCooldown = false;
     private static final long IMU_RESET_COOLDOWN_MS = 300; // 1秒冷却时间
-//    public DcMotorEx shooter =  robot.MasterShooterMotorL;
+    //    public DcMotorEx shooter =  robot.MasterShooterMotorL;
 //    public DcMotorEx shooterR = (DcMotorEx) robot.SlaveShooterMotorR;
     ButtonHandler dpadDownHandler = new ButtonHandler();
     ButtonHandler dpadUpHandler = new ButtonHandler();
@@ -223,16 +223,16 @@ public class TeleOpChampionship extends LinearOpMode {
 
     } //end of run mode
 
-/////////////////////////////////////////////methods/////////////////////////
-/// ////////////////////////////////////////////////
+    /////////////////////////////////////////////methods/////////////////////////
+    /// ////////////////////////////////////////////////
 
-private void handlePositionReset() {
-    if (gamepad1.back && gamepad1.start) {  // 同时按 back + start 重置
-        // 重置到默认起始点
-        follower.setStartingPose(new Pose(70, 70, 0));// base 9,6.25,-180
-        telemetry.addData("Position Reset", "To default (70,70,0)");
-        gamepad1.rumble(500);
-    } else if (gamepad1.back) {  // 只按 back 使用 Auto 保存的位置
+    private void handlePositionReset() {
+        if (gamepad1.back && gamepad1.start) {  // 同时按 back + start 重置
+            // 重置到默认起始点
+            follower.setStartingPose(new Pose(70, 70, 0));// base 9,6.25,-180
+            telemetry.addData("Position Reset", "To default (70,70,0)");
+            gamepad1.rumble(500);
+        } else if (gamepad1.back) {  // 只按 back 使用 Auto 保存的位置
 
             follower.setStartingPose(new Pose(
                     robot.finalAutoX,
@@ -241,23 +241,23 @@ private void handlePositionReset() {
             ));
             telemetry.addData("Position Reset", "To Auto end pose");
 
+        }
     }
-}
 
-private void turretupdate() {
+    private void turretupdate() {
 
-    if (gamepad1.dpad_up) {   // (dpadUpHandler.wasPressed())
+        if (gamepad1.dpad_up) {   // (dpadUpHandler.wasPressed())
 
-         turretSetpoint = findPosition();
-        telemetry.addData("turretSetpoint ", Math.toDegrees(turretSetpoint));
-        delayTimer.reset();
-        while (delayTimer.milliseconds() < 300 && opModeIsActive()) {
-            // Other tasks can be processed here
-        } // 防止快速连击导致模式快速切换
-    } else  { //if(gamepad1.dpad_down)
-        turretSetpoint = 0.0;
+            turretSetpoint = findPosition();
+            telemetry.addData("turretSetpoint ", Math.toDegrees(turretSetpoint));
+            delayTimer.reset();
+            while (delayTimer.milliseconds() < 300 && opModeIsActive()) {
+                // Other tasks can be processed here
+            } // 防止快速连击导致模式快速切换
+        } else  { //if(gamepad1.dpad_down)
+            turretSetpoint = 0.0;
 
-    }
+        }
 /// ///////////by angle/////////////////////
 
 //        axon.setTargetRotation(90);    // Move to 90 degrees absolute
@@ -266,9 +266,9 @@ private void turretupdate() {
 //    robot.axonTurretArmR.changeTargetRotation(Math.toDegrees(turretSetpoint-turretAngle));
 //    robot.axonTurretArmL.changeTargetRotation(-45);
 //    robot.axonTurretArmR.changeTargetRotation(-45);
-    setTurretPosition(turretSetpoint);
-    telemetry.addData("Math.toDegrees(turretSetpoint-turretAngle)", Math.toDegrees(turretSetpoint-turretAngle));
-}
+        setTurretPosition(turretSetpoint);
+        telemetry.addData("Math.toDegrees(turretSetpoint-turretAngle)", Math.toDegrees(turretSetpoint-turretAngle));
+    }
     public void setTurretPosition(double pos) {
         turretPower = - pidfController.calculate(getPosition(), pos);
 //    robot.servoTurretArmL.setPower(turretPower);
@@ -466,17 +466,17 @@ private void turretupdate() {
         public static double kI = 0.0;        // 积分增益
         public static double kD = 0.0;        // 微分增益
         public static double kF = 15.0;      // 14 --- 90%-95% of 1200  15.0 1160 15.1 V=1160 low battery
- /*       //To tune the feedforward controller, increase the velocity feedforward gain until
-  the flywheel approaches the correct setpoint over time. If the flywheel overshoots, reduce .
+        /*       //To tune the feedforward controller, increase the velocity feedforward gain until
+         the flywheel approaches the correct setpoint over time. If the flywheel overshoots, reduce .
 
-Set , , , and to zero.
-Increase until the output starts to oscillate around the setpoint, then decrease it until the oscillations stop.
- In some cases, increase if output gets “stuck” before converging to the setpoint.
+       Set , , , and to zero.
+       Increase until the output starts to oscillate around the setpoint, then decrease it until the oscillations stop.
+        In some cases, increase if output gets “stuck” before converging to the setpoint.
 
-Tuning the combined flywheel controller is simple - we first tune the feedforward controller following the same procedure as
- in the feedforward-only section, and then we tune the PID controller following the same procedure as in the feedback-only section.
-  Notice that PID portion of the controller is much easier to tune “on top of” an accurate feedforward.
- */
+       Tuning the combined flywheel controller is simple - we first tune the feedforward controller following the same procedure as
+        in the feedforward-only section, and then we tune the PID controller following the same procedure as in the feedback-only section.
+         Notice that PID portion of the controller is much easier to tune “on top of” an accurate feedforward.
+        */
         public static double targetSPEED =Med_SHOOTER_TARGET_SPEED; // 目标转速
         public static double tolerance = 0;
         public static double kF_STEP = 0.05;   // 每次按键增加/减少的量
@@ -498,11 +498,11 @@ Tuning the combined flywheel controller is simple - we first tune the feedforwar
 
     public void initShooterPIDF() {
 
-            if (robot.shooterL == null || robot.shooterR == null) {
-                telemetry.addData("Error", "shooterL or shooterR is null - check HardwareQualifier init");
-                return;  // 安全退出，避免崩溃
-            }
-            // 初始化时调用一次
+        if (robot.shooterL == null || robot.shooterR == null) {
+            telemetry.addData("Error", "shooterL or shooterR is null - check HardwareQualifier init");
+            return;  // 安全退出，避免崩溃
+        }
+        // 初始化时调用一次
         if (robot.MasterShooterMotorL instanceof DcMotorEx||robot.SlaveShooterMotorR instanceof DcMotorEx) {
             robot.shooterL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //            shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -530,9 +530,9 @@ Tuning the combined flywheel controller is simple - we first tune the feedforwar
         robot.IntakeMotorR.setPower(0);
 //        robot.axonTurretArmL.setTargetRotation(0);
 //        robot.axonTurretArmR.setTargetRotation(0);
-      //  03072026
+        //  03072026
         if (robot.MasterShooterMotorL instanceof DcMotorEx||robot.SlaveShooterMotorR instanceof DcMotorEx) {
-             // 直接使用setVelocity，它会使用已配置的PIDF
+            // 直接使用setVelocity，它会使用已配置的PIDF
             robot.shooterL.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEED));
             robot.shooterR.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEED));
         }
@@ -575,7 +575,7 @@ Tuning the combined flywheel controller is simple - we first tune the feedforwar
 //            // 直接使用setVelocity，它会使用已配置的PIDF
 //            shooter.setVelocity(ShooterPIDFConfig.targetRPM);
 //            // 从电机使用简单功率跟随（可选PIDF）
-////            robot.SlaveShooterMotorR.setPower(shooter.getPower() * 0.95); // 95%跟随
+    ////            robot.SlaveShooterMotorR.setPower(shooter.getPower() * 0.95); // 95%跟随
 //            double MasterShooterMotorLPower = robot.MasterShooterMotorL.getPower();
 //            robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //            robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -584,7 +584,7 @@ Tuning the combined flywheel controller is simple - we first tune the feedforwar
 //            //
 //        }
 //    }
- //
+    //
     private void moveTurret() {
         robot.IntakeMotorL.setPower(0);
         robot.IntakeMotorR.setPower(0);
