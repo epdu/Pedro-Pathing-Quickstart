@@ -5,11 +5,13 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.ftc.localization.localizers.PinpointLocalizer;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -100,6 +102,7 @@ public class TeleOpChampionship extends LinearOpMode {
     private double turretSetpoint = 0.0;
     private double turretPower = 0.0;
     private Follower follower;
+    private PinpointLocalizer pinpointLocalizer;
     private PIDFController pidfController;
     private RTPAxon.Direction direction;
 //    private final Gamepad gamepad1;
@@ -159,6 +162,12 @@ public class TeleOpChampionship extends LinearOpMode {
 //        robot.alliance = Alliance.BLUE;
         robot.alliance = Alliance.RED;
         follower = Constants.createFollower(hardwareMap);
+        robot.leftFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        robot.rightFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        robot.leftRearMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        robot.rightRearMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        Constants.driveConstants.setUseBrakeModeInTeleOp(true);
+//        follower = Constants.createFollower(hardwareMap);
         Pose startPose = new Pose(70, 70, 0);  // 或其他起始坐标
         //auto off line 112, 92.25
 
@@ -224,7 +233,7 @@ public class TeleOpChampionship extends LinearOpMode {
     } //end of run mode
 
     /////////////////////////////////////////////methods/////////////////////////
-    /// ////////////////////////////////////////////////
+    //////////////////////////////////////////////////
 
     private void handlePositionReset() {
         if (gamepad1.back && gamepad1.start) {  // 同时按 back + start 重置
@@ -874,6 +883,24 @@ public class TeleOpChampionship extends LinearOpMode {
 
 /// ///////////////////////joy stick reversed for no reason//// on 03112026/////////////
     public void updateDrivetrain_FieldCentric() {
+        /// ////////////follower issue/////////
+        /// ////////////////03102026 switch left and right reverse for no reason， after auto everything reversed。
+//        leftRearMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//        leftFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//        robot.rightRearMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//        robot.rightFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//        /// ////////////////03102026 switch left and right reverse for no reason， after auto everything reversed。
+//
+//        robot.leftFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        robot.rightFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        robot.leftRearMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        robot.rightRearMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//
+//        robot.leftFrontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        robot.rightFrontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        robot.leftRearMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        robot.rightRearMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         double y = -gamepad1.left_stick_y * (1); // Remember, Y stick value is reversed
         double x = +gamepad1.left_stick_x * (1);
         double rx = +gamepad1.right_stick_x * DriveTrains_smoothTurn; //*(0.5) is fine
