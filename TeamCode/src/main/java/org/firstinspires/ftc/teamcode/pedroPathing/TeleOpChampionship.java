@@ -190,7 +190,7 @@ public class TeleOpChampionship extends LinearOpMode {
             updateLEDs();
 //            updateHood(); //temp stop for PIDF tuning 03052026
             updateBlockage();
-            updateTuningPIDF();
+//            updateTuningPIDF();
 //            updateAutoAim();
 //            robot.axonTurretArmL.update();
 //            robot.axonTurretArmR.update();
