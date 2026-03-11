@@ -5,11 +5,13 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.ftc.localization.localizers.PinpointLocalizer;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -64,9 +66,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 public class TeleOpChampionship extends LinearOpMode {
     // 已有的硬件和常量定义...
     /////////////////////////////////pretty goood for close shoot /////////////////////////// 1300
-
-    private static final double Med_SHOOTER_TARGET_SPEED = 1200;  // from 1200-1150 1666 still big 1866 kind of good for far， but a little bit too big
-    private static final double flyWheelIdleSpeed = Med_SHOOTER_TARGET_SPEED * 0.6200;
+    private static final double Med_SHOOTER_TARGET_SPEED = 1100;  // from 1200-1150 1666 still big 1866 kind of good for far， but a little bit too big
     public float DriveTrains_ReducePOWER=1.0f;
     public float DriveTrains_smoothTurn=1.0f;
     HardwareQualifier robot = new HardwareQualifier();
@@ -79,7 +79,7 @@ public class TeleOpChampionship extends LinearOpMode {
     boolean move = false;
     boolean PIDFTimerStart=true;
     int controlMode = 1;
-    public float  intakePowerIntake=0.9f;//push blocker too much from 99-90
+    public float  intakePowerIntake=0.95f;//push blocker too much from 99-90
     public float  intakePowerShoot=0.9f;
     public float  intakePowerDump=-0.65f;
     public float  intakePowerOff=0.0f;
@@ -102,6 +102,7 @@ public class TeleOpChampionship extends LinearOpMode {
     private double turretSetpoint = 0.0;
     private double turretPower = 0.0;
     private Follower follower;
+    private PinpointLocalizer pinpointLocalizer;
     private PIDFController pidfController;
     private RTPAxon.Direction direction;
 //    private final Gamepad gamepad1;
@@ -118,7 +119,6 @@ public class TeleOpChampionship extends LinearOpMode {
     private static final double VELOCITY_TOLERANCE = 30; // RPM容差，可根据测试调整
     // 状态变量
     private boolean isShooterAtSpeed = false;
-    private boolean  shooterIsOn=false;
     private boolean wasShooterAtSpeed = false; // 用于7检测状态变化
     private boolean fireRequested = false;
     // LED颜色常量（根据你的LED库调整）
@@ -136,7 +136,7 @@ public class TeleOpChampionship extends LinearOpMode {
     private ElapsedTime imuResetTimer = new ElapsedTime();
     private boolean imuResetInCooldown = false;
     private static final long IMU_RESET_COOLDOWN_MS = 300; // 1秒冷却时间
-//    public DcMotorEx shooter =  robot.MasterShooterMotorL;
+    //    public DcMotorEx shooter =  robot.MasterShooterMotorL;
 //    public DcMotorEx shooterR = (DcMotorEx) robot.SlaveShooterMotorR;
     ButtonHandler dpadDownHandler = new ButtonHandler();
     ButtonHandler dpadUpHandler = new ButtonHandler();
@@ -162,6 +162,12 @@ public class TeleOpChampionship extends LinearOpMode {
 //        robot.alliance = Alliance.BLUE;
         robot.alliance = Alliance.RED;
         follower = Constants.createFollower(hardwareMap);
+        robot.leftFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        robot.rightFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        robot.leftRearMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        robot.rightRearMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        Constants.driveConstants.setUseBrakeModeInTeleOp(true);
+//        follower = Constants.createFollower(hardwareMap);
         Pose startPose = new Pose(70, 70, 0);  // 或其他起始坐标
         //auto off line 112, 92.25
 
@@ -226,16 +232,16 @@ public class TeleOpChampionship extends LinearOpMode {
 
     } //end of run mode
 
-/////////////////////////////////////////////methods/////////////////////////
-/// ////////////////////////////////////////////////
+    /////////////////////////////////////////////methods/////////////////////////
+    //////////////////////////////////////////////////
 
-private void handlePositionReset() {
-    if (gamepad1.back && gamepad1.start) {  // 同时按 back + start 重置
-        // 重置到默认起始点
-        follower.setStartingPose(new Pose(70, 70, 0));// base 9,6.25,-180
-        telemetry.addData("Position Reset", "To default (70,70,0)");
-        gamepad1.rumble(500);
-    } else if (gamepad1.back) {  // 只按 back 使用 Auto 保存的位置
+    private void handlePositionReset() {
+        if (gamepad1.back && gamepad1.start) {  // 同时按 back + start 重置
+            // 重置到默认起始点
+            follower.setStartingPose(new Pose(70, 70, 0));// base 9,6.25,-180
+            telemetry.addData("Position Reset", "To default (70,70,0)");
+            gamepad1.rumble(500);
+        } else if (gamepad1.back) {  // 只按 back 使用 Auto 保存的位置
 
             follower.setStartingPose(new Pose(
                     robot.finalAutoX,
@@ -244,23 +250,23 @@ private void handlePositionReset() {
             ));
             telemetry.addData("Position Reset", "To Auto end pose");
 
+        }
     }
-}
 
-private void turretupdate() {
+    private void turretupdate() {
 
-    if (gamepad1.dpad_up) {   // (dpadUpHandler.wasPressed())
+        if (gamepad1.dpad_up) {   // (dpadUpHandler.wasPressed())
 
-         turretSetpoint = findPosition();
-        telemetry.addData("turretSetpoint ", Math.toDegrees(turretSetpoint));
-        delayTimer.reset();
-        while (delayTimer.milliseconds() < 300 && opModeIsActive()) {
-            // Other tasks can be processed here
-        } // 防止快速连击导致模式快速切换
-    } else  { //if(gamepad1.dpad_down)
-        turretSetpoint = 0.0;
+            turretSetpoint = findPosition();
+            telemetry.addData("turretSetpoint ", Math.toDegrees(turretSetpoint));
+            delayTimer.reset();
+            while (delayTimer.milliseconds() < 300 && opModeIsActive()) {
+                // Other tasks can be processed here
+            } // 防止快速连击导致模式快速切换
+        } else  { //if(gamepad1.dpad_down)
+            turretSetpoint = 0.0;
 
-    }
+        }
 /// ///////////by angle/////////////////////
 
 //        axon.setTargetRotation(90);    // Move to 90 degrees absolute
@@ -269,9 +275,9 @@ private void turretupdate() {
 //    robot.axonTurretArmR.changeTargetRotation(Math.toDegrees(turretSetpoint-turretAngle));
 //    robot.axonTurretArmL.changeTargetRotation(-45);
 //    robot.axonTurretArmR.changeTargetRotation(-45);
-    setTurretPosition(turretSetpoint);
-    telemetry.addData("Math.toDegrees(turretSetpoint-turretAngle)", Math.toDegrees(turretSetpoint-turretAngle));
-}
+        setTurretPosition(turretSetpoint);
+        telemetry.addData("Math.toDegrees(turretSetpoint-turretAngle)", Math.toDegrees(turretSetpoint-turretAngle));
+    }
     public void setTurretPosition(double pos) {
         turretPower = - pidfController.calculate(getPosition(), pos);
 //    robot.servoTurretArmL.setPower(turretPower);
@@ -469,19 +475,18 @@ private void turretupdate() {
         public static double kI = 0.0;        // 积分增益
         public static double kD = 0.0;        // 微分增益
         public static double kF = 15.0;      // 14 --- 90%-95% of 1200  15.0 1160 15.1 V=1160 low battery
- /*       //To tune the feedforward controller, increase the velocity feedforward gain until
-  the flywheel approaches the correct setpoint over time. If the flywheel overshoots, reduce .
+        /*       //To tune the feedforward controller, increase the velocity feedforward gain until
+         the flywheel approaches the correct setpoint over time. If the flywheel overshoots, reduce .
 
-Set , , , and to zero.
-Increase until the output starts to oscillate around the setpoint, then decrease it until the oscillations stop.
- In some cases, increase if output gets “stuck” before converging to the setpoint.
+       Set , , , and to zero.
+       Increase until the output starts to oscillate around the setpoint, then decrease it until the oscillations stop.
+        In some cases, increase if output gets “stuck” before converging to the setpoint.
 
-Tuning the combined flywheel controller is simple - we first tune the feedforward controller following the same procedure as
- in the feedforward-only section, and then we tune the PID controller following the same procedure as in the feedback-only section.
-  Notice that PID portion of the controller is much easier to tune “on top of” an accurate feedforward.
- */
-        public static double targetSPEED =flyWheelIdleSpeed;
-//        public static double targetSPEED =Med_SHOOTER_TARGET_SPEED; // 目标转速// 目标转速
+       Tuning the combined flywheel controller is simple - we first tune the feedforward controller following the same procedure as
+        in the feedforward-only section, and then we tune the PID controller following the same procedure as in the feedback-only section.
+         Notice that PID portion of the controller is much easier to tune “on top of” an accurate feedforward.
+        */
+        public static double targetSPEED =Med_SHOOTER_TARGET_SPEED; // 目标转速
         public static double tolerance = 0;
         public static double kF_STEP = 0.05;   // 每次按键增加/减少的量
         public static double kP_STEP = 0.5;   // 每次按键增加/减少的量
@@ -502,11 +507,11 @@ Tuning the combined flywheel controller is simple - we first tune the feedforwar
 
     public void initShooterPIDF() {
 
-            if (robot.shooterL == null || robot.shooterR == null) {
-                telemetry.addData("Error", "shooterL or shooterR is null - check HardwareQualifier init");
-                return;  // 安全退出，避免崩溃
-            }
-            // 初始化时调用一次
+        if (robot.shooterL == null || robot.shooterR == null) {
+            telemetry.addData("Error", "shooterL or shooterR is null - check HardwareQualifier init");
+            return;  // 安全退出，避免崩溃
+        }
+        // 初始化时调用一次
         if (robot.MasterShooterMotorL instanceof DcMotorEx||robot.SlaveShooterMotorR instanceof DcMotorEx) {
             robot.shooterL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //            shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -534,16 +539,11 @@ Tuning the combined flywheel controller is simple - we first tune the feedforwar
         robot.IntakeMotorR.setPower(0);
 //        robot.axonTurretArmL.setTargetRotation(0);
 //        robot.axonTurretArmR.setTargetRotation(0);
-      //  03072026
-        if ((robot.MasterShooterMotorL instanceof DcMotorEx) && (!shooterIsOn)) {
-             // 直接使用setVelocity，它会使用已配置的PIDF
+        //  03072026
+        if (robot.MasterShooterMotorL instanceof DcMotorEx||robot.SlaveShooterMotorR instanceof DcMotorEx) {
+            // 直接使用setVelocity，它会使用已配置的PIDF
             robot.shooterL.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEED));
             robot.shooterR.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEED));
-            shooterIsOn=true;
-        } else if (shooterIsOn) {
-            robot.shooterL.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEED*1.67));
-            robot.shooterR.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEED*1.67));
-            shooterIsOn=true;
         }
 //        if(PIDFTimerStart){
 //            PIDFTimer.reset();
@@ -584,7 +584,7 @@ Tuning the combined flywheel controller is simple - we first tune the feedforwar
 //            // 直接使用setVelocity，它会使用已配置的PIDF
 //            shooter.setVelocity(ShooterPIDFConfig.targetRPM);
 //            // 从电机使用简单功率跟随（可选PIDF）
-////            robot.SlaveShooterMotorR.setPower(shooter.getPower() * 0.95); // 95%跟随
+    ////            robot.SlaveShooterMotorR.setPower(shooter.getPower() * 0.95); // 95%跟随
 //            double MasterShooterMotorLPower = robot.MasterShooterMotorL.getPower();
 //            robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //            robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -593,7 +593,7 @@ Tuning the combined flywheel controller is simple - we first tune the feedforwar
 //            //
 //        }
 //    }
- //
+    //
     private void moveTurret() {
         robot.IntakeMotorL.setPower(0);
         robot.IntakeMotorR.setPower(0);
@@ -879,10 +879,31 @@ Tuning the combined flywheel controller is simple - we first tune the feedforwar
         }
 
     }
+
+
+/// ///////////////////////joy stick reversed for no reason//// on 03112026/////////////
     public void updateDrivetrain_FieldCentric() {
-        double y = gamepad1.left_stick_y * (1); // Remember, Y stick value is reversed
-        double x = -gamepad1.left_stick_x * (1);
-        double rx = -gamepad1.right_stick_x * DriveTrains_smoothTurn; //*(0.5) is fine
+        /// ////////////follower issue/////////
+        /// ////////////////03102026 switch left and right reverse for no reason， after auto everything reversed。
+//        leftRearMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//        leftFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//        robot.rightRearMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//        robot.rightFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//        /// ////////////////03102026 switch left and right reverse for no reason， after auto everything reversed。
+//
+//        robot.leftFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        robot.rightFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        robot.leftRearMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        robot.rightRearMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//
+//        robot.leftFrontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        robot.rightFrontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        robot.leftRearMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        robot.rightRearMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        double y = -gamepad1.left_stick_y * (1); // Remember, Y stick value is reversed
+        double x = +gamepad1.left_stick_x * (1);
+        double rx = +gamepad1.right_stick_x * DriveTrains_smoothTurn; //*(0.5) is fine
 
         // This button choice was made so that it is hard to hit on accident,
         // it can be freely changed based on preference.
@@ -916,6 +937,54 @@ Tuning the combined flywheel controller is simple - we first tune the feedforwar
         robot.rightRearMotor.setPower(backRightPower * DriveTrains_ReducePOWER);
     }
 
+
+
+
+
+
+
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+//    public void updateDrivetrain_FieldCentric() {
+//        double y = gamepad1.left_stick_y * (1); // Remember, Y stick value is reversed
+//        double x = -gamepad1.left_stick_x * (1);
+//        double rx = -gamepad1.right_stick_x * DriveTrains_smoothTurn; //*(0.5) is fine
+//
+//        // This button choice was made so that it is hard to hit on accident,
+//        // it can be freely changed based on preference.
+//        // The equivalent button is start on Xbox-style controllers.
+//// ******************************************temp
+////        if (gamepad1.back) {
+////            robot.imu.resetYaw();
+////        }
+////******************************************temp
+//
+//        double botHeading = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+//
+//        // Rotate the movement direction counter to the bot's rotation
+//        double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
+//        double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
+//
+//        rotX = rotX * 1.1;  // Counteract imperfect strafing
+//
+//        // Denominator is the largest motor power (absolute value) or 1
+//        // This ensures all the powers maintain the same ratio,
+//        // but only if at least one is out of the range [-1, 1]
+//        double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+//        double frontLeftPower = (rotY + rotX + rx) / denominator;
+//        double backLeftPower = (rotY - rotX + rx) / denominator;
+//        double frontRightPower = (rotY - rotX - rx) / denominator;
+//        double backRightPower = (rotY + rotX - rx) / denominator;
+//
+//        robot.leftFrontMotor.setPower(frontLeftPower * DriveTrains_ReducePOWER);
+//        robot.leftRearMotor.setPower(backLeftPower * DriveTrains_ReducePOWER);
+//        robot.rightFrontMotor.setPower(frontRightPower * DriveTrains_ReducePOWER);
+//        robot.rightRearMotor.setPower(backRightPower * DriveTrains_ReducePOWER);
+//    }
+//
+//
+/////////////////////////////////////////////////////////////////////////////////////////
     public void updateDrivetrain_RobotCentric() {
         double robot_y = gamepad1.left_stick_y; // Remember, Y stick value is reversed
         double robot_x = gamepad1.left_stick_x;
@@ -1027,6 +1096,7 @@ Tuning the combined flywheel controller is simple - we first tune the feedforwar
 //End debugging with a step increment of 0.05
 
 //        }
+
 ///////////////////End Definition and Initialization of steptestservo()
 
 

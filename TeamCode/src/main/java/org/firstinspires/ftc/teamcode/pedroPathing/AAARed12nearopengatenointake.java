@@ -62,8 +62,8 @@ public class AAARed12nearopengatenointake extends LinearOpMode {
 //    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
 //    private static final double Far_SHOOTER_TARGET_RPM = 2237;  //  350RPM---2237
     ///////////////////////////////
-    private static final double Med_SHOOTER_TARGET_Velocity = 1150;  //1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
-    public float  intakePowerIntake=0.85f;//0.95
+    private static final double Med_SHOOTER_TARGET_Velocity = 1100;  //1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
+    public float  intakePowerIntake=0.95f;//0.95
     public float  intakePowerShoot=0.9f;//0.9
     public float DriveTrains_ReducePOWER=0.75f;
     public float DriveTrains_smoothTurn=0.55f;
@@ -148,7 +148,7 @@ public class AAARed12nearopengatenointake extends LinearOpMode {
     private final Pose openGatePickupCP = new Pose(72, 76, Math.toRadians(0));
     private final Pose secondSpikePickupPoseControlPoint = new Pose(125, 64.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose firstSpikePickupPose = new Pose(134, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
-    private final Pose openGatePickupPose = new Pose(133, 69, Math.toRadians(0));  //63--61
+    private final Pose openGatePickupPose = new Pose(132.5, 69, Math.toRadians(0));  //63--61
     //    private final Pose PARKPose = new Pose(120, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     private final Pose offlinePose = new Pose(112, 92.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     // Initialize variables for paths
@@ -306,13 +306,14 @@ private void saveCurrentPosition() {
 
             case SPINNING_UP:
 //                  robot.BlockageArm.setPosition(blockagereleaseTele);
-                robot.BlockageArmL.setPosition(blockagereleaseposition);
-                robot.BlockageArmR.setPosition(blockagereleaseposition);
+//release blockage move to start spin
                 //switch with blockage case with blockage
 //                double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());//60/(28)
 //                double targetVelocity = ShooterPIDFConfig.targetVelocity;
 //                if ((!isShooterAtSpeed) && (Math.abs(currentVelocity - targetVelocity) <= ShooterPIDFConfig.toleranceofVelocity)) {
                 if ((Math.abs(Math.abs(robot.MasterShooterMotorL.getVelocity()) - ShooterPIDFConfig.targetVelocity) <= ShooterPIDFConfig.toleranceofVelocity)) {
+                    robot.BlockageArmL.setPosition(blockagereleaseposition);
+                    robot.BlockageArmR.setPosition(blockagereleaseposition);
                     robot.IntakeMotorL.setPower(intakePowerShoot);
                     robot.IntakeMotorR.setPower(intakePowerShoot);
 //                    isShooterAtSpeed = true;
@@ -323,7 +324,7 @@ private void saveCurrentPosition() {
                 break;
 
             case FEEDING:
-                if (shootTimer.getElapsedTimeSeconds()  >= 1.6) {
+                if (shootTimer.getElapsedTimeSeconds()  >= 1.1 ) {
                     // from 1.9---1.6
                     stopShooter();
                     stopIntake();
@@ -383,7 +384,7 @@ public static class ShooterPIDFConfig {
 //        public static double targetRPM =Med_SHOOTER_TARGET_RPM; // 目标转速
         public static double targetVelocity =Med_SHOOTER_TARGET_Velocity;
 //        public static double toleranceofRPM = 100;    // 转速容差 5RPM---30TPS
-        public static double toleranceofVelocity = 70;
+        public static double toleranceofVelocity = 80;
         public static double tolerance = 50;
 
     }
@@ -709,7 +710,7 @@ public static class ShooterPIDFConfig {
     private void statePathUpdate() {
         switch (pathState) {
             case DRIVE_START_POS_SHOOT_POS:
-                follower.followPath(driveStartShoot, 0.65, true);
+                follower.followPath(driveStartShoot, 0.7, true);
                 setPathState(PathState.DRIVE_TO_SHOOT_WAIT);
                 saveCurrentPosition();
                 break;
@@ -724,7 +725,7 @@ public static class ShooterPIDFConfig {
             case SHOOT_PRELOAD:
              autoshoot();
                if (autoShootState == AutoShootState.DONE) {
-                   follower.followPath(driveReadySecondSpikePickup, 0.65, true);
+                   follower.followPath(driveReadySecondSpikePickup, 0.7, true);
                    isShooterAtSpeed = false;
                    setPathState(PathState.DRIVE_READY_SECOND_SPIKE_PICKUPT_POS);
                     }
@@ -733,7 +734,7 @@ public static class ShooterPIDFConfig {
 
             case DRIVE_READY_SECOND_SPIKE_PICKUPT_POS:
                 if (!follower.isBusy()) {
-                    follower.followPath(driveSecondSpikePickup, 0.5, true);
+                    follower.followPath(driveSecondSpikePickup, 0.6, true);
                     setPathState(PathState.SECOND_SPIKE_PICKUP);
                 }
                 saveCurrentPosition();
@@ -753,14 +754,14 @@ public static class ShooterPIDFConfig {
 
             case DRIVE_READY_OPEN_GATE_POS:
                 if (!follower.isBusy()) {
-                    follower.followPath(driveOpenGatePickup, 0.5, true);
+                    follower.followPath(driveOpenGatePickup, 0.6, true);
                     setPathState(PathState.OPEN_GATE);
                 }
                 saveCurrentPosition();
                 break;
 
             case OPEN_GATE:
-                if (pathTimer.getElapsedTimeSeconds() < .9) {
+                if (pathTimer.getElapsedTimeSeconds() < 1.2) {
 //                    autoIntake();
                 } else {
                     follower.followPath(driveOpenGatePickupShoot);
@@ -782,7 +783,7 @@ public static class ShooterPIDFConfig {
             case SHOOT_SECOND_SPIKE_PICKUP:
                 autoshoot();
                 if (autoShootState == AutoShootState.DONE) {
-                    follower.followPath(driveReadyThirdSpikePickup, 0.65, true);
+                    follower.followPath(driveReadyThirdSpikePickup, 0.7, true);
                     isShooterAtSpeed = false;
                     setPathState(PathState.DRIVE_READY_THIRD_SPIKE_PICKUPT_POS);
                 }
@@ -791,7 +792,7 @@ public static class ShooterPIDFConfig {
 
             case DRIVE_READY_THIRD_SPIKE_PICKUPT_POS:
                 if (!follower.isBusy()) {
-                    follower.followPath(driveThirdSpikePickup, 0.5, true);
+                    follower.followPath(driveThirdSpikePickup, 0.6, true);
                     setPathState(PathState.THIRD_SPIKE_PICKUP);
                 }
                 saveCurrentPosition();
@@ -821,7 +822,7 @@ public static class ShooterPIDFConfig {
             case SHOOT_THIRD_SPIKE_PICKUP:
                 autoshoot();
                 if (autoShootState == AutoShootState.DONE) {
-                    follower.followPath(driveReadyFirstSpikePickup, 0.65, true);
+                    follower.followPath(driveReadyFirstSpikePickup, 0.7, true);
                     isShooterAtSpeed = false;
                     setPathState(PathState.DRIVE_READY_FIRST_SPIKE_PICKUP_POS);
                 }
@@ -830,7 +831,7 @@ public static class ShooterPIDFConfig {
 
             case DRIVE_READY_FIRST_SPIKE_PICKUP_POS:
                 if (!follower.isBusy()) {
-                    follower.followPath(driveFirstSpikePickup, 0.5, true);
+                    follower.followPath(driveFirstSpikePickup, 0.6, true);
                     setPathState(PathState.FIRST_SPIKE_PICKUP);
                 }
                 saveCurrentPosition();

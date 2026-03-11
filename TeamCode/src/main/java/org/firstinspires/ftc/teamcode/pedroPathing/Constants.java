@@ -7,6 +7,7 @@ import com.pedropathing.ftc.drivetrains.MecanumConstants;
 import com.pedropathing.ftc.localization.constants.PinpointConstants;
 import com.pedropathing.paths.PathConstraints;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -40,9 +41,10 @@ public class Constants {
             .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
             .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
+            .useBrakeModeInTeleOp(true)
             .xVelocity(64.599)
-            .yVelocity(51.33016);
-
+            .yVelocity(51.33016);          ;
+//useBrakeModeInTeleOp(true) added after using follower for teleOp
     public static PinpointConstants localizerConstants = new PinpointConstants()
             .forwardPodY(-1.9685)
             .strafePodX(-8.033)
