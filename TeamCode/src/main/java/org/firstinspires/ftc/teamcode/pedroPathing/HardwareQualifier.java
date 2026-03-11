@@ -36,7 +36,6 @@ public class HardwareQualifier {
 
     public DcMotorEx IntakeMotorL;
     public DcMotorEx IntakeMotorR;
-
     public DcMotorEx ShooterMotor;
     public DigitalChannel redLED ;
     public DigitalChannel greenLED;
@@ -53,7 +52,6 @@ public class HardwareQualifier {
     public CRServo servoTurretArmR;
 //    public AnalogInput encoderTurretArmL;
 //    public AnalogInput encoderTurretArmR;
-
     public DcMotorEx revEncoder;
     public RTPAxon axonTurretArmL;
     public RTPAxon axonTurretArmR;
