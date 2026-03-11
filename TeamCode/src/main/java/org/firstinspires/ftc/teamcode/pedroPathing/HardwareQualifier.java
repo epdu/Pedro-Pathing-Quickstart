@@ -82,10 +82,10 @@ public class HardwareQualifier {
         rightFrontMotor  = hwMap.get(DcMotorEx.class, "RFMotor"); //01292026 control hub port 2
         rightRearMotor  = hwMap.get(DcMotorEx.class, "RBMotor"); //11072025 control hub port 3
         /// ////////////////03102026 switch left and right reverse for no reason， after auto everything reversed。
-        leftRearMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-//        rightRearMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-//        rightFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//        leftRearMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//        leftFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightRearMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         /// ////////////////03102026 switch left and right reverse for no reason， after auto everything reversed。
 
         leftFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

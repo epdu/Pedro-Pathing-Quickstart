@@ -65,8 +65,8 @@ public class TeleOpChampionship extends LinearOpMode {
     // 已有的硬件和常量定义...
     /////////////////////////////////pretty goood for close shoot /////////////////////////// 1300
     private static final double Med_SHOOTER_TARGET_SPEED = 1200;  // from 1200-1150 1666 still big 1866 kind of good for far， but a little bit too big
-    public float DriveTrains_ReducePOWER=1f;
-    public float DriveTrains_smoothTurn=1f;
+    public float DriveTrains_ReducePOWER=1.0f;
+    public float DriveTrains_smoothTurn=1.0f;
     HardwareQualifier robot = new HardwareQualifier();
 //    TelemetryData telemetryData = new TelemetryData(new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry()));
 
