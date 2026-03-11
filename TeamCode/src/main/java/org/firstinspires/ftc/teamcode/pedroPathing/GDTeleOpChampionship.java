@@ -20,7 +20,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 @Config
 @TeleOp(name = "GD Pennsylvania FTC Championship V1 02192026")
-
+////From LEGION
 public class GDTeleOpChampionship extends LinearOpMode {
 
 
