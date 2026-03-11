@@ -21,6 +21,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 public class HardwareQualifier {
+//    //From LEGION
     HardwareMap hwMap =  null;
     public Alliance alliance;
     public DcMotorEx rightFrontMotor;

@@ -59,7 +59,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 @Config  // 添加这个注解，让 Dashboard 可以调整参数
 @TeleOp(name = "AAA Pennsylvania FTC Championship V1 02192026")
 // working on turret testing
-//
+//From LEGION
 // working on turret, and hood check speed fixed
 public class TeleOpChampionship extends LinearOpMode {
     // 已有的硬件和常量定义...
