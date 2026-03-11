@@ -4,7 +4,6 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDFController;
-import com.arcrobotics.ftclib.geometry.Pose2d;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.PedroCoordinates;
 import com.pedropathing.geometry.Pose;
@@ -18,7 +17,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-
 
 @Config
 @TeleOp(name = "GD Pennsylvania FTC Championship V1 02192026")
@@ -155,17 +153,19 @@ public class GDTeleOpChampionship extends LinearOpMode {
     @Override
     public void runOpMode() {
         robot.init(hardwareMap);
-        initializeTurret();
+
+//        initializeTurret();
         initShooterPIDF();
 //        robot.alliance = Alliance.BLUE;
         robot.alliance = Alliance.RED;
         follower = Constants.createFollower(hardwareMap);
-//        follower = Constants.createFollower(hardwareMap);
+
         // 设置初始位置（通常在 opMode 的初始化阶段）
         Pose startPose = new Pose(70, 70, 0);  // 或其他起始坐标
         //auto off line 112, 92.25
-        follower.setStartingPose(startPose);
 
+        follower.setStartingPose(startPose == null ? new Pose() : startPose);
+        follower.update();
 
         pidController = new PIDFController(
                 TurretConstants.kP,
@@ -220,6 +220,7 @@ public class GDTeleOpChampionship extends LinearOpMode {
 //            updateDrivetrain_RobotCentric();
             updateIntake();
             updateShooter();
+            updateTelemetry();
             checkShooterVelocity();
             updateLEDs();
             updateHood();
@@ -230,11 +231,12 @@ public class GDTeleOpChampionship extends LinearOpMode {
             // Always update measured position
 //            robotPose = follower.getPose();
 //            setTurretPosition(0);
+
             turretAngle = getPosition();
             turretupdate();
 //            setTurretPosition(turretSetpoint);
-//            robot.axonTurretArmL.update();
-//            robot.axonTurretArmR.update();
+            robot.axonTurretArmL.update();
+            robot.axonTurretArmR.update();
             telemetry.update();
             sleep(20);
 
@@ -262,11 +264,24 @@ public class GDTeleOpChampionship extends LinearOpMode {
 
 /// ////////////////////////////////////////////////
 private void turretupdate() {
-    if (gamepad1.x) {
-        turretSetpoint = findPosition();
-        telemetry.addData("turretSetpoint ", turretSetpoint);
 
-    } else {
+    if (gamepad1.dpad_up) {
+        turretSetpoint = findPosition();
+        robot.axonTurretArmL.setTargetRotation(45);
+        robot.axonTurretArmR.setTargetRotation(45);
+        ////////////////////////////
+//        robot.axonTurretArmL.setTargetRotation(Math.toDegrees(turretSetpoint));
+//        robot.axonTurretArmR.setTargetRotation(Math.toDegrees(turretSetpoint));
+        /// ///////////////////////////
+//        robot.axonTurretArmL.changeTargetRotation(Math.toDegrees(turretSetpoint));
+//        robot.axonTurretArmR.changeTargetRotation(Math.toDegrees(turretSetpoint));
+//        axon.setTargetRotation(90);    // Move to 90 degrees absolute
+//        axon.changeTargetRotation(45); // Move 45 degrees from current position
+//        robot.axonTurretArmL.changeTargetRotation(45);
+//        robot.axonTurretArmR.changeTargetRotation(45);
+        telemetry.addData("turretSetpoint ", Math.toDegrees(turretSetpoint));
+
+    } else if (gamepad1.dpad_down)  {
         turretSetpoint = 0.0;
 //        telemetry.addData("X not", "NO X");
     }
@@ -301,46 +316,51 @@ private void turretupdate() {
 
         double target = overallAngle - robotHeading;
         //代替power PIDF 使用 angle PID
-//        robot.axonTurretArmL.setTargetRotation(overallAngle);
-//        robot.axonTurretArmR.setTargetRotation(overallAngle);
-        robot.axonTurretArmL.changeTargetRotation(target);
-        robot.axonTurretArmR.changeTargetRotation(target);
-        telemetry.addData("target ", target);
+
 
         if (target < -Math.PI / 2.0 || target > Math.PI / 2.0) {
 
 
             return 0.0;
         }
+        telemetry.addData("target ", target);
         telemetry.addData("tMath.toDegrees(target) ",  Math.toDegrees(target));
         return target;
     }
 
     public double getPosition() {
+        if (robot.revEncoder == null) {
+            telemetry.addData("Warning", "revEncoderForTurret is null in getPosition()");
+            return 0.0;
+        }
         int ticksPerRev = 8192;//16384
-        double revolutions = (double) robot.encoderTurret.getCurrentPosition() / ticksPerRev;
-//        telemetry.addData(" -revolutions * 2 * Math.PI * TurretConstants.GEAR_RATIO ",  -revolutions * 2 * Math.PI * TurretConstants.GEAR_RATIO);
+        double revolutions = (double) robot.revEncoder.getCurrentPosition() / ticksPerRev;
+        telemetry.addData(" -revolutions * 2 * Math.PI * TurretConstants.GEAR_RATIO ",  -revolutions * 2 * Math.PI * TurretConstants.GEAR_RATIO);
         return -revolutions * 2 * Math.PI * TurretConstants.GEAR_RATIO;
 
     }
+
+
+    public double getCurrentAngleOfTurret() {
+        if (robot.revEncoder == null) {
+            telemetry.addData("Warning", "revEncoderForTurret is null in getCurrentAngleofTurret()");
+            return 0.0;
+        }
+
+        return ( robot.revEncoder.getCurrentPosition()/16384) * (direction.equals(RTPAxon.Direction.FORWARD) ? -360 : 360);
+    }
+
+
 public void setTurretPosition(double pos) {
     turretPower = - pidController.calculate(getPosition(), pos);
 //    robot.servoTurretArmL.setPower(turretPower);
 //    robot.servoTurretArmR.setPower(turretPower);
-
-    telemetry.addData("pos ",  pos);
-    telemetry.addData("getPosition()  ",  getPosition());
-    telemetry.addData(" turretPower ",  turretPower);
-    telemetry.addData(" getPosition(), pos ",  pos - getPosition());
 
     setTurretPower(turretPower);
 }
 
     public void setTurretPower(double power) {
         double clampedPower = Math.max(-0.5, Math.min(0.5, power)); // 可以是-1  +1 区间
-
-        telemetry.addData("Original Power", power);
-        telemetry.addData("Clamped Power", clampedPower);
 
         turretPower = clampedPower;
 //        robot.servoTurretArmL.setPower(clampedPower);
@@ -373,7 +393,7 @@ public void setTurretPosition(double pos) {
 //    OFF,
 //}
 //    public static PIDFCoefficients TURRET_LARGE_PIDF_COEFFICIENTS = new PIDFCoefficients(0.01,0.000, 0.00044, 0.0); // Coefficients for radians
-private Pose2d turretPose = null;
+//private Pose2d turretPose = null;
 //    public static TurretState turretState = TurretState.GOAL_LOCK_CONTROL;
 
 //    PIDController turretController = new PIDController(0.015, 0, 0);
@@ -415,7 +435,7 @@ private Pose2d turretPose = null;
 
 // Main update loop: updates rotation, computes PID, applies power update ----updateTurret
 public synchronized void updateTurret() {
-    double currentAngle = getCurrentAngle();
+    double currentAngle = getCurrentAngleOfTurret();
     double angleDifference = currentAngle - previousAngle;
 
     // Handle wraparound at 0/360 degrees
@@ -489,9 +509,9 @@ private void initializeTurret() {
 
     // Try to get a valid starting position
     do {
-        STARTPOS = getCurrentAngle();
+        STARTPOS = getCurrentAngleOfTurret();
         if (Math.abs(STARTPOS) > 1) {
-            previousAngle = getCurrentAngle();
+            previousAngle = getCurrentAngleOfTurret();
         } else {
             try {
                 Thread.sleep(50);
@@ -520,10 +540,6 @@ private void initializeTurret() {
     // endregion
 
 
-public double getCurrentAngle() {
-    if (robot.servoEncoder == null) return 0;
-    return (robot.servoEncoder.getCurrentPosition()/16384.0) * (direction.equals(RTPAxon.Direction.FORWARD) ? -360 : 360);
-}
 /// ////////////////////////////////////////////////////
     public double normA(double angle) {
         angle %= 360;
@@ -636,8 +652,11 @@ public double getCurrentAngle() {
             robot.IntakeMotorL.setPower(intakePowerIntake);
             robot.IntakeMotorR.setPower(intakePowerIntake);
             /// ///////////////////////////////////for debug//////////////////////
-//                robot.axonTurretArmL.setTargetRotation(90);// ((96/20)*35/110)
-//                robot.axonTurretArmR.setTargetRotation(90);
+//                robot.axonTurretArmL.setTargetRotation(45);// ((96/20)*35/110)
+//                robot.axonTurretArmR.setTargetRotation(45);
+//            robot.axonTurretArmL.changeTargetRotation(45);
+//            robot.axonTurretArmR.changeTargetRotation(45);
+
 //y = 0.45452 -0.00677*H43^1 + -9.37853E-4*H43^2 -4.69942E-5*H43^3 + -1.24595E-6*H43^4 -1.74452E-8*H43^5 + -1.05357E-10*H43^6
             delayTimer.reset();
             while (delayTimer.milliseconds() < 300 && opModeIsActive()) {
@@ -707,7 +726,7 @@ public double getCurrentAngle() {
             isShooterAtSpeed = false;
             fireRequested = false;
         }
-        updateShooterTelemetry();
+        updateTelemetry();
     }
 
     public static class ShooterPIDFConfig {
@@ -816,7 +835,7 @@ public double getCurrentAngle() {
 
     }
 
-    private void updateShooterTelemetry() {
+    private void updateTelemetry() {
 
         double shooterVelocity = robot.MasterShooterMotorL.getVelocity();
         double shooterPower = robot.MasterShooterMotorL.getPower();
@@ -824,19 +843,33 @@ public double getCurrentAngle() {
         double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());
         double targetVelocity = ShooterPIDFConfig.targetRPM;
         double tolerance = ShooterPIDFConfig.tolerance;
+        double x = follower.getPose().getX();
+        double y = follower.getPose().getY();
+        double heading = follower.getPose().getHeading();
+
+
+
         telemetry.addLine("=== TURRET  STATUS ===");
+        telemetry.addData("Raw X", x);
+        telemetry.addData("Raw Y", y);
+        telemetry.addData("Raw Heading", heading);
         telemetry.addData("follower.getPose().getX()", follower.getPose().getX());
         telemetry.addData("follower.getPose().getY()", follower.getPose().getY());
-//        telemetry.addData("turretTargetAngle", turretTargetAngle);
+        telemetry.addData("follower.getPose().getHeading()", follower.getPose().getHeading());
 
 //        telemetry.addData("Servo Position", servoPosition);
-//        telemetry.addData("encoderTurret .getCurrentPosition()", robot.encoderTurret.getCurrentPosition());
-//        telemetry.addData("encoderTurret .getCurrentPosition()/4046.0", robot.encoderTurret.getCurrentPosition()/4046.0);
+        telemetry.addData("getCurrentAngleOfTurret()", getCurrentAngleOfTurret());
+        telemetry.addData("getPosition()", getPosition());
         telemetry.addData("encoderTurret .getCurrentAngle", robot.axonTurretArmL.getCurrentAngle());
+        telemetry.addData("(robot.revEncoderForTurret.getCurrentPosition()/16384) ", (robot.revEncoder.getCurrentPosition()/16384) );
+        telemetry.addData("robot.revEncoderForTurret.getCurrentPosition()", (robot.revEncoder.getCurrentPosition()/16384) * (direction.equals(RTPAxon.Direction.FORWARD) ? -360 : 360));
+
+
+
 //        telemetry.addData("axonTurretArmL Target Rotation", robot.axonTurretArmL.getTargetRotation());
 //        telemetry.addData("encoderTurret .getCurrentPosition()", robot.encoderTurret.getCurrentAngle());
 
-//        telemetry.addData("axonTurretArmL Servo Position", robot.axonTurretArmL.getCurrentAngle());
+//        telemetry.addData("axonTurretArmL Servo Position", robot.axonTurretArmL.getCurrentAngle());robot.revEncoderForTurret.getCurrentPosition()/16384) * (direction.equals(RTPAxon.Direction.FORWARD) ? -360 : 360)
 ////        telemetry.addData("axonTurretArmL Total Rotation", robot.axonTurretArmL.getTotalRotation());
 //
 //        telemetry.addData("encoderTurretArmL", robot.encoderTurretArmL.getVoltage());

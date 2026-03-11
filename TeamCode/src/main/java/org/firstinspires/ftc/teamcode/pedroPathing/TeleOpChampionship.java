@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.pedroPathing;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.arcrobotics.ftclib.controller.PIDFController;
+import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -10,10 +12,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+
 //import com.qualcomm.robotcore.hardware.Gamepad;
 //import com.qualcomm.robotcore.hardware.HardwareMap;
 //import com.qualcomm.robotcore.hardware.CRServoImplEx;
@@ -92,10 +94,14 @@ public class TeleOpChampionship extends LinearOpMode {
     public static final double blockageblockTele=0.1; // from .18 -0.1 for tele
     public static final double blockagereleaseTele=0.24;
     ///////////////turret///////////
+    private boolean previousDpadUp = false;
     private Pose robotPose;
     private double turretAngle = Math.PI / 2.0;
     private double turretSetpoint = 0.0;
     private double turretPower = 0.0;
+    private Follower follower;
+    private PIDFController pidfController;
+    private RTPAxon.Direction direction;
 //    private final Gamepad gamepad1;
 //    public static final double GEAR_RATIO = .5;
 //    private DriveSubsystem driveSubsystem;
@@ -123,9 +129,6 @@ public class TeleOpChampionship extends LinearOpMode {
     //  private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
     //    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
     // use rpm as speed, the real name should be speed = 1300      //1300
-    //  1000RPM---6346.67
-    //  600RPM---3808
-    //  500RPM---3173.3
 
     private ElapsedTime imuResetTimer = new ElapsedTime();
     private boolean imuResetInCooldown = false;
@@ -152,9 +155,23 @@ public class TeleOpChampionship extends LinearOpMode {
     @Override
     public void runOpMode() {
         robot.init(hardwareMap);
-//        robot.alliance = Alliance.BLUE;
-        robot.alliance = org.firstinspires.ftc.teamcode.pedroPathing.Alliance.RED;
         initShooterPIDF();
+//        robot.alliance = Alliance.BLUE;
+        robot.alliance = Alliance.RED;
+        follower = Constants.createFollower(hardwareMap);
+        Pose startPose = new Pose(70, 70, 0);  // 或其他起始坐标
+        //auto off line 112, 92.25
+
+        follower.setStartingPose(startPose == null ? new Pose() : startPose);
+        follower.update();
+
+        pidfController = new PIDFController(
+                TurretConstants.kP,
+                TurretConstants.kI,
+                TurretConstants.kD,
+                TurretConstants.kF
+        );
+
 //        if (gamepad1.dpad_right) {
 //            solverrobot.turret.setTurret(Turret.TurretState.GOAL_LOCK_CONTROL, 0);
 //        } else if(gamepad1.dpad_left){
@@ -186,14 +203,19 @@ public class TeleOpChampionship extends LinearOpMode {
 //            updateDrivetrain_RobotCentric();
             updateIntake();
             updateShooter();
+            updateAllTelemetry();
             checkShooterVelocity();
             updateLEDs();
 //            updateHood(); //temp stop for PIDF tuning 03052026
             updateBlockage();
 //            updateTuningPIDF();
 //            updateAutoAim();
-//            robot.axonTurretArmL.update();
-//            robot.axonTurretArmR.update();
+            dpadUpHandler.update(gamepad1.dpad_up);
+            handlePositionReset();
+            turretAngle = getPosition();
+            turretupdate();
+            robot.axonTurretArmL.update();
+            robot.axonTurretArmR.update();
             telemetry.update();
             sleep(20);
 
@@ -202,137 +224,143 @@ public class TeleOpChampionship extends LinearOpMode {
     } //end of run mode
 
 /////////////////////////////////////////////methods/////////////////////////
+/// ////////////////////////////////////////////////
 
-    ///////////////////////////////////////seattlesolvers/////////////////////////
+private void handlePositionReset() {
+    if (gamepad1.back && gamepad1.start) {  // 同时按 back + start 重置
+        // 重置到默认起始点
+        follower.setStartingPose(new Pose(70, 70, 0));// base 9,6.25,-180
+        telemetry.addData("Position Reset", "To default (70,70,0)");
+        gamepad1.rumble(500);
+    } else if (gamepad1.back) {  // 只按 back 使用 Auto 保存的位置
 
-//    public void updateAutoAim(){
-//        if(gamepad1.dpad_down){
-//            solverrobot.launcher.setFlywheel(0, false);
-//        } else if(gamepad1.dpad_up){
-//            new ClearLaunch(true);
-//            solverrobot.readyToLaunch = true;
-//            solverrobot.launcher.setActiveControl(true);
-//            solverrobot.launcher.setRamp(true);
-//        }
-//    }
+            follower.setStartingPose(new Pose(
+                    robot.finalAutoX,
+                    robot.finalAutoY,
+                    robot.finalAutoHeading
+            ));
+            telemetry.addData("Position Reset", "To Auto end pose");
 
-
-    private void updateTuningPIDF() {
-        // 模式选择：用左扳机+方向键选择要调整的参数
-
-            // 调整 kP
-//            if (gamepad1.dpad_up) {
-//                ShooterPIDFConfig.kF += ShooterPIDFConfig.kF_STEP;
-//                updateShooter();
-//                telemetry.addData("Tuning Mode", "Adjusting kF ++++");
-//            } else if (gamepad1.dpad_down) {
-//                ShooterPIDFConfig.kF -= ShooterPIDFConfig.kF_STEP;
-//                updateShooter();
-//                telemetry.addData("Tuning Mode", "Adjusting kF ---- ");
-//            }
-
-        // 调整 kP
-//        if (gamepad1.dpad_up) {
-//            ShooterPIDFConfig.kP += ShooterPIDFConfig.kP_STEP;
-//            updateShooter();
-//            telemetry.addData("Tuning Mode", "Adjusting kP ++++");
-//        } else if (gamepad1.dpad_down) {
-//            ShooterPIDFConfig.kP -= ShooterPIDFConfig.kP_STEP;
-//            updateShooter();
-//            telemetry.addData("Tuning Mode", "Adjusting kP ---- ");
-//        }
     }
+}
+
+private void turretupdate() {
+
+    if (gamepad1.dpad_up) {   // (dpadUpHandler.wasPressed())
+
+         turretSetpoint = findPosition();
+        telemetry.addData("turretSetpoint ", Math.toDegrees(turretSetpoint));
+        delayTimer.reset();
+        while (delayTimer.milliseconds() < 300 && opModeIsActive()) {
+            // Other tasks can be processed here
+        } // 防止快速连击导致模式快速切换
+    } else  { //if(gamepad1.dpad_down)
+        turretSetpoint = 0.0;
+
+    }
+/// ///////////by angle/////////////////////
+
+//        axon.setTargetRotation(90);    // Move to 90 degrees absolute
+//        axon.changeTargetRotation(45); // Move 45 degrees from current position
+//    robot.axonTurretArmL.changeTargetRotation(Math.toDegrees(turretSetpoint-turretAngle));
+//    robot.axonTurretArmR.changeTargetRotation(Math.toDegrees(turretSetpoint-turretAngle));
+//    robot.axonTurretArmL.changeTargetRotation(-45);
+//    robot.axonTurretArmR.changeTargetRotation(-45);
+    setTurretPosition(turretSetpoint);
+    telemetry.addData("Math.toDegrees(turretSetpoint-turretAngle)", Math.toDegrees(turretSetpoint-turretAngle));
+}
+    public void setTurretPosition(double pos) {
+        turretPower = - pidfController.calculate(getPosition(), pos);
+//    robot.servoTurretArmL.setPower(turretPower);
+//    robot.servoTurretArmR.setPower(turretPower);
+
+        setTurretPower(turretPower);
+    }
+    public void setTurretPower(double power) {
+        double clampedPower = Math.max(-0.5, Math.min(0.5, power)); // 可以是-1  +1 区间
+
+        turretPower = clampedPower;
+        robot.servoTurretArmL.setPower(clampedPower);
+        robot.servoTurretArmR.setPower(clampedPower);
+
+//        telemetry.addData("Final Power", turretPower);
+//        telemetry.addData(" BturretPower ",  turretPower);
+//        telemetry.addData(" turretPower ",  power);
+//        turretPower = power;
+//        telemetry.addData(" AturretPower ",  turretPower);
+//        telemetry.addData(" turretPower ",  power);
+//        robot.servoTurretArmL.setPower(power);
+//        robot.servoTurretArmR.setPower(power);
 
 
-//    private void updateTuningPIDF() {
-//        // 模式选择：用左扳机+方向键选择要调整的参数
-//        if (gamepad1.x ) {
-//            // 调整 kP
-//            if (gamepad1.dpad_up && dpadUpHandler.wasPressed()) {
-//                ShooterPIDFConfig.kP += ShooterPIDFConfig.kP_STEP;
-//                updateShooter();
-//            }
-//            if (gamepad1.dpad_down && dpadDownHandler.wasPressed()) {
-//                ShooterPIDFConfig.kP -= ShooterPIDFConfig.kP_STEP;
-//                updateShooter();
-//            }
-//            telemetry.addData("Tuning Mode", "Adjusting kP");
-//        } else if (gamepad2.b ) {
-//            // 调整 kI
-//            if (gamepad1.dpad_up && dpadUpHandler.wasPressed()) {
-//                ShooterPIDFConfig.kI += ShooterPIDFConfig.kI_STEP;
-//                updateShooter();
-//            }
-//            if (gamepad1.dpad_down && dpadDownHandler.wasPressed()) {
-//                ShooterPIDFConfig.kI -= ShooterPIDFConfig.kI_STEP;
-//                updateShooter();
-//            }
-//            telemetry.addData("Tuning Mode", "Adjusting kI");
-//        } else if (gamepad2.a) {
-//            // 调整 kD
-//            if (gamepad1.dpad_up && dpadUpHandler.wasPressed()) {
-//                ShooterPIDFConfig.kD += ShooterPIDFConfig.kD_STEP;
-//                updateShooter();
-//            }
-//            if (gamepad1.dpad_down && dpadDownHandler.wasPressed()) {
-//                ShooterPIDFConfig.kD -= ShooterPIDFConfig.kD_STEP;
-//                updateShooter();
-//            }
-//            telemetry.addData("Tuning Mode", "Adjusting kD");
-//        } else if (gamepad1.a) {
-//            // 调整 kF（默认模式）
-//            if (gamepad1.dpad_up && dpadUpHandler.wasPressed()) {
-//                ShooterPIDFConfig.kF += ShooterPIDFConfig.kF_STEP;
-//                updateShooter();
-//            }
-//            if (gamepad1.dpad_down && dpadDownHandler.wasPressed()) {
-//                ShooterPIDFConfig.kF -= ShooterPIDFConfig.kF_STEP;
-//                updateShooter();
-//            }
-//            telemetry.addData("Tuning Mode", "Adjusting kF");
-//        }
-//    }
 
+    }
     public double findPosition() {
         double x, y;
         double robotHeading;
         double overallAngle;
 
-        if (robot.alliance == org.firstinspires.ftc.teamcode.pedroPathing.Alliance.BLUE) {
-            x = robotPose.getX();
-            y = 144 - robotPose.getY();
+        if (robot.alliance == Alliance.BLUE) {
+            x = follower.getPose().getX();
+            y = 144 - follower.getPose().getY();
 
-            robotHeading = robotPose.getHeading();
+            robotHeading = follower.getPose().getHeading();
             overallAngle = Math.PI - Math.atan2(y, x);
-
+            telemetry.addData("Alliance.BLUE",Alliance.BLUE);
         } else if (robot.alliance == Alliance.RED) {
-            x = 144 - robotPose.getX();
-            y = 144 - robotPose.getY();
-
-            robotHeading = robotPose.getHeading();
+            x = 144 - follower.getPose().getX();
+            y = 144 - follower.getPose().getY();
+            telemetry.addData("Alliance.RED", Alliance.RED);
+            robotHeading = follower.getPose().getHeading();
             overallAngle = Math.atan2(y, x);
+            telemetry.addData("robotHeading", robotHeading);
+            telemetry.addData("overallAngle", overallAngle);
 
         } else {
             return 0.0;
         }
 
         double target = overallAngle - robotHeading;
+        //代替power PIDF 使用 angle PID
+
 
         if (target < -Math.PI / 2.0 || target > Math.PI / 2.0) {
             return 0.0;
         }
-
+        telemetry.addData("target ", target);
+        telemetry.addData("tMath.toDegrees(target) ",  Math.toDegrees(target));
         return target;
     }
 
 
+//    public double getPosition() {
+//        int ticksPerRev = 8192;
+//        double revolutions = (double) robot.revEncoder.getCurrentPosition() / ticksPerRev;
+//
+//        return -revolutions * 2 * Math.PI * TurretConstants.GEAR_RATIO;
+//    }
+
+
     public double getPosition() {
-        int ticksPerRev = 8192;
-        double revolutions = (double) robot.encoderTurret.getCurrentPosition() / ticksPerRev;
-
-        return -revolutions * 2 * Math.PI * TurretConstants.GEAR_RATIO;
+        if (robot.revEncoder == null) {
+            telemetry.addData("Warning", "revEncoderForTurret is null in getPosition()");
+            return 0.0;
+        }
+        int ticksPerRev = 8192;//16384
+        double revolutions = (double) -robot.revEncoder.getCurrentPosition() / ticksPerRev;
+        telemetry.addData(" -revolutions * 2 * Math.PI * TurretConstants.GEAR_RATIO ",  -revolutions * 2 * Math.PI * TurretConstants.GEAR_RATIO);
+        telemetry.addData(" -revolutions angle ",  Math.toDegrees(-revolutions * 2 * Math.PI * TurretConstants.GEAR_RATIO));
+        return - revolutions * 2 * Math.PI * TurretConstants.GEAR_RATIO;
+//        return -revolutions * 2 * Math.PI * TurretConstants.GEAR_RATIO;
     }
-
+//    public double getCurrentAngleOfTurret() {
+//        if (robot.revEncoder == null) {
+//            telemetry.addData("Warning", "revEncoderForTurret is null in getCurrentAngleofTurret()");
+//            return 0.0;
+//        }
+//
+//        return ( robot.revEncoder.getCurrentPosition()/16384) * (direction.equals(RTPAxon.Direction.FORWARD) ? -360 : 360);
+//    }
 //    public void setPosition(double pos) {
 //        turretPower = -pidController.calculate(getPosition(), pos);
 //        setTurretPower(turretPower);
@@ -348,12 +376,16 @@ public class TeleOpChampionship extends LinearOpMode {
             robot.IntakeMotorL.setPower(intakePowerIntake);
             robot.IntakeMotorR.setPower(intakePowerIntake);
             /// ///////////////////////////////////for debug//////////////////////
+//            robot.axonTurretArmL.changeTargetRotation(45);
+//            robot.axonTurretArmR.changeTargetRotation(45);
 //                robot.axonTurretArmL.setTargetRotation(180);// ((96/20)*35/110)
 //
 //                robot.axonTurretArmR.setTargetRotation(180);
-            robot.axonTurretArmL.setTargetRotation(0);// ((96/20)*35/110)
-
-            robot.axonTurretArmR.setTargetRotation(0);
+//            robot.axonTurretArmL.setTargetRotation(0);// ((96/20)*35/110)
+//
+//            robot.axonTurretArmR.setTargetRotation(0);
+//            robot.axonTurretArmR.setTargetRotation(90);    // Move to 90 degrees absolute
+//            robot.axonTurretArmR.changeTargetRotation(45); // Move 45 degrees from current position
 
 //y = 0.45452 -0.00677*H43^1 + -9.37853E-4*H43^2 -4.69942E-5*H43^3 + -1.24595E-6*H43^4 -1.74452E-8*H43^5 + -1.05357E-10*H43^6
 
@@ -392,8 +424,9 @@ public class TeleOpChampionship extends LinearOpMode {
             if (!robot.MasterShooterMotorL.isBusy()){
                 startShooter();
 //                robot.BlockageArm.setPosition(blockagereleaseTele);
-                robot.BlockageArmL.setPosition(blockagereleaseposition);
-                robot.BlockageArmR.setPosition(blockagereleaseposition);
+                //do not release blockageArm
+//                robot.BlockageArmL.setPosition(blockagereleaseposition);
+//                robot.BlockageArmR.setPosition(blockagereleaseposition);
             }
 
         }
@@ -401,6 +434,9 @@ public class TeleOpChampionship extends LinearOpMode {
 //        if (gamepad1.right_bumper && isShooterAtSpeed && !fireRequested)
         if (gamepad1.right_bumper) {
             fireRequested = true;
+            // release blockageArm
+            robot.BlockageArmL.setPosition(blockagereleaseposition);
+            robot.BlockageArmR.setPosition(blockagereleaseposition);
             robot.IntakeMotorL.setPower(intakePowerShoot);
             robot.IntakeMotorR.setPower(intakePowerShoot);
         }
@@ -421,7 +457,7 @@ public class TeleOpChampionship extends LinearOpMode {
             fireRequested = false;
         }
         // 更新射击系统遥测数据（关键！）
-        updateShooterTelemetry();
+
     }
 
 
@@ -508,9 +544,9 @@ Tuning the combined flywheel controller is simple - we first tune the feedforwar
     /// ///////////////////////////////////////////////////////////////////////////////
     /// /// ///////////need fix
     private void updateHood() {
-        if (gamepad1.dpad_down) {
+        if (gamepad2.dpad_down) {
             robot.HoodArmL.setPosition(HoodArmfarposition);
-        }  else if(gamepad1.dpad_up) {
+        }  else if(gamepad2.dpad_up) {
             robot.HoodArmL.setPosition(HoodArmcloseposition);
         } // 防止快速连击导致模式快速切换
 
@@ -603,7 +639,7 @@ Tuning the combined flywheel controller is simple - we first tune the feedforwar
     /**
      * 更新射击系统遥测数据（用于 PIDF 调参）
      */
-    private void updateShooterTelemetry() {
+    private void updateAllTelemetry() {
         // 射击电机状态
         double shooterVelocity = robot.MasterShooterMotorL.getVelocity();
         double shooterPower = robot.MasterShooterMotorL.getPower();
@@ -615,9 +651,35 @@ Tuning the combined flywheel controller is simple - we first tune the feedforwar
         double currentVelocityR = Math.abs(robot.SlaveShooterMotorR.getVelocity());
         double targetVelocityR = ShooterPIDFConfig.targetSPEED;
         double tolerance = ShooterPIDFConfig.tolerance;
-//        telemetry.addLine("=== encoderTurret TUNING ===");
-//        telemetry.addData("encoderTurret .getCurrentPosition()", robot.encoderTurret.getCurrentPosition());
+        double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());
+        double targetVelocity = GDTeleOpChampionship.ShooterPIDFConfig.targetRPM;
+        double x = follower.getPose().getX();
+        double y = follower.getPose().getY();
+        double heading = follower.getPose().getHeading();
+
+
+        telemetry.addLine("=== TURRET  STATUS ===");
+        telemetry.addData("Raw X", x);
+        telemetry.addData("Raw Y", y);
+        telemetry.addData("Raw Heading", heading);
+        telemetry.addData("follower.getPose().getX()", follower.getPose().getX());
+        telemetry.addData("follower.getPose().getY()", follower.getPose().getY());
+        telemetry.addData("follower.getPose().getHeading()", follower.getPose().getHeading());
+
+//        telemetry.addData("Servo Position", servoPosition);
+//        telemetry.addData("getCurrentAngleOfTurret()", robot.axonTurretArmL.getCurrentAngle());
+        telemetry.addData("getPosition()", getPosition());
+////        telemetry.addData("encoderTurret .getCurrentAngle", robot.revEncoder.getCurrentAngle());
+//        telemetry.addData("(robot.revEncoderForTurret.getCurrentPosition()/16384) ", (robot.revEncoder.getCurrentPosition()/16384) );
+////        telemetry.addData("robot.revEncoderForTurret.getCurrentPosition()", (robot.revEncoder.getCurrentPosition()/16384) * (direction.equals(RTPAxon.Direction.FORWARD) ? -360 : 360));
+//
+//
+//
+////        telemetry.addLine("=== encoderTurret TUNING ===");
 //        telemetry.addData("encoderTurret .getCurrentAngle", robot.axonTurretArmL.getCurrentAngle());
+//        telemetry.addData("encoderTurret .getCurrentPosition()", robot.revEncoder.getCurrentPosition());
+//        telemetry.addData(" -revolutions * 2 * Math.PI ",  Math.toDegrees(robot.revEncoder.getCurrentPosition() / 16384));
+
 //        telemetry.addLine("=== encoderTurret TUNING ===");
         //        telemetry.addData("Servo Position", servoPosition);
 //        telemetry.addData("encoderTurret .getCurrentPosition()/4046.0", robot.encoderTurret.getCurrentPosition()/4046.0);
@@ -643,13 +705,13 @@ Tuning the combined flywheel controller is simple - we first tune the feedforwar
 //        telemetry.addData("Total Rotation", robot.axonTurretArmR.getTotalRotation());
 //        telemetry.addData("Target Rotation", robot.axonTurretArmR.getTargetRotation());
 
-        telemetry.addLine("=== SHOOTER PIDF TUNING ===");
-        telemetry.addData("target SPEED", "%.0f", ShooterPIDFConfig.targetSPEED);
-        telemetry.addData("kP Increased ", "Increased to %.2f", ShooterPIDFConfig.kP);
-        telemetry.addData("currentVelocityLeft", currentVelocityL);
-        telemetry.addData("currentVelocityRight", currentVelocityR);
-        telemetry.addData("shooterL", shooterL);
-        telemetry.addData("shooterR", shooterR);
+//        telemetry.addLine("=== SHOOTER PIDF TUNING ===");
+//        telemetry.addData("target SPEED", "%.0f", ShooterPIDFConfig.targetSPEED);
+//        telemetry.addData("kP Increased ", "Increased to %.2f", ShooterPIDFConfig.kP);
+//        telemetry.addData("currentVelocityLeft", currentVelocityL);
+//        telemetry.addData("currentVelocityRight", currentVelocityR);
+//        telemetry.addData("shooterL", shooterL);
+//        telemetry.addData("shooterR", shooterR);
 
 
 //        telemetry.addData("Current RPM", "%.0f", shooterVelocity);
