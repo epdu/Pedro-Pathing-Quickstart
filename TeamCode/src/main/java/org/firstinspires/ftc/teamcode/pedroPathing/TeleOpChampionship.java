@@ -64,7 +64,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 public class TeleOpChampionship extends LinearOpMode {
     // 已有的硬件和常量定义...
     /////////////////////////////////pretty goood for close shoot /////////////////////////// 1300
-    private static final double Med_SHOOTER_TARGET_SPEED = 1200;  // from 1200-1150 1666 still big 1866 kind of good for far， but a little bit too big
+    private static final double Med_SHOOTER_TARGET_SPEED = 1100;  // from 1200-1150 1666 still big 1866 kind of good for far， but a little bit too big
     public float DriveTrains_ReducePOWER=1.0f;
     public float DriveTrains_smoothTurn=1.0f;
     HardwareQualifier robot = new HardwareQualifier();
@@ -77,7 +77,7 @@ public class TeleOpChampionship extends LinearOpMode {
     boolean move = false;
     boolean PIDFTimerStart=true;
     int controlMode = 1;
-    public float  intakePowerIntake=0.9f;//push blocker too much from 99-90
+    public float  intakePowerIntake=0.95f;//push blocker too much from 99-90
     public float  intakePowerShoot=0.9f;
     public float  intakePowerDump=-0.65f;
     public float  intakePowerOff=0.0f;
@@ -870,10 +870,13 @@ public class TeleOpChampionship extends LinearOpMode {
         }
 
     }
+
+
+/// ///////////////////////joy stick reversed for no reason//// on 03112026/////////////
     public void updateDrivetrain_FieldCentric() {
-        double y = gamepad1.left_stick_y * (1); // Remember, Y stick value is reversed
-        double x = -gamepad1.left_stick_x * (1);
-        double rx = -gamepad1.right_stick_x * DriveTrains_smoothTurn; //*(0.5) is fine
+        double y = -gamepad1.left_stick_y * (1); // Remember, Y stick value is reversed
+        double x = +gamepad1.left_stick_x * (1);
+        double rx = +gamepad1.right_stick_x * DriveTrains_smoothTurn; //*(0.5) is fine
 
         // This button choice was made so that it is hard to hit on accident,
         // it can be freely changed based on preference.
@@ -907,6 +910,54 @@ public class TeleOpChampionship extends LinearOpMode {
         robot.rightRearMotor.setPower(backRightPower * DriveTrains_ReducePOWER);
     }
 
+
+
+
+
+
+
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+//    public void updateDrivetrain_FieldCentric() {
+//        double y = gamepad1.left_stick_y * (1); // Remember, Y stick value is reversed
+//        double x = -gamepad1.left_stick_x * (1);
+//        double rx = -gamepad1.right_stick_x * DriveTrains_smoothTurn; //*(0.5) is fine
+//
+//        // This button choice was made so that it is hard to hit on accident,
+//        // it can be freely changed based on preference.
+//        // The equivalent button is start on Xbox-style controllers.
+//// ******************************************temp
+////        if (gamepad1.back) {
+////            robot.imu.resetYaw();
+////        }
+////******************************************temp
+//
+//        double botHeading = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+//
+//        // Rotate the movement direction counter to the bot's rotation
+//        double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
+//        double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
+//
+//        rotX = rotX * 1.1;  // Counteract imperfect strafing
+//
+//        // Denominator is the largest motor power (absolute value) or 1
+//        // This ensures all the powers maintain the same ratio,
+//        // but only if at least one is out of the range [-1, 1]
+//        double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+//        double frontLeftPower = (rotY + rotX + rx) / denominator;
+//        double backLeftPower = (rotY - rotX + rx) / denominator;
+//        double frontRightPower = (rotY - rotX - rx) / denominator;
+//        double backRightPower = (rotY + rotX - rx) / denominator;
+//
+//        robot.leftFrontMotor.setPower(frontLeftPower * DriveTrains_ReducePOWER);
+//        robot.leftRearMotor.setPower(backLeftPower * DriveTrains_ReducePOWER);
+//        robot.rightFrontMotor.setPower(frontRightPower * DriveTrains_ReducePOWER);
+//        robot.rightRearMotor.setPower(backRightPower * DriveTrains_ReducePOWER);
+//    }
+//
+//
+/////////////////////////////////////////////////////////////////////////////////////////
     public void updateDrivetrain_RobotCentric() {
         double robot_y = gamepad1.left_stick_y; // Remember, Y stick value is reversed
         double robot_x = gamepad1.left_stick_x;

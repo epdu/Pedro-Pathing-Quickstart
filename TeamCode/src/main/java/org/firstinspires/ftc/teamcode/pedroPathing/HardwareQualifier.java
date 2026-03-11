@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
-
 import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.CM;
-
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -17,8 +15,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+
 
 public class HardwareQualifier {
     //    //From LEGION
@@ -33,10 +31,8 @@ public class HardwareQualifier {
     public DcMotorEx shooterL ;
     public DcMotorEx shooterR;
     public Servo blocker;
-
     public DcMotorEx IntakeMotorL;
     public DcMotorEx IntakeMotorR;
-
     public DcMotorEx ShooterMotor;
     public DigitalChannel redLED ;
     public DigitalChannel greenLED;
@@ -53,7 +49,6 @@ public class HardwareQualifier {
     public CRServo servoTurretArmR;
 //    public AnalogInput encoderTurretArmL;
 //    public AnalogInput encoderTurretArmR;
-
     public DcMotorEx revEncoder;
     public RTPAxon axonTurretArmL;
     public RTPAxon axonTurretArmR;
@@ -69,9 +64,7 @@ public class HardwareQualifier {
     GoBildaPinpointDriver odo;
     IMU imu;
     public static final double DriveTrains_POWER =  0.95 ;// reduced power of driving train motors
-
     private ElapsedTime period  = new ElapsedTime();
-
     /* Constructor */
     /* Initialize standard Hardware interfaces */
     public void init(HardwareMap ahwMap) {
