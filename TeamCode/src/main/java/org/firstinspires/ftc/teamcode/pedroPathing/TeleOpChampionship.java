@@ -64,7 +64,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 public class TeleOpChampionship extends LinearOpMode {
     // 已有的硬件和常量定义...
     /////////////////////////////////pretty goood for close shoot /////////////////////////// 1300
+
     private static final double Med_SHOOTER_TARGET_SPEED = 1200;  // from 1200-1150 1666 still big 1866 kind of good for far， but a little bit too big
+    private static final double flyWheelIdleSpeed = Med_SHOOTER_TARGET_SPEED * 0.6200;
     public float DriveTrains_ReducePOWER=1.0f;
     public float DriveTrains_smoothTurn=1.0f;
     HardwareQualifier robot = new HardwareQualifier();
@@ -116,6 +118,7 @@ public class TeleOpChampionship extends LinearOpMode {
     private static final double VELOCITY_TOLERANCE = 30; // RPM容差，可根据测试调整
     // 状态变量
     private boolean isShooterAtSpeed = false;
+    private boolean  shooterIsOn=false;
     private boolean wasShooterAtSpeed = false; // 用于7检测状态变化
     private boolean fireRequested = false;
     // LED颜色常量（根据你的LED库调整）
@@ -477,7 +480,8 @@ Tuning the combined flywheel controller is simple - we first tune the feedforwar
  in the feedforward-only section, and then we tune the PID controller following the same procedure as in the feedback-only section.
   Notice that PID portion of the controller is much easier to tune “on top of” an accurate feedforward.
  */
-        public static double targetSPEED =Med_SHOOTER_TARGET_SPEED; // 目标转速
+        public static double targetSPEED =flyWheelIdleSpeed;
+//        public static double targetSPEED =Med_SHOOTER_TARGET_SPEED; // 目标转速// 目标转速
         public static double tolerance = 0;
         public static double kF_STEP = 0.05;   // 每次按键增加/减少的量
         public static double kP_STEP = 0.5;   // 每次按键增加/减少的量
@@ -531,10 +535,15 @@ Tuning the combined flywheel controller is simple - we first tune the feedforwar
 //        robot.axonTurretArmL.setTargetRotation(0);
 //        robot.axonTurretArmR.setTargetRotation(0);
       //  03072026
-        if (robot.MasterShooterMotorL instanceof DcMotorEx||robot.SlaveShooterMotorR instanceof DcMotorEx) {
+        if ((robot.MasterShooterMotorL instanceof DcMotorEx) && (!shooterIsOn)) {
              // 直接使用setVelocity，它会使用已配置的PIDF
             robot.shooterL.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEED));
             robot.shooterR.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEED));
+            shooterIsOn=true;
+        } else if (shooterIsOn) {
+            robot.shooterL.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEED*1.67));
+            robot.shooterR.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEED*1.67));
+            shooterIsOn=true;
         }
 //        if(PIDFTimerStart){
 //            PIDFTimer.reset();
