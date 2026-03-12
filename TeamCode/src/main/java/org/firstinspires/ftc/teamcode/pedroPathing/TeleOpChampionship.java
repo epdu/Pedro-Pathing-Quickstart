@@ -236,8 +236,10 @@ public class TeleOpChampionship extends LinearOpMode {
             handlePositionReset();
             turretAngle = getPosition();
             turretupdate();
-            robot.axonTurretArmL.update();
-            robot.axonTurretArmR.update();
+//            robot.axonTurretArmL.update();
+//            robot.axonTurretArmR.update();
+
+
             telemetry.update();
             sleep(20);
 
@@ -286,28 +288,30 @@ public class TeleOpChampionship extends LinearOpMode {
 //        axon.changeTargetRotation(45); // Move 45 degrees from current position
 //    robot.axonTurretArmL.changeTargetRotation(Math.toDegrees(turretSetpoint-turretAngle));
 //    robot.axonTurretArmR.changeTargetRotation(Math.toDegrees(turretSetpoint-turretAngle));
-//    robot.axonTurretArmL.changeTargetRotation(-45);
-//    robot.axonTurretArmR.changeTargetRotation(-45);
+//    robot.axonTurretArmL.changeTargetRotation(45);
+//    robot.axonTurretArmR.changeTargetRotation(45);
         setTurretPosition(turretSetpoint);
-        telemetry.addData("Math.toDegrees(turretSetpoint-turretAngle)", Math.toDegrees(turretSetpoint-turretAngle));
+//        telemetry.addData("Math.toDegrees(turretSetpoint-turretAngle)", Math.toDegrees(turretSetpoint-turretAngle));
     }
     public void setTurretPosition(double pos) {
-        turretPower = - pidfController.calculate(getPosition(), pos);
-//    robot.servoTurretArmL.setPower(turretPower);
-//    robot.servoTurretArmR.setPower(turretPower);
+//        turretPower = - pidfController.calculate(getPosition(), pos);
+        turretPower =  + pidfController.calculate(getPosition(), pos);
 
-        setTurretPower(turretPower);
+        robot.servoTurretArmL.setPower(turretPower);
+        robot.servoTurretArmR.setPower(turretPower);
+//    robot.axonTurretArmL.setPower(turretPower);
+//    robot.axonTurretArmR.setPower(turretPower);
+
+//        setTurretPower(turretPower);
     }
     public void setTurretPower(double power) {
         double clampedPower = Math.max(-0.5, Math.min(0.5, power)); // 可以是-1  +1 区间
 
-        turretPower = clampedPower;
-        robot.servoTurretArmL.setPower(clampedPower);
-        robot.servoTurretArmR.setPower(clampedPower);
+//        turretPower = clampedPower;
+//        robot.servoTurretArmL.setPower(clampedPower);
+//        robot.servoTurretArmR.setPower(clampedPower);
 
-//        telemetry.addData("Final Power", turretPower);
-//        telemetry.addData(" BturretPower ",  turretPower);
-//        telemetry.addData(" turretPower ",  power);
+
 //        turretPower = power;
 //        telemetry.addData(" AturretPower ",  turretPower);
 //        telemetry.addData(" turretPower ",  power);
@@ -364,10 +368,10 @@ public class TeleOpChampionship extends LinearOpMode {
 
 
     public double getPosition() {
-        if (robot.revEncoder == null) {
-            telemetry.addData("Warning", "revEncoderForTurret is null in getPosition()");
-            return 0.0;
-        }
+//        if (robot.revEncoder == null) {
+//            telemetry.addData("Warning", "revEncoderForTurret is null in getPosition()");
+//            return 0.0;
+//        }
         int ticksPerRev = 8192;//16384
         double revolutions = (double) -robot.revEncoder.getCurrentPosition() / ticksPerRev;
         telemetry.addData(" -revolutions * 2 * Math.PI * TurretConstants.GEAR_RATIO ",  -revolutions * 2 * Math.PI * TurretConstants.GEAR_RATIO);
@@ -710,13 +714,15 @@ public class TeleOpChampionship extends LinearOpMode {
         telemetry.addData("Raw X", x);
         telemetry.addData("Raw Y", y);
         telemetry.addData("Raw Heading", heading);
-        telemetry.addData("follower.getPose().getX()", follower.getPose().getX());
-        telemetry.addData("follower.getPose().getY()", follower.getPose().getY());
-        telemetry.addData("follower.getPose().getHeading()", follower.getPose().getHeading());
+//        telemetry.addData("follower.getPose().getX()", follower.getPose().getX());
+//        telemetry.addData("follower.getPose().getY()", follower.getPose().getY());
+//        telemetry.addData("follower.getPose().getHeading()", follower.getPose().getHeading());
 
 //        telemetry.addData("Servo Position", servoPosition);
 //        telemetry.addData("getCurrentAngleOfTurret()", robot.axonTurretArmL.getCurrentAngle());
-        telemetry.addData("getPosition()", getPosition());
+        telemetry.addData("getPosition()", getPosition());//1
+        telemetry.addData("findPosition()", findPosition());//1
+        telemetry.addData("turretSetpoint", turretSetpoint);//1
 ////        telemetry.addData("encoderTurret .getCurrentAngle", robot.revEncoder.getCurrentAngle());
 //        telemetry.addData("(robot.revEncoderForTurret.getCurrentPosition()/16384) ", (robot.revEncoder.getCurrentPosition()/16384) );
 ////        telemetry.addData("robot.revEncoderForTurret.getCurrentPosition()", (robot.revEncoder.getCurrentPosition()/16384) * (direction.equals(RTPAxon.Direction.FORWARD) ? -360 : 360));
@@ -736,7 +742,7 @@ public class TeleOpChampionship extends LinearOpMode {
 //        telemetry.addData("axonTurretArmL Target Rotation", robot.axonTurretArmL.getTargetRotation());
 //        telemetry.addData("encoderTurret .getCurrentPosition()", robot.encoderTurret.getCurrentAngle());
 
-//        telemetry.addData("axonTurretArmL Servo Position", robot.axonTurretArmL.getCurrentAngle());
+        telemetry.addData("axonTurretArmL Servo Position", robot.axonTurretArmL.getCurrentAngle());
 ////        telemetry.addData("axonTurretArmL Total Rotation", robot.axonTurretArmL.getTotalRotation());
 //
 //        telemetry.addData("encoderTurretArmL", robot.encoderTurretArmL.getVoltage());
