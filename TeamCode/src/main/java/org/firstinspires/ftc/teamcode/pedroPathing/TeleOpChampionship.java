@@ -11,9 +11,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
@@ -61,12 +61,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 @Config  // 添加这个注解，让 Dashboard 可以调整参数
 @TeleOp(name = "AAA Pennsylvania FTC Championship V1 02192026")
 // working on turret testing
+//Y shooter idle of 0.6 target speed 03122026
 //From LEGION
 // working on turret, and hood check speed fixed
 public class TeleOpChampionship extends LinearOpMode {
     // 已有的硬件和常量定义...
     /////////////////////////////////pretty goood for close shoot /////////////////////////// 1300
     private static final double Med_SHOOTER_TARGET_SPEED = 1100;  // from 1200-1150 1666 still big 1866 kind of good for far， but a little bit too big
+    private static final double flyWheelIdleSpeed=Med_SHOOTER_TARGET_SPEED*0.6;
     public float DriveTrains_ReducePOWER=1.0f;
     public float DriveTrains_smoothTurn=1.0f;
     HardwareQualifier robot = new HardwareQualifier();
@@ -119,6 +121,9 @@ public class TeleOpChampionship extends LinearOpMode {
     private static final double VELOCITY_TOLERANCE = 30; // RPM容差，可根据测试调整
     // 状态变量
     private boolean isShooterAtSpeed = false;
+    private boolean shooterIsOn = false; //1
+    private boolean intakeIsOn = false;
+    private boolean shooterIsOnSpeend= false;
     private boolean wasShooterAtSpeed = false; // 用于7检测状态变化
     private boolean fireRequested = false;
     // LED颜色常量（根据你的LED库调整）
@@ -144,6 +149,8 @@ public class TeleOpChampionship extends LinearOpMode {
     ButtonHandler dpadRightHandler = new ButtonHandler();
     ButtonHandler leftBumperHandler = new ButtonHandler();
     ButtonHandler rightBumperHandler = new ButtonHandler();
+//    ButtonHandler leftTriggerHandler = new ButtonHandler();
+//    ButtonHandler rightTriggerHandler = new ButtonHandler();
     ButtonHandler gamepad1XHandler = new ButtonHandler();
     ButtonHandler gamepad1BHandler = new ButtonHandler();
     ButtonHandler gamepad1YHandler = new ButtonHandler();
@@ -152,6 +159,11 @@ public class TeleOpChampionship extends LinearOpMode {
     private volatile boolean isRunning = true;
     ElapsedTime delayTimer = new ElapsedTime();
     ElapsedTime PIDFTimer = new ElapsedTime();
+    public enum shooterstatus {
+        OFF,
+        IDLE,
+        SHOOT_SPEED
+    }
 
     // 计时器
     private ElapsedTime runtime = new ElapsedTime();
@@ -220,6 +232,7 @@ public class TeleOpChampionship extends LinearOpMode {
 //            updateTuningPIDF();
 //            updateAutoAim();
             dpadUpHandler.update(gamepad1.dpad_up);
+//            rightTriggerHandler.update(gamepad1.right_trigger);
             handlePositionReset();
             turretAngle = getPosition();
             turretupdate();
@@ -400,11 +413,17 @@ public class TeleOpChampionship extends LinearOpMode {
 
 //                robot.HoodArmL.setPosition(0.3);
 //                robot.HoodArmR.setPosition(0.3);
-
+            intakeIsOn = true;
             delayTimer.reset();
             while (delayTimer.milliseconds() < 300 && opModeIsActive()) {
                 // Other tasks can be processed here
             } // 防止快速连击导致模式快速切换
+
+            telemetry.addData("shooterIsOn startintake", shooterIsOn);
+            telemetry.addData("intakeIsOn startintake", intakeIsOn);
+            telemetry.addData("shooterIsOnSpeend startintake ", shooterIsOnSpeend);
+
+
 
         } else if (gamepad1.left_bumper) {
             // 反转（吐出）
@@ -427,16 +446,17 @@ public class TeleOpChampionship extends LinearOpMode {
     public void updateShooter() {
 
         // 手柄控制发射电机 - 按下右肩键启动射击电机
-        if (gamepad1.right_trigger > 0.1) {
+        if (gamepad1.right_trigger > 0.1 ) {
             // 检查射击电机是否达到目标速度
             checkShooterVelocity();
-            if (!robot.MasterShooterMotorL.isBusy()){
-                startShooter();
-//                robot.BlockageArm.setPosition(blockagereleaseTele);
-                //do not release blockageArm
-//                robot.BlockageArmL.setPosition(blockagereleaseposition);
-//                robot.BlockageArmR.setPosition(blockagereleaseposition);
-            }
+            startShooter();
+//            if (!robot.MasterShooterMotorL.isBusy()){
+//                startShooter();
+////                robot.BlockageArm.setPosition(blockagereleaseTele);
+//                //do not release blockageArm
+////                robot.BlockageArmL.setPosition(blockagereleaseposition);
+////                robot.BlockageArmR.setPosition(blockagereleaseposition);
+//            }
 
         }
         // 手动射击触发 - 按下A键射击（仅在速度达标时有效）
@@ -448,6 +468,7 @@ public class TeleOpChampionship extends LinearOpMode {
             robot.BlockageArmR.setPosition(blockagereleaseposition);
             robot.IntakeMotorL.setPower(intakePowerShoot);
             robot.IntakeMotorR.setPower(intakePowerShoot);
+            intakeIsOn = true;
         }
         // 停止射击电机 - 按下B键
         if (gamepad1.b) {
@@ -457,7 +478,9 @@ public class TeleOpChampionship extends LinearOpMode {
 //            robot.BlockageArm.setPosition(blockageblockTele);
             robot.BlockageArmL.setPosition(blockageblockposition);
             robot.BlockageArmR.setPosition(blockageblockposition);
+            intakeIsOn = false;
             fireRequested = false;
+            shooterIsOn= false; //2
         }
 
         // 如果射击电机未运行，确保重置状态
@@ -486,7 +509,8 @@ public class TeleOpChampionship extends LinearOpMode {
         in the feedforward-only section, and then we tune the PID controller following the same procedure as in the feedback-only section.
          Notice that PID portion of the controller is much easier to tune “on top of” an accurate feedforward.
         */
-        public static double targetSPEED =Med_SHOOTER_TARGET_SPEED; // 目标转速
+        public static double targetSPEED =flyWheelIdleSpeed;
+//        public static double targetSPEED =Med_SHOOTER_TARGET_SPEED;
         public static double tolerance = 0;
         public static double kF_STEP = 0.05;   // 每次按键增加/减少的量
         public static double kP_STEP = 0.5;   // 每次按键增加/减少的量
@@ -534,21 +558,35 @@ public class TeleOpChampionship extends LinearOpMode {
 
     ///  //////////////////////////////////////////////////////////////////////////////////////////
 
+    private void startShooterIdle() {
+        robot.IntakeMotorL.setPower(0);
+        robot.IntakeMotorR.setPower(0);
+        // robot.axonTurretArmL.setTargetRotation(0);
+        // robot.axonTurretArmR.setTargetRotation(0);
+        //  03072026
+        //  03072026
+        if ((robot.MasterShooterMotorL instanceof DcMotorEx) && (robot.SlaveShooterMotorR instanceof DcMotorEx) ) {
+            robot.shooterL.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEED));
+            robot.shooterR.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEED));
+
+        }
+
+    }
+
     private void startShooter() {
         robot.IntakeMotorL.setPower(0);
         robot.IntakeMotorR.setPower(0);
 //        robot.axonTurretArmL.setTargetRotation(0);
 //        robot.axonTurretArmR.setTargetRotation(0);
         //  03072026
-        if (robot.MasterShooterMotorL instanceof DcMotorEx||robot.SlaveShooterMotorR instanceof DcMotorEx) {
-            // 直接使用setVelocity，它会使用已配置的PIDF
-            robot.shooterL.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEED));
-            robot.shooterR.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEED));
+ if ((robot.MasterShooterMotorL instanceof DcMotorEx) && (robot.SlaveShooterMotorR instanceof DcMotorEx) ) {
+            robot.shooterL.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEED)*1.67);
+            robot.shooterR.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEED)*1.67);
+            shooterIsOn=true; //4
+            shooterIsOnSpeend=true;
+     telemetry.addData("Shooter status 4", "4");
         }
-//        if(PIDFTimerStart){
-//            PIDFTimer.reset();
-//            PIDFTimerStart=false;
-//        }
+
     }
     /// ///////////////////////////////////////////////////////////////////////////////
     /// /// ///////////need fix
@@ -611,7 +649,8 @@ public class TeleOpChampionship extends LinearOpMode {
     private void checkShooterVelocity() {
 
         double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());
-        double targetVelocity = ShooterPIDFConfig.targetSPEED;
+        double targetVelocity = ShooterPIDFConfig.targetSPEED*1.67;
+//        double targetVelocity = ShooterPIDFConfig.targetSPEED;
 //        double tolerance = ShooterPIDFConfig.tolerance;
 
         // 检查是否在容差范围内
@@ -715,12 +754,13 @@ public class TeleOpChampionship extends LinearOpMode {
 //        telemetry.addData("Target Rotation", robot.axonTurretArmR.getTargetRotation());
 
 //        telemetry.addLine("=== SHOOTER PIDF TUNING ===");
-//        telemetry.addData("target SPEED", "%.0f", ShooterPIDFConfig.targetSPEED);
-//        telemetry.addData("kP Increased ", "Increased to %.2f", ShooterPIDFConfig.kP);
-//        telemetry.addData("currentVelocityLeft", currentVelocityL);
-//        telemetry.addData("currentVelocityRight", currentVelocityR);
+        telemetry.addData("target SPEED", "%.0f", ShooterPIDFConfig.targetSPEED);
+        telemetry.addData("target SPEED *1.67 ", "%.0f", ShooterPIDFConfig.targetSPEED*1.67);
+        telemetry.addData("currentVelocityLeft", currentVelocityL);
+        telemetry.addData("currentVelocityRight", currentVelocityR);
 //        telemetry.addData("shooterL", shooterL);
 //        telemetry.addData("shooterR", shooterR);
+        //        telemetry.addData("kP Increased ", "Increased to %.2f", ShooterPIDFConfig.kP);
 
 
 //        telemetry.addData("Current RPM", "%.0f", shooterVelocity);
@@ -759,23 +799,42 @@ public class TeleOpChampionship extends LinearOpMode {
         robot.SlaveShooterMotorR.setPower(0);
         robot.IntakeMotorL.setPower(0);
         robot. IntakeMotorR.setPower(0);
+        intakeIsOn = false;
         isShooterAtSpeed = false;
         fireRequested = false;
+        shooterIsOn= false;
+        shooterIsOnSpeend= false;
     }
 
 
     ///  ///////////
 
     private void stopIntake() {
+        telemetry.addData("shooterIsOn", shooterIsOn);
+        telemetry.addData("intakeIsOn", intakeIsOn);
+        telemetry.addData("shooterIsOnSpeend", shooterIsOnSpeend);
+
         robot.IntakeMotorL.setPower(intakePowerOff);
         robot.IntakeMotorR.setPower(intakePowerOff);
-        robot.MasterShooterMotorL.setPower(ShooterMotorOff);
-        robot.SlaveShooterMotorR.setPower(ShooterMotorOff);
+//        robot.MasterShooterMotorL.setPower(ShooterMotorOff);
+//        robot.SlaveShooterMotorR.setPower(ShooterMotorOff);
+        isShooterAtSpeed = false;
+        fireRequested = false;
         robot.MasterShooterMotorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.MasterShooterMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        if ((robot.MasterShooterMotorL instanceof DcMotorEx) && (robot.MasterShooterMotorL.getVelocity()< ShooterPIDFConfig.targetSPEED)) {
+            // 直接使用setVelocity，它会使用已配置的PIDF
+            startShooterIdle();
+            shooterIsOn=true;//3
+            telemetry.addData("Shooter status 3", "3");
+        } else if ((robot.MasterShooterMotorL instanceof DcMotorEx) && (robot.MasterShooterMotorL.getVelocity()> ShooterPIDFConfig.targetSPEED*1.4)) {
+            // 直接使用setVelocity，它会使用已配置的PIDF
+            stopShooter();
+        }
+        intakeIsOn=false;
         // Non-blocking delay to prevent rapid mode switching
         telemetry.addData("intakePowerOff", intakePowerOff);
         telemetry.update();
