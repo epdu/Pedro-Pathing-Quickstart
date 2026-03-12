@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.ftc.localization.constants.PinpointConstants;
 import com.pedropathing.ftc.localization.localizers.PinpointLocalizer;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -99,13 +100,15 @@ public class TeleOpChampionship extends LinearOpMode {
     public static final double blockagereleaseTele=0.24;
     ///////////////turret///////////
     private boolean previousDpadUp = false;
-    private Pose robotPose;
+
     private double turretAngle = Math.PI / 2.0;
     private double turretSetpoint = 0.0;
     private double turretPower = 0.0;
     private Follower follower;
-    private PinpointLocalizer pinpointLocalizer;
+//    private PinpointLocalizer pinpointLocalizer;
     private PIDFController pidfController;
+    private Pose robotPose;
+    private Pose  currentPose;
     private RTPAxon.Direction direction;
 //    private final Gamepad gamepad1;
 //    public static final double GEAR_RATIO = .5;
@@ -174,6 +177,8 @@ public class TeleOpChampionship extends LinearOpMode {
 //        robot.alliance = Alliance.BLUE;
         robot.alliance = Alliance.RED;
         follower = Constants.createFollower(hardwareMap);
+//        PinpointConstants localizerConstants = new PinpointConstants();
+//        pinpointLocalizer = new PinpointLocalizer(hardwareMap,localizerConstants);
         robot.leftFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         robot.rightFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         robot.leftRearMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -185,6 +190,7 @@ public class TeleOpChampionship extends LinearOpMode {
 
         follower.setStartingPose(startPose == null ? new Pose() : startPose);
         follower.update();
+//        pinpointLocalizer.update();
 
         pidfController = new PIDFController(
                 TurretConstants.kP,
@@ -219,6 +225,7 @@ public class TeleOpChampionship extends LinearOpMode {
 
         while (opModeIsActive()) {
 
+            follower.update();
             updateDrivetrain_FieldCentric();
             handleIMUReset();
 //            updateDrivetrain_RobotCentric();
@@ -326,18 +333,23 @@ public class TeleOpChampionship extends LinearOpMode {
         double robotHeading;
         double overallAngle;
 
-        if (robot.alliance == Alliance.BLUE) {
-            x = follower.getPose().getX();
-            y = 144 - follower.getPose().getY();
+        currentPose = follower.getPose();
 
-            robotHeading = follower.getPose().getHeading();
+        if (robot.alliance == Alliance.BLUE) {
+
+            x = currentPose.getX();
+            y = 144 - currentPose.getY();
+
+//            x = follower.getPose().getX();
+//            y = 144 - follower.getPose().getY();
+            robotHeading = currentPose.getHeading();
             overallAngle = Math.PI - Math.atan2(y, x);
             telemetry.addData("Alliance.BLUE",Alliance.BLUE);
         } else if (robot.alliance == Alliance.RED) {
-            x = 144 - follower.getPose().getX();
-            y = 144 - follower.getPose().getY();
+            x = 144 - currentPose.getX();
+            y = 144 -currentPose.getY();
             telemetry.addData("Alliance.RED", Alliance.RED);
-            robotHeading = follower.getPose().getHeading();
+            robotHeading = currentPose.getHeading();
             overallAngle = Math.atan2(y, x);
             telemetry.addData("robotHeading", robotHeading);
             telemetry.addData("overallAngle", overallAngle);
@@ -355,6 +367,9 @@ public class TeleOpChampionship extends LinearOpMode {
         }
         telemetry.addData("target ", target);
         telemetry.addData("tMath.toDegrees(target) ",  Math.toDegrees(target));
+        telemetry.addData("follower.currentPose.getX()", currentPose.getX());
+        telemetry.addData("follower.currentPose.getY()", currentPose.getY());
+        telemetry.addData("follower.currentPose.getHeading()", currentPose.getHeading());
         return target;
     }
 
@@ -714,9 +729,7 @@ public class TeleOpChampionship extends LinearOpMode {
         telemetry.addData("Raw X", x);
         telemetry.addData("Raw Y", y);
         telemetry.addData("Raw Heading", heading);
-//        telemetry.addData("follower.getPose().getX()", follower.getPose().getX());
-//        telemetry.addData("follower.getPose().getY()", follower.getPose().getY());
-//        telemetry.addData("follower.getPose().getHeading()", follower.getPose().getHeading());
+
 
 //        telemetry.addData("Servo Position", servoPosition);
 //        telemetry.addData("getCurrentAngleOfTurret()", robot.axonTurretArmL.getCurrentAngle());

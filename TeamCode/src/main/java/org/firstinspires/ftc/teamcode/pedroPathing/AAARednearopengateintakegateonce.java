@@ -27,14 +27,14 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 // 姿态
 // Limelight
 // 位姿
-@Autonomous(name = "AAA RED Near open Gate WITH intake TWENTY-FIRST  park after third loaded 03092026 V1")
+@Autonomous(name = "AAA RED Near open Gate WITH gate intake once second spark and third spark intake 03092026 V1")
 //no enough time to finish all backup 03032026
 //intake second role with open gate , park at  136, 36.25 with three loaded
 //. 3 ARTIFACTS on each SPIKE MARK arranged as follows:
 //i.Near (audience side): GPP
-//ii. Middle: PGP
+//ii. Middle: PGP7
 //iii. Far (GOAL side): PPG
-public class AAARed21nearopengatewithintake extends LinearOpMode {
+public class AAARednearopengateintakegateonce extends LinearOpMode {
     HardwareQualifier robot = new HardwareQualifier();
     private Limelight3A limelight;
     private volatile boolean isRunning = true;
@@ -64,7 +64,9 @@ public class AAARed21nearopengatewithintake extends LinearOpMode {
 //    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
 //    private static final double Far_SHOOTER_TARGET_RPM = 2237;  //  350RPM---2237
     ///////////////////////////////
-    private static final double Med_SHOOTER_TARGET_Velocity = 1150; //1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
+    private static final double Med_SHOOTER_TARGET_Velocity = 1100;
+//    public static double flyWheelIdleTargetSpeed=Med_SHOOTER_TARGET_Velocity*0.6;
+//    private static final double Med_SHOOTER_TARGET_Velocity = 1150; //1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
     public float  intakePowerIntake=0.85f;//0.95
     public float  intakePowerShoot=0.9f;//0.9
     public float DriveTrains_ReducePOWER=0.75f;
@@ -165,7 +167,8 @@ private PathChain driveStartShoot;
     private final Pose firstSpikePickupPose = new Pose(134, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     private final Pose openGatePickupPose = new Pose(133, 69, Math.toRadians(0));  //63--61
     /// /////////////////////////////////////////
-    private final Pose openGateForPickPickupPose = new Pose(130, 64, Math.toRadians(18));
+    private final Pose openGateForPickPickupPose = new Pose(129.0, 64.5, Math.toRadians(18));// x 130-129.5--129.2 accident closed the gate y 64--64.5//
+    //for open gate position, adjust here
     //increased 2 inches Winston Z: 2/18/26
     private final Pose openGateForPickPickupPoseAdjust = new Pose(130,62,Math.toRadians(26));
 
@@ -364,6 +367,41 @@ private PathChain driveStartShoot;
         }
     }
 
+///////////////////////////////////////////
+
+
+private void startShooterIdle() {
+    robot.IntakeMotorL.setPower(0);
+    robot.IntakeMotorR.setPower(0);
+    // robot.axonTurretArmL.setTargetRotation(0);
+    // robot.axonTurretArmR.setTargetRotation(0);
+    //  03072026
+    //  03072026
+    if ((robot.MasterShooterMotorL instanceof DcMotorEx) && (robot.SlaveShooterMotorR instanceof DcMotorEx) ) {
+        robot.shooterL.setVelocity(Math.abs(ShooterPIDFConfig.flyWheelIdleTargetSpeed));
+        robot.shooterR.setVelocity(Math.abs(ShooterPIDFConfig.flyWheelIdleTargetSpeed));
+
+    }
+
+}
+//
+//    private void startShooter() {
+//        robot.IntakeMotorL.setPower(0);
+//        robot.IntakeMotorR.setPower(0);
+////        robot.axonTurretArmL.setTargetRotation(0);
+////        robot.axonTurretArmR.setTargetRotation(0);
+//        //  03072026
+//        if ((robot.MasterShooterMotorL instanceof DcMotorEx) && (robot.SlaveShooterMotorR instanceof DcMotorEx) ) {
+//            robot.shooterL.setVelocity(Math.abs(TeleOpChampionship.ShooterPIDFConfig.targetSPEED)*1.67);
+//            robot.shooterR.setVelocity(Math.abs(TeleOpChampionship.ShooterPIDFConfig.targetSPEED)*1.67);
+//            shooterIsOn=true; //4
+//            shooterIsOnSpeend=true;
+//            telemetry.addData("Shooter status 4", "4");
+//        }
+//
+//    }
+
+//////////////////////////////////////////
 private void startShooter() {
     robot.IntakeMotorL.setPower(0);
     robot.IntakeMotorR.setPower(0);
@@ -393,9 +431,10 @@ public static class ShooterPIDFConfig {
 //        public static double targetRPM =Close_SHOOTER_TARGET_RPM;
 //        public static double targetRPM =Med_SHOOTER_TARGET_RPM; // 目标转速
         public static double targetVelocity =Med_SHOOTER_TARGET_Velocity;
+    public static double flyWheelIdleTargetSpeed =Med_SHOOTER_TARGET_Velocity*0.6;
 //        public static double toleranceofRPM = 100;    // 转速容差 5RPM---30TPS
         public static double toleranceofVelocity = 70;
-        public static double tolerance = 50;
+        public static double tolerance = 0;
 
     }
 
@@ -748,8 +787,9 @@ public static class ShooterPIDFConfig {
     private void statePathUpdate() {
         switch (pathState) {
             case DRIVE_START_POS_SHOOT_POS:
-                follower.followPath(driveStartShoot, 0.65, true);
+                follower.followPath(driveStartShoot, 0.7, true);
                 setPathState(PathState.DRIVE_TO_SHOOT_WAIT);
+                startShooterIdle();//add idle speed 03122026
                 break;
 
             case DRIVE_TO_SHOOT_WAIT:
@@ -761,7 +801,7 @@ public static class ShooterPIDFConfig {
             case SHOOT_PRELOAD:
              autoshoot();
                if (autoShootState == AutoShootState.DONE) {
-                   follower.followPath(driveReadySecondSpikePickup, 0.65, true);
+                   follower.followPath(driveReadySecondSpikePickup, 0.7, true);
                    isShooterAtSpeed = false;
                    setPathState(PathState.DRIVE_READY_SECOND_SPIKE_PICKUPT_POS);
                     }
@@ -769,19 +809,20 @@ public static class ShooterPIDFConfig {
 
             case DRIVE_READY_SECOND_SPIKE_PICKUPT_POS:
                 if (!follower.isBusy()) {
-                    follower.followPath(driveSecondSpikePickup, 0.5, true);
+                    follower.followPath(driveSecondSpikePickup, 0.55, true);
                     setPathState(PathState.SECOND_SPIKE_PICKUP);
                 }
                 break;
 
             case SECOND_SPIKE_PICKUP:
-                if (pathTimer.getElapsedTimeSeconds() < 1.8) {
+                if (pathTimer.getElapsedTimeSeconds() < 1.4) {
                     autoIntake();
                 } else {
                     follower.followPath(driveSecondSpikePickupShoot);
                     stopShooter();
                     stopIntake();
                     setPathState(PathState.DRIVE_BACK_SECOND_SPIKE_PICKUPT_POS);
+                    startShooterIdle();//add idle speed 03122026
                 }
                 break;
 
@@ -795,7 +836,7 @@ public static class ShooterPIDFConfig {
             case SHOOT_SECOND_SPIKE_PICKUP:
                 autoshoot();
                 if (autoShootState == AutoShootState.DONE) {
-                    follower.followPath(driveReadyOpenGatePickup, 0.65, true);
+                    follower.followPath(driveReadyOpenGatePickup, 0.7, true);
                     isShooterAtSpeed = false;
                     setPathState(PathState.DRIVE_READY_FIRST_OPEN_GATE_POS);
                 }
@@ -803,13 +844,13 @@ public static class ShooterPIDFConfig {
 
             case DRIVE_READY_FIRST_OPEN_GATE_POS:
                 if (!follower.isBusy()) {
-                    follower.followPath(driveOpenGatePickup, 0.5, true);
+                    follower.followPath(driveOpenGatePickup, 0.55, true);
                     setPathState(PathState.FIRST_OPEN_GATE);
                 }
                 break;
 
             case FIRST_OPEN_GATE:
-                if (pathTimer.getElapsedTimeSeconds() < .5) {
+                if (pathTimer.getElapsedTimeSeconds() < .7) {
                     autoIntake();
                 } else {
                     follower.followPath(driveOpenGatePickupAdjust);
@@ -837,24 +878,80 @@ public static class ShooterPIDFConfig {
                 }
                 break;
 
+
+                /// //////////////for keep opening gate
+//            case SHOOT_FIRST_OPEN_GATE_PICKUP:
+//                autoshoot();
+//                if (autoShootState == AutoShootState.DONE) {
+//                    follower.followPath(driveReadyOpenGatePickup, 0.7, true);
+//                    isShooterAtSpeed = false;
+//                    setPathState(PathState. DRIVE_READY_SECOND_OPEN_GATE_POS);
+//                }
+//                break;
+////////////////////////
             case SHOOT_FIRST_OPEN_GATE_PICKUP:
                 autoshoot();
                 if (autoShootState == AutoShootState.DONE) {
-                    follower.followPath(driveReadyOpenGatePickup, 0.65, true);
+                    follower.followPath(driveReadyThirdSpikePickup, 0.7, true);
                     isShooterAtSpeed = false;
-                    setPathState(PathState. DRIVE_READY_SECOND_OPEN_GATE_POS);
+                    setPathState(PathState. DRIVE_READY_THIRD_SPIKE_PICKUPT_POS);
                 }
                 break;
 
+            case DRIVE_READY_THIRD_SPIKE_PICKUPT_POS:
+                if (!follower.isBusy()) {
+                    follower.followPath(driveThirdSpikePickup, 0.55, true);
+                    setPathState(PathState.THIRD_SPIKE_PICKUP);
+                }
+                break;
+
+            case THIRD_SPIKE_PICKUP:
+                if (!firstPickupCompleted && pathTimer.getElapsedTimeSeconds() < 1.4) {
+                    autoIntake();
+                } else {
+                    follower.followPath(driveThirdSpikePickupShoot);
+                    stopShooter();
+                    stopIntake();
+                    setPathState(PathState.DRIVE_BACK_THIRD_SPIKE_PICKUPT_POS);
+                    firstPickupCompleted = true;
+                }
+                break;
+
+            case DRIVE_BACK_THIRD_SPIKE_PICKUPT_POS:
+                if (!follower.isBusy()) {
+                    setPathState(PathState.SHOOT_THIRD_SPIKE_PICKUP);
+                    autoShootState = AutoShootState.IDLE;
+                }
+                 break;
+
+            case SHOOT_THIRD_SPIKE_PICKUP:
+                autoshoot();
+                if (autoShootState == AutoShootState.DONE) {
+                    follower.followPath(driveOffline, 0.75, true);
+                    isShooterAtSpeed = false;
+                    setPathState(PathState.DRIVE_OFFLINE);
+                }
+                break;
+
+            case DRIVE_OFFLINE:
+                if (!follower.isBusy()) {
+                    setPathState(PathState.END);
+                }
+                break;
+
+
+//////////////////////////////////////////////////////
+
+/////////////////if still have time left over try here
             case DRIVE_READY_SECOND_OPEN_GATE_POS:
                 if (!follower.isBusy()) {
-                    follower.followPath(driveOpenGatePickup, 0.5, true);
+                    follower.followPath(driveOpenGatePickup, 0.55, true);
                     setPathState(PathState.SECOND_OPEN_GATE);
                 }
                 break;
 
             case SECOND_OPEN_GATE:
-                if (pathTimer.getElapsedTimeSeconds() < .5) {
+                if (pathTimer.getElapsedTimeSeconds() < .75) {
                     autoIntake();
                 } else {
                     follower.followPath(driveOpenGatePickupAdjust);
@@ -885,131 +982,101 @@ public static class ShooterPIDFConfig {
             case SHOOT_SECOND_OPEN_GATE_PICKUP:
                 autoshoot();
                 if (autoShootState == AutoShootState.DONE) {
-                    follower.followPath(driveReadyOpenGatePickup, 0.65, true);
+                    follower.followPath(driveReadyOpenGatePickup, 0.7, true);
                     isShooterAtSpeed = false;
                     setPathState(PathState. DRIVE_READY_THIRD_OPEN_GATE_POS);
                 }
                 break;
 
-            case DRIVE_READY_THIRD_OPEN_GATE_POS:
-                if (!follower.isBusy()) {
-                    follower.followPath(driveOpenGatePickup, 0.5, true);
-                    setPathState(PathState.THIRD_OPEN_GATE);
-                }
-                break;
-
-            case THIRD_OPEN_GATE:
-                if (pathTimer.getElapsedTimeSeconds() < .9) {
-                    autoIntake();
-                } else {
-                    follower.followPath(driveOpenGatePickupAdjust);
+////////////////////////////////////////////////////////////
+//            case DRIVE_READY_THIRD_OPEN_GATE_POS:
+//                if (!follower.isBusy()) {
+//                    follower.followPath(driveOpenGatePickup, 0.55, true);
+//                    setPathState(PathState.THIRD_OPEN_GATE);
+//                }
+//                break;
+//
+//            case THIRD_OPEN_GATE:
+//                if (pathTimer.getElapsedTimeSeconds() < .9) {
+//                    autoIntake();
+//                } else {
+//                    follower.followPath(driveOpenGatePickupAdjust);
+////                    stopShooter();
+////                    stopIntake();
+//                    setPathState(PathState.THIRD_OPEN_GATE_INTAKE);
+//                }
+//                break;
+//
+//            case THIRD_OPEN_GATE_INTAKE:
+//                if (pathTimer.getElapsedTimeSeconds() < .9) {
+//                    autoIntake();
+//                } else {
+//                    follower.followPath(driveOpenGatePickupShoot);
 //                    stopShooter();
 //                    stopIntake();
-                    setPathState(PathState.THIRD_OPEN_GATE_INTAKE);
-                }
-                break;
+//                    setPathState(PathState.DRIVE_BACK_THIRD_OPEN_GATE_PICKUPT_POS);
+//                }
+//                break;
+//
+//            case DRIVE_BACK_THIRD_OPEN_GATE_PICKUPT_POS:
+//                if (!follower.isBusy()) {
+//                    setPathState(PathState.SHOOT_THIRD_OPEN_GATE_PICKUP);
+//                    autoShootState = AutoShootState.IDLE;
+//                }
+//                break;
+//
+//            case SHOOT_THIRD_OPEN_GATE_PICKUP:
+//                autoshoot();
+//                if (autoShootState == AutoShootState.DONE) {
+//                    follower.followPath(driveReadyOpenGatePickup, 0.7, true);
+//                    isShooterAtSpeed = false;
+//                    setPathState(PathState. DRIVE_READY_THIRD_SPIKE_PICKUPT_POS);
+//                }
+//                break;
+//
 
-            case THIRD_OPEN_GATE_INTAKE:
-                if (pathTimer.getElapsedTimeSeconds() < .9) {
-                    autoIntake();
-                } else {
-                    follower.followPath(driveOpenGatePickupShoot);
-                    stopShooter();
-                    stopIntake();
-                    setPathState(PathState.DRIVE_BACK_THIRD_OPEN_GATE_PICKUPT_POS);
-                }
-                break;
+            /// //////////////////////
 
-            case DRIVE_BACK_THIRD_OPEN_GATE_PICKUPT_POS:
-                if (!follower.isBusy()) {
-                    setPathState(PathState.SHOOT_THIRD_OPEN_GATE_PICKUP);
-                    autoShootState = AutoShootState.IDLE;
-                }
-                break;
-
-            case SHOOT_THIRD_OPEN_GATE_PICKUP:
-                autoshoot();
-                if (autoShootState == AutoShootState.DONE) {
-                    follower.followPath(driveReadyOpenGatePickup, 0.65, true);
-                    isShooterAtSpeed = false;
-                    setPathState(PathState. DRIVE_READY_THIRD_SPIKE_PICKUPT_POS);
-                }
-                break;
-
-            case DRIVE_READY_THIRD_SPIKE_PICKUPT_POS:
-                if (!follower.isBusy()) {
-                    follower.followPath(driveThirdSpikePickup, 0.5, true);
-                    setPathState(PathState.THIRD_SPIKE_PICKUP);
-                }
-                break;
-
-            case THIRD_SPIKE_PICKUP:
-                if (!firstPickupCompleted && pathTimer.getElapsedTimeSeconds() < 1.8) {
-            autoIntake();
-                } else {
-                    follower.followPath(driveThirdSpikePickupShoot);
-                    stopShooter();
-                    stopIntake();
-                    setPathState(PathState.DRIVE_BACK_THIRD_SPIKE_PICKUPT_POS);
-                    firstPickupCompleted = true;
-                }
-                break;
-
-            case DRIVE_BACK_THIRD_SPIKE_PICKUPT_POS:
-                if (!follower.isBusy()) {
-                    setPathState(PathState.SHOOT_THIRD_SPIKE_PICKUP);
-                    autoShootState = AutoShootState.IDLE;
-                }
-                break;
-
-            case SHOOT_THIRD_SPIKE_PICKUP:
-                autoshoot();
-                if (autoShootState == AutoShootState.DONE) {
-                    follower.followPath(driveReadyFirstSpikePickup, 0.65, true);
-                    isShooterAtSpeed = false;
-                    setPathState(PathState.DRIVE_READY_FIRST_SPIKE_PICKUP_POS);
-                }
-                break;
-
-            case DRIVE_READY_FIRST_SPIKE_PICKUP_POS:
-                if (!follower.isBusy()) {
-                    follower.followPath(driveFirstSpikePickup, 0.5, true);
-                    setPathState(PathState.FIRST_SPIKE_PICKUP);
-                }
-                break;
-
-            case FIRST_SPIKE_PICKUP:
-                if (pathTimer.getElapsedTimeSeconds() < 1.8) {
-                    autoIntake();
-                } else {
-                    follower.followPath(driveFirstSpikePickupShoot);
-                    stopShooter();
-                    stopIntake();
-                    setPathState(PathState.DRIVE_BACK_FIRST_SPIKE_SHOOT_POS);
-                }
-                break;
-
-            case DRIVE_BACK_FIRST_SPIKE_SHOOT_POS:
-                if (!follower.isBusy()) {
-                    setPathState(PathState.SHOOT_FIRST_SPIKE_PICKUP);
-                    autoShootState = AutoShootState.IDLE;
-                }
-                break;
-
-            case SHOOT_FIRST_SPIKE_PICKUP:
-                autoshoot();
-                if (autoShootState == AutoShootState.DONE) {
-                    follower.followPath(driveOffline, 0.75, true);
-                    isShooterAtSpeed = false;
-                    setPathState(PathState.DRIVE_OFFLINE);
-                }
-                break;
-
-            case DRIVE_OFFLINE:
-                if (!follower.isBusy()) {
-                    setPathState(PathState.END);
-                }
-                break;
+//            case DRIVE_READY_FIRST_SPIKE_PICKUP_POS:
+//                if (!follower.isBusy()) {
+//                    follower.followPath(driveFirstSpikePickup, 0.55, true);
+//                    setPathState(PathState.FIRST_SPIKE_PICKUP);
+//                }
+//                break;
+//
+//            case FIRST_SPIKE_PICKUP:
+//                if (pathTimer.getElapsedTimeSeconds() < 1.8) {
+//                    autoIntake();
+//                } else {
+//                    follower.followPath(driveFirstSpikePickupShoot);
+//                    stopShooter();
+//                    stopIntake();
+//                    setPathState(PathState.DRIVE_BACK_FIRST_SPIKE_SHOOT_POS);
+//                }
+//                break;
+//
+//            case DRIVE_BACK_FIRST_SPIKE_SHOOT_POS:
+//                if (!follower.isBusy()) {
+//                    setPathState(PathState.SHOOT_FIRST_SPIKE_PICKUP);
+//                    autoShootState = AutoShootState.IDLE;
+//                }
+//                break;
+//
+//            case SHOOT_FIRST_SPIKE_PICKUP:
+//                autoshoot();
+//                if (autoShootState == AutoShootState.DONE) {
+//                    follower.followPath(driveOffline, 0.75, true);
+//                    isShooterAtSpeed = false;
+//                    setPathState(PathState.DRIVE_OFFLINE);
+//                }
+//                break;
+//
+//            case DRIVE_OFFLINE:
+//                if (!follower.isBusy()) {
+//                    setPathState(PathState.END);
+//                }
+//                break;
+                /// /////////////
         }
     }
 }
