@@ -808,6 +808,10 @@ public class AAARed12farTurretThreeHumanPlayers extends LinearOpMode {
                 startShooterIdle();//add idle speed 03122026
                 robot.axonTurretArmL.setTargetRotation(turretshootangle);
                 robot.axonTurretArmR.setTargetRotation(turretshootangle);
+//        axon.setTargetRotation(90);    // Move to 90 degrees absolute
+//        axon.changeTargetRotation(45); // Move 45 degrees from current position
+//                robot.axonTurretArmL.setTargetRotation(turretshootangle);
+//                robot.axonTurretArmR.setTargetRotation(turretshootangle);
                 //adjust turret angle here
                 follower.followPath(driveStartShoot, 0.6, true);
                 setPathState(PathState.DRIVE_TO_SHOOT_WAIT);
@@ -854,6 +858,10 @@ public class AAARed12farTurretThreeHumanPlayers extends LinearOpMode {
             case FIRST_HOME_PICKUP_SECOND_TRY:
                 if (!firstHomePickupSecondTryCompleted && pathTimer.getElapsedTimeSeconds() < 0.8) {
                     autoIntake();
+                    robot.axonTurretArmL.setTargetRotation(turretshootangle+2);
+                    robot.axonTurretArmR.setTargetRotation(turretshootangle+2);
+//                    robot.axonTurretArmL.changeTargetRotation(2);
+//                    robot.axonTurretArmR.changeTargetRotation(2);
                 } else {
                     follower.followPath(driveFirstHomePickupShootSecondTry);
                     stopShooter();
@@ -976,8 +984,10 @@ public class AAARed12farTurretThreeHumanPlayers extends LinearOpMode {
                 if (autoShootState == AutoShootState.DONE) {
                     follower.followPath(driveOffline, 0.6, true);
                     isShooterAtSpeed = false;
-                    robot.axonTurretArmL.changeTargetRotation(-turretshootangle);
-                    robot.axonTurretArmR.changeTargetRotation(-turretshootangle);
+                    robot.axonTurretArmL.setTargetRotation(0);
+                    robot.axonTurretArmR.setTargetRotation(0);
+//                    robot.axonTurretArmL.changeTargetRotation(-turretshootangle);
+//                    robot.axonTurretArmR.changeTargetRotation(-turretshootangle);
                     setPathState(PathState.DRIVE_OFFLINE);
                 }
                 break;

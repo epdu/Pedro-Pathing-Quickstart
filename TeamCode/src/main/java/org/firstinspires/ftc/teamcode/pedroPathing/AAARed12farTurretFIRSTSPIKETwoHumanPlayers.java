@@ -152,7 +152,7 @@ public class  AAARed12farTurretFIRSTSPIKETwoHumanPlayers extends LinearOpMode {
     }
     private final Pose startPose = new Pose(96,6.25, Math.toRadians(0));
     private final Pose startPoseCP = new Pose(96,11.25, Math.toRadians(0)); // Start Pose further zone of our robot.
-    private final Pose shootPose = new Pose(96, 12.25, Math.toRadians(71)); //69---71 03122026 70-73 65-75 Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
+    private final Pose shootPose = new Pose(96, 12.25, Math.toRadians(0)); //69---71 03122026 70-73 65-75 Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
     private final Pose readyFirstSpikePickupPose = new Pose(92, 36.25, Math.toRadians(0));
     //    private final Pose readyFirstHomePickupPose = new Pose(120, 12.25, Math.toRadians(0));
     private final Pose readyFirstHomePickupPose = new Pose(115, 8.25, Math.toRadians(0));//129, 22.25
@@ -805,6 +805,8 @@ public class  AAARed12farTurretFIRSTSPIKETwoHumanPlayers extends LinearOpMode {
                 startShooterIdle();//add idle speed 03122026
                 robot.axonTurretArmL.setTargetRotation(turretshootangle);
                 robot.axonTurretArmR.setTargetRotation(turretshootangle);
+//        axon.setTargetRotation(90);    // Move to 90 degrees absolute
+//        axon.changeTargetRotation(45); // Move 45 degrees from current position
                 follower.followPath(driveStartShoot, 0.6, true);
                 setPathState(PathState.DRIVE_TO_SHOOT_WAIT);
                 break;
@@ -832,6 +834,11 @@ public class  AAARed12farTurretFIRSTSPIKETwoHumanPlayers extends LinearOpMode {
             case FIRST_SPIKE_PICKUP:
                 if (pathTimer.getElapsedTimeSeconds() < 1.4) {
                     autoIntake();
+                    robot.axonTurretArmL.setTargetRotation(turretshootangle+2);
+                    robot.axonTurretArmR.setTargetRotation(turretshootangle+2);
+//                    robot.axonTurretArmL.changeTargetRotation(2);
+//                    robot.axonTurretArmR.changeTargetRotation(2);
+
                 } else {
                     follower.followPath(driveFirstSpikePickupShoot);
                     stopShooter();
@@ -956,8 +963,8 @@ public class  AAARed12farTurretFIRSTSPIKETwoHumanPlayers extends LinearOpMode {
                 if (autoShootState == AutoShootState.DONE) {
                     follower.followPath(driveOffline, 0.6, true);
                     isShooterAtSpeed = false;
-                    robot.axonTurretArmL.setTargetRotation(turretshootangle);
-                    robot.axonTurretArmR.setTargetRotation(turretshootangle);
+                    robot.axonTurretArmL.setTargetRotation(0);
+                    robot.axonTurretArmR.setTargetRotation(0);
                     setPathState(PathState.DRIVE_OFFLINE);
                 }
                 break;
