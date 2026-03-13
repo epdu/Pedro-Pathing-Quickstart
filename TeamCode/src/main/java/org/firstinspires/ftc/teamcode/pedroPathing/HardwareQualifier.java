@@ -147,11 +147,11 @@ public class HardwareQualifier {
         axonTurretArmL.setRtp(rtp);
         axonTurretArmR.setMaxPower(0.5);
         axonTurretArmR.setRtp(rtp);
-        axonTurretArmL.setPidCoeffs(0.01,0.000, 0.00044);//  0.02   0.0025
-        axonTurretArmR.setPidCoeffs(0.01,0.000, 0.00044);//good for no load
+//        axonTurretArmL.setPidCoeffs(0.00,0.000, 0.0001);//  0.02   0.0025
+//        axonTurretArmR.setPidCoeffs(0.00,0.000, 0.0001);//good for no load
 
-//        axonTurretArmL.setPidCoeffs(0.01,0.000, 0.00044);//  0.02   0.0025
-//        axonTurretArmR.setPidCoeffs(0.01,0.000, 0.00044);//good for no load
+        axonTurretArmL.setPidCoeffs(0.01,0.000, 0.00044);//  0.01,0.000, 0.00044
+        axonTurretArmR.setPidCoeffs(0.01,0.000, 0.00044);//good for no load
 //        axonTurretArmL.setPidCoeffs(0.0079, 0.00000, 0.0008); //good for no load
 
 ///////////////////////////////////////CRServo///////////////////////////////////////

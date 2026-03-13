@@ -5,8 +5,6 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.ftc.localization.constants.PinpointConstants;
-import com.pedropathing.ftc.localization.localizers.PinpointLocalizer;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -14,11 +12,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-
 //import com.qualcomm.robotcore.hardware.Gamepad;
 //import com.qualcomm.robotcore.hardware.HardwareMap;
 //import com.qualcomm.robotcore.hardware.CRServoImplEx;
@@ -186,7 +182,7 @@ public class TeleOpChampionship extends LinearOpMode {
 //        Constants.driveConstants.setUseBrakeModeInTeleOp(true);
 //        follower = Constants.createFollower(hardwareMap);
         Pose startPose = new Pose(70, 70, 0);  // 或其他起始坐标
-        //auto off line 112, 92.25
+        //auto off line near 112, 92.25  far 104, 12.25,
 
         follower.setStartingPose(startPose == null ? new Pose() : startPose);
         follower.update();
@@ -243,8 +239,9 @@ public class TeleOpChampionship extends LinearOpMode {
             handlePositionReset();
             turretAngle = getPosition();
             turretupdate();
-//            robot.axonTurretArmL.update();
-//            robot.axonTurretArmR.update();
+            /// ///////angle need these， not power
+            robot.axonTurretArmL.update();
+            robot.axonTurretArmR.update();
 
 
             telemetry.update();
@@ -278,9 +275,12 @@ public class TeleOpChampionship extends LinearOpMode {
     private void turretupdate() {
 
         if (gamepad1.dpad_up) {   // (dpadUpHandler.wasPressed())
-
+//            robot.axonTurretArmL.setTargetRotation(45);
+//            robot.axonTurretArmR.setTargetRotation(45);
+            robot.axonTurretArmL.setTargetRotation(Math.toDegrees(turretSetpoint-getPosition()));
+            robot.axonTurretArmR.setTargetRotation(Math.toDegrees(turretSetpoint-getPosition()));
             turretSetpoint = findPosition();
-            telemetry.addData("turretSetpoint ", Math.toDegrees(turretSetpoint));
+            telemetry.addData(" (dpadUpHandler.wasPressed()) turretSetpoint  ", Math.toDegrees(turretSetpoint));
             delayTimer.reset();
             while (delayTimer.milliseconds() < 300 && opModeIsActive()) {
                 // Other tasks can be processed here
@@ -289,25 +289,38 @@ public class TeleOpChampionship extends LinearOpMode {
             turretSetpoint = 0.0;
 
         }
+/// ///////////by power/////////////////////
+                setTurretPosition(turretSetpoint);
+        telemetry.addData("turretSetpoint", Math.toDegrees( turretSetpoint) );
+        telemetry.addData("Math.toDegrees( pos-getPosition())", Math.toDegrees( turretSetpoint-getPosition()) );
 /// ///////////by angle/////////////////////
-
+//        robot.axonTurretArmL.setTargetRotation(45);
+//        robot.axonTurretArmR.setTargetRotation(45);
+//        robot.axonTurretArmL.setTargetRotation(Math.toDegrees(pos-getPosition()));
+//        robot.axonTurretArmR.setTargetRotation(Math.toDegrees(pos-getPosition()));
+//        telemetry.addData("setPidCoeffs", robot.axonTurretArmR.setPidCoeffs.dF());
+//setPidCoeffs(0.00,0.000, 0.0001)
 //        axon.setTargetRotation(90);    // Move to 90 degrees absolute
 //        axon.changeTargetRotation(45); // Move 45 degrees from current position
-//    robot.axonTurretArmL.changeTargetRotation(Math.toDegrees(turretSetpoint-turretAngle));
-//    robot.axonTurretArmR.changeTargetRotation(Math.toDegrees(turretSetpoint-turretAngle));
 //    robot.axonTurretArmL.changeTargetRotation(45);
 //    robot.axonTurretArmR.changeTargetRotation(45);
-        setTurretPosition(turretSetpoint);
 //        telemetry.addData("Math.toDegrees(turretSetpoint-turretAngle)", Math.toDegrees(turretSetpoint-turretAngle));
     }
     public void setTurretPosition(double pos) {
 //        turretPower = - pidfController.calculate(getPosition(), pos);
         turretPower =  + pidfController.calculate(getPosition(), pos);
 
-        robot.servoTurretArmL.setPower(turretPower);
-        robot.servoTurretArmR.setPower(turretPower);
-//    robot.axonTurretArmL.setPower(turretPower);
-//    robot.axonTurretArmR.setPower(turretPower);
+//        robot.servoTurretArmL.setPower(turretPower);
+//        robot.servoTurretArmR.setPower(turretPower);
+        telemetry.addData("Math.toDegrees(getPosition()) ", Math.toDegrees(getPosition()) );
+        telemetry.addData("Math.toDegrees(turretSetpoint) ", Math.toDegrees(turretSetpoint));
+//        robot.axonTurretArmL.setTargetRotation(Math.toDegrees(pos-getPosition()));
+//        robot.axonTurretArmR.setTargetRotation(Math.toDegrees(pos-getPosition()));
+//        robot.axonTurretArmL.setTargetRotation(45);
+//        robot.axonTurretArmR.setTargetRotation(45);
+//        robot.axonTurretArmL.changeTargetRotation(Math.toDegrees( pos-getPosition()));
+//        robot.axonTurretArmR.changeTargetRotation(Math.toDegrees(pos-getPosition()));
+
 
 //        setTurretPower(turretPower);
     }
@@ -501,7 +514,9 @@ public class TeleOpChampionship extends LinearOpMode {
             fireRequested = false;
             shooterIsOn= false; //2
         }
-
+        if (gamepad1.a) {
+            stopintaleandShooter();
+        }
         // 如果射击电机未运行，确保重置状态
         if (!gamepad1.right_bumper && !robot.MasterShooterMotorL.isBusy()) {
             isShooterAtSpeed = false;
@@ -774,8 +789,8 @@ public class TeleOpChampionship extends LinearOpMode {
 
 //        telemetry.addLine("=== SHOOTER PIDF TUNING ===");
         telemetry.addData("target SPEED", "%.0f", ShooterPIDFConfig.targetSPEED);
-        telemetry.addData("target SPEED *1.67 ", "%.0f", ShooterPIDFConfig.targetSPEED*1.67);
-        telemetry.addData("currentVelocityLeft", currentVelocityL);
+//        telemetry.addData("target SPEED *1.67 ", "%.0f", ShooterPIDFConfig.targetSPEED*1.67);
+//        telemetry.addData("currentVelocityLeft", currentVelocityL);
         telemetry.addData("currentVelocityRight", currentVelocityR);
 //        telemetry.addData("shooterL", shooterL);
 //        telemetry.addData("shooterR", shooterR);
@@ -790,13 +805,13 @@ public class TeleOpChampionship extends LinearOpMode {
 //        telemetry.addData("At Speed?", isShooterAtSpeed ? "YES" : "NO");
 //        telemetry.addData("Power", "%.2f", shooterPower);
 //        // PIDF 参数值
-        telemetry.addLine("=== PIDF PARAMETERS ===");
-        telemetry.addData("kP", "%.4f", ShooterPIDFConfig.kP);
-//        telemetry.addData("kI", "%.4f", ShooterPIDFConfig.kI);
-        telemetry.addData("kD", "%.4f", ShooterPIDFConfig.kD);
-        telemetry.addData("kF", "%.4f", ShooterPIDFConfig.kF);
-        telemetry.addData("Tolerance", "%.0f RPM", ShooterPIDFConfig.tolerance);
-        telemetry.addData("PIDFTimer.milliseconds", "%.0f milliseconds", PIDFTimer.milliseconds());
+//        telemetry.addLine("=== PIDF PARAMETERS ===");
+//        telemetry.addData("kP", "%.4f", ShooterPIDFConfig.kP);
+////        telemetry.addData("kI", "%.4f", ShooterPIDFConfig.kI);
+//        telemetry.addData("kD", "%.4f", ShooterPIDFConfig.kD);
+//        telemetry.addData("kF", "%.4f", ShooterPIDFConfig.kF);
+//        telemetry.addData("Tolerance", "%.0f RPM", ShooterPIDFConfig.tolerance);
+//        telemetry.addData("PIDFTimer.milliseconds", "%.0f milliseconds", PIDFTimer.milliseconds());
 //
 //        // 从电机状态
 //        telemetry.addLine("=== SLAVE MOTOR ===");
@@ -814,6 +829,20 @@ public class TeleOpChampionship extends LinearOpMode {
      * 停止射击电机
      */
     private void stopShooter() {
+        startShooterIdle();
+//        robot.MasterShooterMotorL.setVelocity(0);
+//        robot.SlaveShooterMotorR.setPower(0);
+        robot.IntakeMotorL.setPower(0);
+        robot. IntakeMotorR.setPower(0);
+        intakeIsOn = false;
+        isShooterAtSpeed = false;
+        fireRequested = false;
+        shooterIsOn= false;
+        shooterIsOnSpeend= false;
+    }
+
+    private void stopintaleandShooter() {
+//        startShooterIdle();
         robot.MasterShooterMotorL.setVelocity(0);
         robot.SlaveShooterMotorR.setPower(0);
         robot.IntakeMotorL.setPower(0);
@@ -824,14 +853,12 @@ public class TeleOpChampionship extends LinearOpMode {
         shooterIsOn= false;
         shooterIsOnSpeend= false;
     }
-
-
     ///  ///////////
 
     private void stopIntake() {
-        telemetry.addData("shooterIsOn", shooterIsOn);
-        telemetry.addData("intakeIsOn", intakeIsOn);
-        telemetry.addData("shooterIsOnSpeend", shooterIsOnSpeend);
+//        telemetry.addData("shooterIsOn", shooterIsOn);
+//        telemetry.addData("intakeIsOn", intakeIsOn);
+//        telemetry.addData("shooterIsOnSpeend", shooterIsOnSpeend);
 
         robot.IntakeMotorL.setPower(intakePowerOff);
         robot.IntakeMotorR.setPower(intakePowerOff);
@@ -843,16 +870,16 @@ public class TeleOpChampionship extends LinearOpMode {
         robot.MasterShooterMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.SlaveShooterMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        if ((robot.MasterShooterMotorL instanceof DcMotorEx) && (robot.MasterShooterMotorL.getVelocity()< ShooterPIDFConfig.targetSPEED)) {
-            // 直接使用setVelocity，它会使用已配置的PIDF
-            startShooterIdle();
-            shooterIsOn=true;//3
-            telemetry.addData("Shooter status 3", "3");
-        } else if ((robot.MasterShooterMotorL instanceof DcMotorEx) && (robot.MasterShooterMotorL.getVelocity()> ShooterPIDFConfig.targetSPEED*1.4)) {
-            // 直接使用setVelocity，它会使用已配置的PIDF
-            stopShooter();
-        }
+        startShooterIdle();
+//        if ((robot.MasterShooterMotorL instanceof DcMotorEx) && (robot.MasterShooterMotorL.getVelocity()< ShooterPIDFConfig.targetSPEED)) {
+//            // 直接使用setVelocity，它会使用已配置的PIDF
+//            startShooterIdle();
+//            shooterIsOn=true;//3
+//            telemetry.addData("Shooter status 3", "3");
+//        } else if ((robot.MasterShooterMotorL instanceof DcMotorEx) && (robot.MasterShooterMotorL.getVelocity()> ShooterPIDFConfig.targetSPEED*1.4)) {
+//            // 直接使用setVelocity，它会使用已配置的PIDF
+//            stopShooter();
+//        }
         intakeIsOn=false;
         // Non-blocking delay to prevent rapid mode switching
         telemetry.addData("intakePowerOff", intakePowerOff);
