@@ -27,7 +27,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 // 姿态
 // Limelight
 // 位姿
-@Autonomous(name = "AAA RED Near open Gate WITH gate intake twice second spark,third spark withOUT firstspark intake 03092026 V1")
+@Autonomous(name = "AAA RED Near open Gate WITH gate intake twice second spark, might third spark withOUT firstspark intake 03092026 V1")
 //preload , second spark open gate no intake, shoot ,
 // open gate intake
 // third spark
