@@ -254,8 +254,6 @@ public class TeleOpChampionship extends LinearOpMode {
     } //end of run mode
 
     /////////////////////////////////////////////methods/////////////////////////
-    //////////////////////////////////////////////////
-
     private void handlePositionReset() {
         if (gamepad1.back && gamepad1.start) {  // 同时按 back + start 重置
             // 重置到默认起始点
