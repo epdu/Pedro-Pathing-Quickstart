@@ -161,7 +161,7 @@ public class AAARed12nearopengateintakegatetwicewithOUTfirstspike extends Linear
     private final Pose readyFirstSpikePickupPose = new Pose(92, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     private final Pose readyOpenGatePickupPose = new Pose(124.5,67.5,Math.toRadians(0)); // 63--64  PGP Middle (Second Set) of Artifacts from the Spike Mark.
     /// //////////////////////////////////
-    private final Pose readyOpenGateForPickPickupPose = new Pose(123.5,64.5,Math.toRadians(18));
+    private final Pose readyOpenGateForPickPickupPose = new Pose(123.5,66,Math.toRadians(18));
     private final Pose thirdSpikePickupPose = new Pose(127, 86.25, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
     private final Pose secondSpikePickupPose = new Pose(133, 62.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose secondSpikePickupCP = new Pose(72, 76, Math.toRadians(0));
@@ -172,8 +172,8 @@ public class AAARed12nearopengateintakegatetwicewithOUTfirstspike extends Linear
     private final Pose firstSpikePickupPose = new Pose(134, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     private final Pose openGatePickupPose = new Pose(133, 69, Math.toRadians(0));  //63--61
     /// /////////////////////////////////////////
-    private final Pose openGateForPickPickupPose = new Pose(129.0, 64.5, Math.toRadians(18));// x 130-129.5--129.2 accident closed the gate y 64--64.5//
-    //for open gate position, adjust here
+    private final Pose openGateForPickPickupPose = new Pose(129.0, 66, Math.toRadians(18));// x 130-129.5--129.2 accident closed the gate y 64--64.5//
+    //for open gate position, adjust here//64.5
     //increased 2 inches Winston Z: 2/18/26
     private final Pose openGateForPickPickupPoseAdjust = new Pose(130,62,Math.toRadians(26));
 

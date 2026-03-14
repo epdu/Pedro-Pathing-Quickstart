@@ -40,12 +40,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 
 @Config  // 添加这个注解，让 Dashboard 可以调整参数
-@TeleOp(name = "AAA RED Pennsylvania FTC Championship V1 02192026")
+@TeleOp(name = "AAA BLUE first match Pennsylvania FTC Championship V1 02192026")
 // working on turret testing
 //Y shooter idle of 0.6 target speed 03122026
 //From LEGION
 // working on turret, and hood check speed fixed
-public class TeleOpChampionshipRed extends LinearOpMode {
+public class TeleOpChampionshipBlue extends LinearOpMode {
     private static double Med_SHOOTER_TARGET_SPEED = 1100;  // 1100 is good for near shoot
     private static final double Far_SHOOTER_TARGET_Velocity = 1400;
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -160,8 +160,8 @@ public class TeleOpChampionshipRed extends LinearOpMode {
         robot.init(hardwareMap);
         initShooterPIDF();
 //////////////////////////////////////////////Alliance changing here
-//        robot.alliance = Alliance.BLUE;
-        robot.alliance = Alliance.RED;
+        robot.alliance = Alliance.BLUE;
+//        robot.alliance = Alliance.RED;
         follower = Constants.createFollower(hardwareMap);
 //        PinpointConstants localizerConstants = new PinpointConstants();
 //        pinpointLocalizer = new PinpointLocalizer(hardwareMap,localizerConstants);
@@ -171,10 +171,10 @@ public class TeleOpChampionshipRed extends LinearOpMode {
         robot.rightRearMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //        Constants.driveConstants.setUseBrakeModeInTeleOp(true);
 //        follower = Constants.createFollower(hardwareMap);
-        Pose startPose = new Pose(70, 70, 0);  // 或其他起始坐标
+//        Pose startPose = new Pose(70, 70, 0);  // 或其他起始坐标
 //        Pose startPose = new Pose(112, 92.25, 0);//Red near
 //        Pose startPose = new Pose(104, 12.25, 0);//Red far
-//        Pose startPose = new Pose(32, 92.25, 0);//Blue near
+        Pose startPose = new Pose(32, 92.25, 0);//Blue near
 //        Pose startPose = new Pose(40, 12.25, 0);//Blue far
 
         //auto off line near 112, 92.25  far 104, 12.25,//near oor far
