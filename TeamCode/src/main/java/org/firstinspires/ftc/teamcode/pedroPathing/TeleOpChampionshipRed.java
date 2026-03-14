@@ -18,9 +18,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 //import com.qualcomm.robotcore.hardware.Gamepad;
 //import com.qualcomm.robotcore.hardware.HardwareMap;
 //import com.qualcomm.robotcore.hardware.CRServoImplEx;
-//import com.seattlesolvers.solverslib.command.InstantCommand;
-////import com.seattlesolvers.solverslib.command.Robot;
-//import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 //import com.arcrobotics.ftclib.controller.PIDFController;
 //import com.arcrobotics.ftclib.hardware.motors.Motor;
 //import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -40,32 +37,18 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 //import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 //import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 //import com.qualcomm.robotcore.util.ElapsedTime;
-//import com.seattlesolvers.solverslib.command.CommandOpMode;
-//import com.seattlesolvers.solverslib.command.CommandScheduler;
-//import com.seattlesolvers.solverslib.command.ConditionalCommand;
-//import com.seattlesolvers.solverslib.command.InstantCommand;
-//import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
-//import com.seattlesolvers.solverslib.command.UninterruptibleCommand;
-//import com.seattlesolvers.solverslib.gamepad.GamepadEx;
-//import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
-//import com.seattlesolvers.solverslib.gamepad.SlewRateLimiter;
-//import com.seattlesolvers.solverslib.geometry.Pose2d;
-//import com.seattlesolvers.solverslib.geometry.Rotation2d;
-//import com.seattlesolvers.solverslib.geometry.Translation2d;
-//import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
-//import com.seattlesolvers.solverslib.kinematics.wpilibkinematics.ChassisSpeeds;
+
 
 @Config  // 添加这个注解，让 Dashboard 可以调整参数
-@TeleOp(name = "AAA Pennsylvania FTC Championship V1 02192026")
+@TeleOp(name = "AAA RED Pennsylvania FTC Championship V1 02192026")
 // working on turret testing
 //Y shooter idle of 0.6 target speed 03122026
 //From LEGION
 // working on turret, and hood check speed fixed
-public class TeleOpChampionship extends LinearOpMode {
-    // 已有的硬件和常量定义...
+public class TeleOpChampionshipRed extends LinearOpMode {
     /////////////////////////////////pretty goood for close shoot /////////////////////////// 1300
     private static final double Med_SHOOTER_TARGET_SPEED = 1100;  // from 1200-1150 1666 still big 1866 kind of good for far， but a little bit too big
-    private static final double flyWheelIdleSpeed=Med_SHOOTER_TARGET_SPEED*0.6;
+//    private static final double flyWheelIdleSpeed=Med_SHOOTER_TARGET_SPEED*0.6;
     public float DriveTrains_ReducePOWER=1.0f;
     public float DriveTrains_smoothTurn=1.0f;
     HardwareQualifier robot = new HardwareQualifier();
@@ -172,6 +155,7 @@ public class TeleOpChampionship extends LinearOpMode {
     public void runOpMode() {
         robot.init(hardwareMap);
         initShooterPIDF();
+//////////////////////////////////////////////Alliance changing here
 //        robot.alliance = Alliance.BLUE;
         robot.alliance = Alliance.RED;
         follower = Constants.createFollower(hardwareMap);
@@ -184,7 +168,9 @@ public class TeleOpChampionship extends LinearOpMode {
 //        Constants.driveConstants.setUseBrakeModeInTeleOp(true);
 //        follower = Constants.createFollower(hardwareMap);
         Pose startPose = new Pose(70, 70, 0);  // 或其他起始坐标
-        //auto off line near 112, 92.25  far 104, 12.25,
+//        Pose startPose = new Pose(112, 92.25, 0);//near
+//        Pose startPose = new Pose(104, 12.25, 0);//far
+        //auto off line near 112, 92.25  far 104, 12.25,//near oor far
 
         follower.setStartingPose(startPose == null ? new Pose() : startPose);
         follower.update();
@@ -555,8 +541,9 @@ public class TeleOpChampionship extends LinearOpMode {
         in the feedforward-only section, and then we tune the PID controller following the same procedure as in the feedback-only section.
          Notice that PID portion of the controller is much easier to tune “on top of” an accurate feedforward.
         */
-        public static double targetSPEED =flyWheelIdleSpeed;
-//        public static double targetSPEED =Med_SHOOTER_TARGET_SPEED;
+        public static double targetSPEED =Med_SHOOTER_TARGET_SPEED;
+        public static double flyWheelIdleSpeed =Med_SHOOTER_TARGET_SPEED*0.6;
+
         public static double tolerance = 0;
         public static double kF_STEP = 0.05;   // 每次按键增加/减少的量
         public static double kP_STEP = 0.5;   // 每次按键增加/减少的量
@@ -612,11 +599,9 @@ public class TeleOpChampionship extends LinearOpMode {
         //  03072026
         //  03072026
         if ((robot.MasterShooterMotorL instanceof DcMotorEx) && (robot.SlaveShooterMotorR instanceof DcMotorEx) ) {
-            robot.shooterL.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEED));
-            robot.shooterR.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEED));
-
+            robot.shooterL.setVelocity(Math.abs(ShooterPIDFConfig.flyWheelIdleSpeed));
+            robot.shooterR.setVelocity(Math.abs(ShooterPIDFConfig.flyWheelIdleSpeed));
         }
-
     }
 
     private void startShooter() {
@@ -626,13 +611,12 @@ public class TeleOpChampionship extends LinearOpMode {
 //        robot.axonTurretArmR.setTargetRotation(0);
         //  03072026
  if ((robot.MasterShooterMotorL instanceof DcMotorEx) && (robot.SlaveShooterMotorR instanceof DcMotorEx) ) {
-            robot.shooterL.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEED)*1.67);
-            robot.shooterR.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEED)*1.67);
+            robot.shooterL.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEED));
+            robot.shooterR.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEED));
             shooterIsOn=true; //4
             shooterIsOnSpeend=true;
      telemetry.addData("Shooter status 4", "4");
         }
-
     }
     /// ///////////////////////////////////////////////////////////////////////////////
     /// /// ///////////need fix
@@ -695,7 +679,7 @@ public class TeleOpChampionship extends LinearOpMode {
     private void checkShooterVelocity() {
 
         double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());
-        double targetVelocity = ShooterPIDFConfig.targetSPEED*1.67;
+        double targetVelocity = ShooterPIDFConfig.targetSPEED;
 //        double targetVelocity = ShooterPIDFConfig.targetSPEED;
 //        double tolerance = ShooterPIDFConfig.tolerance;
 
@@ -968,13 +952,6 @@ public class TeleOpChampionship extends LinearOpMode {
         }
     }
 
-    /**
-     * 设置射击电机PIDF系数
-     */
-//    private void setShooterPIDFCoefficients() {
-//        PIDFCoefficients pidf = new PIDFCoefficients(SHOOTER_P, SHOOTER_I, SHOOTER_D, SHOOTER_F);
-//        robot.MasterShooterMotorL.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
-//    }
 
     private double calculateOptimalSlavePower(double masterPower) {
 
@@ -1002,21 +979,6 @@ public class TeleOpChampionship extends LinearOpMode {
     public void updateDrivetrain_FieldCentric() {
         /// ////////////follower issue/////////
         /// ////////////////03102026 switch left and right reverse for no reason， after auto everything reversed。
-//        leftRearMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-//        leftFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-//        robot.rightRearMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-//        robot.rightFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-//        /// ////////////////03102026 switch left and right reverse for no reason， after auto everything reversed。
-//
-//        robot.leftFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        robot.rightFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        robot.leftRearMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        robot.rightRearMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//
-//        robot.leftFrontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        robot.rightFrontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        robot.leftRearMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        robot.rightRearMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         double y = -gamepad1.left_stick_y * (1); // Remember, Y stick value is reversed
         double x = +gamepad1.left_stick_x * (1);
@@ -1054,15 +1016,7 @@ public class TeleOpChampionship extends LinearOpMode {
         robot.rightRearMotor.setPower(backRightPower * DriveTrains_ReducePOWER);
     }
 
-
-
-
-
-
-
-
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
 //    public void updateDrivetrain_FieldCentric() {
 //        double y = gamepad1.left_stick_y * (1); // Remember, Y stick value is reversed
 //        double x = -gamepad1.left_stick_x * (1);
@@ -1148,20 +1102,6 @@ public class TeleOpChampionship extends LinearOpMode {
             gamepad1.rumble(300);
         }
     }
-    //    private void handleIMUReset() {
-//        // 使用 gamepad1.start 键重设IMU
-//        if (gamepad1.start) {
-//            robot.imu.resetYaw();
-//            telemetry.addData("IMU", "Yaw Axis Reset Complete");
-//            telemetry.update();
-//            // 短暂震动反馈（如果有gamepad震动功能）
-////            if (gamepad1.getGamepadId() == 1) {
-////                gamepad1.rumble(300); // 震动300ms
-////            }
-//            // 防抖延迟
-//            sleep(300);
-//        }
-//    }
 
 //Begin Definition and Initialization of steptestservo()
 // Begin debugging with a step increment of 0.05  SGC - servoGamepadControl
