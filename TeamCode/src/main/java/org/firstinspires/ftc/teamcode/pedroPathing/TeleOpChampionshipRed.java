@@ -258,7 +258,6 @@ public class TeleOpChampionshipRed extends LinearOpMode {
             robot.axonTurretArmL.update();
             robot.axonTurretArmR.update();
 
-
             telemetry.update();
             sleep(20);
 
