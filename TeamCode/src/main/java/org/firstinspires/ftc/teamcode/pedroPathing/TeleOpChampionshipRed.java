@@ -46,9 +46,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 //From LEGION
 // working on turret, and hood check speed fixed
 public class TeleOpChampionshipRed extends LinearOpMode {
-    /////////////////////////////////pretty goood for close shoot /////////////////////////// 1300
-    private static final double Med_SHOOTER_TARGET_SPEED = 1100;  // from 1200-1150 1666 still big 1866 kind of good for far， but a little bit too big
-//    private static final double flyWheelIdleSpeed=Med_SHOOTER_TARGET_SPEED*0.6;
+    private static final double Med_SHOOTER_TARGET_SPEED = 1100;  // 1100 is good for near shoot
+//////////////////////////////////////////////////////////////////////////////////////////////////
     public float DriveTrains_ReducePOWER=1.0f;
     public float DriveTrains_smoothTurn=1.0f;
     HardwareQualifier robot = new HardwareQualifier();
@@ -90,6 +89,7 @@ public class TeleOpChampionshipRed extends LinearOpMode {
     private PIDFController pidfController;
     private Pose robotPose;
     private Pose  currentPose;
+    private Methods methods;
     private RTPAxon.Direction direction;
 //    private final Gamepad gamepad1;
 //    public static final double GEAR_RATIO = .5;
@@ -223,6 +223,9 @@ public class TeleOpChampionshipRed extends LinearOpMode {
 //            updateTuningPIDF();
 //            updateAutoAim();
             dpadUpHandler.update(gamepad1.dpad_up);
+            if (gamepad1.bWasPressed()){
+                methods.manualRelocalize(follower);
+            }
 //            rightTriggerHandler.update(gamepad1.right_trigger);
             handlePositionReset();
             turretAngle = getPosition();
