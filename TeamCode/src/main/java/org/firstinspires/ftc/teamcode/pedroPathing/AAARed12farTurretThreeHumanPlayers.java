@@ -24,7 +24,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 // Limelight
 // 位姿
 
-@Autonomous(name = "AAA RED Far Twelve HumanPlayers  HumanPlayers HumanPlayers V1 Red9short")
+@Autonomous(name = "AAA RED Far NO SPIKEMARK. three human players")
 //three preload and take home twice and one first role, parking
 
 public class AAARed12farTurretThreeHumanPlayers extends LinearOpMode {
