@@ -169,12 +169,13 @@ public class HardwareQualifier {
 
         HoodArmL = hwMap.get(ServoImplEx.class, "HoodArmL");//expansion  hub port 3
         HoodArmL.setPwmRange(new PwmControl.PwmRange(500, 2500));
-        HoodArmL.setPosition(0.3);
+        HoodArmL.setDirection(Servo.Direction.REVERSE);
+        HoodArmL.setPosition(0.5);
 
         HoodArmR = hwMap.get(ServoImplEx.class, "HoodArmR");//expansion  hub port 5
         HoodArmR.setPwmRange(new PwmControl.PwmRange(500, 2500));
-        HoodArmR.setDirection(Servo.Direction.REVERSE);
-        HoodArmR.setPosition(0.3);
+//        HoodArmR.setDirection(Servo.Direction.REVERSE);
+        HoodArmR.setPosition(0.5);
 
         // HoodArm = hwMap.get(ServoImplEx.class, "HoodArm");//expansion  hub port 4
 //        initializeOArmPosition();

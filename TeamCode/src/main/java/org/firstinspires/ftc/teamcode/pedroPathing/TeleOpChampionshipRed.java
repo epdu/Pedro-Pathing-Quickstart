@@ -46,7 +46,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 //From LEGION
 // working on turret, and hood check speed fixed
 public class TeleOpChampionshipRed extends LinearOpMode {
-    private static final double Med_SHOOTER_TARGET_SPEED = 1100;  // 1100 is good for near shoot
+    private static double Med_SHOOTER_TARGET_SPEED = 1100;  // 1100 is good for near shoot
+    private static final double Far_SHOOTER_TARGET_Velocity = 1400;
 //////////////////////////////////////////////////////////////////////////////////////////////////
     public float DriveTrains_ReducePOWER=1.0f;
     public float DriveTrains_smoothTurn=1.0f;
@@ -58,6 +59,9 @@ public class TeleOpChampionshipRed extends LinearOpMode {
     public String fieldOrRobotCentric = "field";
     private double powerMultiplier = 0.9;
     boolean move = false;
+    private static boolean far = false;
+    private static boolean near = false;
+
     boolean PIDFTimerStart=true;
     int controlMode = 1;
     public float  intakePowerIntake=0.95f;//push blocker too much from 99-90
@@ -168,8 +172,11 @@ public class TeleOpChampionshipRed extends LinearOpMode {
 //        Constants.driveConstants.setUseBrakeModeInTeleOp(true);
 //        follower = Constants.createFollower(hardwareMap);
         Pose startPose = new Pose(70, 70, 0);  // 或其他起始坐标
-//        Pose startPose = new Pose(112, 92.25, 0);//near
-//        Pose startPose = new Pose(104, 12.25, 0);//far
+//        Pose startPose = new Pose(112, 92.25, 0);//Red near
+//        Pose startPose = new Pose(104, 12.25, 0);//Red far
+//        Pose startPose = new Pose(32, 92.25, 0);//Blue near
+//        Pose startPose = new Pose(40, 12.25, 0);//Blue far
+
         //auto off line near 112, 92.25  far 104, 12.25,//near oor far
 
         follower.setStartingPose(startPose == null ? new Pose() : startPose);
@@ -214,6 +221,13 @@ public class TeleOpChampionshipRed extends LinearOpMode {
             handleIMUReset();
 //            updateDrivetrain_RobotCentric();
             updateIntake();
+            if (gamepad2.xWasPressed()){
+                far = true;;
+            }
+            if (gamepad2.bWasPressed()){
+                near = true;
+            }
+
             updateShooter();
             updateAllTelemetry();
             checkShooterVelocity();
@@ -223,9 +237,19 @@ public class TeleOpChampionshipRed extends LinearOpMode {
 //            updateTuningPIDF();
 //            updateAutoAim();
             dpadUpHandler.update(gamepad1.dpad_up);
-            if (gamepad1.bWasPressed()){
+            /////////////////////////////////
+            if (gamepad1.xWasPressed()){
                 methods.manualRelocalize(follower);
             }
+            if (gamepad2.dpad_up){
+                robot.HoodArmL.setPosition(0.4);
+                robot.HoodArmR.setPosition(0.4);
+            }
+            if (gamepad2.dpad_down){
+                robot.HoodArmL.setPosition(0.6);
+                robot.HoodArmR.setPosition(0.6);
+            }
+            /// ////////////////////////////
 //            rightTriggerHandler.update(gamepad1.right_trigger);
             handlePositionReset();
             turretAngle = getPosition();
@@ -544,8 +568,11 @@ public class TeleOpChampionshipRed extends LinearOpMode {
         in the feedforward-only section, and then we tune the PID controller following the same procedure as in the feedback-only section.
          Notice that PID portion of the controller is much easier to tune “on top of” an accurate feedforward.
         */
-        public static double targetSPEED =Med_SHOOTER_TARGET_SPEED;
-        public static double flyWheelIdleSpeed =Med_SHOOTER_TARGET_SPEED*0.6;
+
+            public static double targetSPEED = Med_SHOOTER_TARGET_SPEED;
+            public static double flyWheelIdleSpeed = Med_SHOOTER_TARGET_SPEED * 0.6;
+            public static double targetSPEEDfar = Far_SHOOTER_TARGET_Velocity;
+            public static double flyWheelIdleSpeedfar = Far_SHOOTER_TARGET_Velocity * 0.6;
 
         public static double tolerance = 0;
         public static double kF_STEP = 0.05;   // 每次按键增加/减少的量
@@ -593,7 +620,18 @@ public class TeleOpChampionshipRed extends LinearOpMode {
     }
 
     ///  //////////////////////////////////////////////////////////////////////////////////////////
-
+    private void startShooterIdlefar() {
+        robot.IntakeMotorL.setPower(0);
+        robot.IntakeMotorR.setPower(0);
+        // robot.axonTurretArmL.setTargetRotation(0);
+        // robot.axonTurretArmR.setTargetRotation(0);
+        //  03072026
+        //  03072026
+        if ((robot.MasterShooterMotorL instanceof DcMotorEx) && (robot.SlaveShooterMotorR instanceof DcMotorEx) ) {
+            robot.shooterL.setVelocity(Math.abs(ShooterPIDFConfig.flyWheelIdleSpeedfar));
+            robot.shooterR.setVelocity(Math.abs(ShooterPIDFConfig.flyWheelIdleSpeedfar));
+        }
+    }
     private void startShooterIdle() {
         robot.IntakeMotorL.setPower(0);
         robot.IntakeMotorR.setPower(0);
@@ -619,6 +657,20 @@ public class TeleOpChampionshipRed extends LinearOpMode {
             shooterIsOn=true; //4
             shooterIsOnSpeend=true;
      telemetry.addData("Shooter status 4", "4");
+        }
+    }
+    private void startShooterfar() {
+        robot.IntakeMotorL.setPower(0);
+        robot.IntakeMotorR.setPower(0);
+//        robot.axonTurretArmL.setTargetRotation(0);
+//        robot.axonTurretArmR.setTargetRotation(0);
+        //  03072026
+        if ((robot.MasterShooterMotorL instanceof DcMotorEx) && (robot.SlaveShooterMotorR instanceof DcMotorEx) ) {
+            robot.shooterL.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEEDfar));
+            robot.shooterR.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEEDfar));
+            shooterIsOn=true; //4
+            shooterIsOnSpeend=true;
+            telemetry.addData("Shooter status 4", "4");
         }
     }
     /// ///////////////////////////////////////////////////////////////////////////////
@@ -828,7 +880,13 @@ public class TeleOpChampionshipRed extends LinearOpMode {
      * 停止射击电机
      */
     private void stopShooter() {
-        startShooterIdle();
+        if(far){
+            startShooterIdlefar();
+        }
+        if(near){
+            startShooterIdle();
+        }
+
 //        robot.MasterShooterMotorL.setVelocity(0);
 //        robot.SlaveShooterMotorR.setPower(0);
         robot.IntakeMotorL.setPower(0);
