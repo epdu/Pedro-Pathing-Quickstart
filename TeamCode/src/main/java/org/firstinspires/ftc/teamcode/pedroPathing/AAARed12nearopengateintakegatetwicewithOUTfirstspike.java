@@ -956,7 +956,6 @@ public class AAARed12nearopengateintakegatetwicewithOUTfirstspike extends Linear
                 }
                 break;
 
-
 //////////////////////////////////////////////////////
 
         }
