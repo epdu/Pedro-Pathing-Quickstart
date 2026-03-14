@@ -25,7 +25,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-@Autonomous(name = "AAA RED Near open Gate NO Gate intake all spikes TWELVE park 03092026 V1")
+@Autonomous(name = "AAA RED Near. open Gate. NO Gate intake. all spikes TWELVE park 03092026 V1")
 // anyupdate of auto start with this one
 // change name style to be FirstSpike,SecondSpike,ThirdSpike backup 03032026
 // intake second role with open gate , park at  136, 36.25 with three loaded
