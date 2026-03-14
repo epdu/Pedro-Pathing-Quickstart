@@ -94,8 +94,10 @@ public class TeleOpChampionship extends LinearOpMode {
     public static final double SERVO_STEP=-0.005;
     public static final double blockageblockTele=0.1; // from .18 -0.1 for tele
     public static final double blockagereleaseTele=0.24;
+
     ///////////////turret///////////
     private boolean previousDpadUp = false;
+    private double changeTargetRotationAngle;
 
     private double turretAngle = Math.PI / 2.0;
     private double turretSetpoint = 0.0;
@@ -252,8 +254,6 @@ public class TeleOpChampionship extends LinearOpMode {
     } //end of run mode
 
     /////////////////////////////////////////////methods/////////////////////////
-    //////////////////////////////////////////////////
-
     private void handlePositionReset() {
         if (gamepad1.back && gamepad1.start) {  // 同时按 back + start 重置
             // 重置到默认起始点
@@ -274,23 +274,32 @@ public class TeleOpChampionship extends LinearOpMode {
 
     private void turretupdate() {
 
-        if (gamepad1.dpad_up) {   // (dpadUpHandler.wasPressed())
-//            robot.axonTurretArmL.setTargetRotation(45);
-//            robot.axonTurretArmR.setTargetRotation(45);
-            robot.axonTurretArmL.setTargetRotation(Math.toDegrees(turretSetpoint-getPosition()));
-            robot.axonTurretArmR.setTargetRotation(Math.toDegrees(turretSetpoint-getPosition()));
+        if (dpadUpHandler.wasPressed()) {   // (dpadUpHandler.wasPressed())
             turretSetpoint = findPosition();
+            changeTargetRotationAngle=Math.toDegrees(turretSetpoint-getPosition());
+//                        robot.axonTurretArmL.setTargetRotation(45);
+//            robot.axonTurretArmR.setTargetRotation(45);
+//            robot.axonTurretArmL.setTargetRotation(Math.toDegrees(turretSetpoint-getPosition()));
+//            robot.axonTurretArmR.setTargetRotation(Math.toDegrees(turretSetpoint-getPosition()));
+//            robot.axonTurretArmL.changeTargetRotation(Math.toDegrees(turretSetpoint-getPosition()));
+//            robot.axonTurretArmR.changeTargetRotation(Math.toDegrees(turretSetpoint-getPosition()));
+
             telemetry.addData(" (dpadUpHandler.wasPressed()) turretSetpoint  ", Math.toDegrees(turretSetpoint));
+            telemetry.addData(" (dpadUpHandler.wasPressed()) getPosition()  ", Math.toDegrees(getPosition()));
+            telemetry.addData(" (dpadUpHandler.wasPressed()) getHeading())  ", Math.toDegrees(currentPose.getHeading()));
             delayTimer.reset();
             while (delayTimer.milliseconds() < 300 && opModeIsActive()) {
                 // Other tasks can be processed here
             } // 防止快速连击导致模式快速切换
         } else  { //if(gamepad1.dpad_down)
-            turretSetpoint = 0.0;
+//            turretSetpoint = 0.0;
+            changeTargetRotationAngle=0;
 
         }
 /// ///////////by power/////////////////////
                 setTurretPosition(turretSetpoint);
+        robot.axonTurretArmL.changeTargetRotation(changeTargetRotationAngle);
+        robot.axonTurretArmR.changeTargetRotation(changeTargetRotationAngle);
         telemetry.addData("turretSetpoint", Math.toDegrees( turretSetpoint) );
         telemetry.addData("Math.toDegrees( pos-getPosition())", Math.toDegrees( turretSetpoint-getPosition()) );
 /// ///////////by angle/////////////////////
@@ -312,8 +321,11 @@ public class TeleOpChampionship extends LinearOpMode {
 
 //        robot.servoTurretArmL.setPower(turretPower);
 //        robot.servoTurretArmR.setPower(turretPower);
-        telemetry.addData("Math.toDegrees(getPosition()) ", Math.toDegrees(getPosition()) );
+
         telemetry.addData("Math.toDegrees(turretSetpoint) ", Math.toDegrees(turretSetpoint));
+        telemetry.addData("Math.toDegrees(getPosition()) ", Math.toDegrees(getPosition()) );
+        telemetry.addData("Math.toDegrees(currentPose.getHeading()) ", Math.toDegrees(currentPose.getHeading()));
+
 //        robot.axonTurretArmL.setTargetRotation(Math.toDegrees(pos-getPosition()));
 //        robot.axonTurretArmR.setTargetRotation(Math.toDegrees(pos-getPosition()));
 //        robot.axonTurretArmL.setTargetRotation(45);

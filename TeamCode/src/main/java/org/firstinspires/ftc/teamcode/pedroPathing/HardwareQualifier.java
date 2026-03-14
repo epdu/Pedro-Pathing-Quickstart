@@ -229,7 +229,6 @@ public class HardwareQualifier {
 
         ///////////////////////////////////////GoBildaPinpointDriver/////////////////////////////
 
-
         imu = hwMap.get(IMU.class, "imu");  //control I2C port 3
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
