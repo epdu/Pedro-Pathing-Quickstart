@@ -58,7 +58,7 @@ public class AAARed12farTurretThreeHumanPlayers extends LinearOpMode {
     //    private static final double Med_SHOOTER_TARGET_RPM = 204;   //1598 white tri a little bit too far//  250RPM---1586.67
     private static final double Med_SHOOTER_TARGET_RPM = 2785;   //1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
     //    private static final double Med_SHOOTER_TARGET_Velocity = 1300;8
-    private static final double Med_SHOOTER_TARGET_Velocity = 1400;
+
     //    public static double flyWheelIdleSpeed=Med_SHOOTER_TARGET_Velocity*0.6;//1450   1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
     private static final double Far_SHOOTER_TARGET_RPM = 350;  //  350RPM---2237
     //   private static final double Close_SHOOTER_TARGET_RPM = 800;//  400RPM---2,557.33333333333333
@@ -67,6 +67,8 @@ public class AAARed12farTurretThreeHumanPlayers extends LinearOpMode {
     //  1000RPM---6346.67
     //  600RPM---3808
     //  500RPM---3173.3
+    private static final double Med_SHOOTER_TARGET_Velocity = 1400;
+    private static final double turretshootangle=71;
     public float DriveTrains_ReducePOWER=0.75f;
     public float DriveTrains_smoothTurn=0.85f;
     //    public String fieldOrRobotCentric = "robot";
@@ -154,7 +156,7 @@ public class AAARed12farTurretThreeHumanPlayers extends LinearOpMode {
 
     private final Pose startPose = new Pose(96,6.25, Math.toRadians(0));
     private final Pose startPoseCP = new Pose(96,11.25, Math.toRadians(0)); // Start Pose further zone of our robot.
-    private final Pose shootPose = new Pose(96, 12.25, Math.toRadians(71)); //69---71 03122026 70-73 65-75 Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
+    private final Pose shootPose = new Pose(96, 12.25, Math.toRadians(0));//71 change to be turret set angle //69---71 03122026 70-73 65-75 Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
     private final Pose readyFirstSpikePickupPose = new Pose(92, 36.25, Math.toRadians(0));
     //    private final Pose readyFirstHomePickupPose = new Pose(120, 12.25, Math.toRadians(0));
     private final Pose readyFirstHomePickupPose = new Pose(115, 8.25, Math.toRadians(0));//129, 22.25
@@ -265,6 +267,9 @@ public class AAARed12farTurretThreeHumanPlayers extends LinearOpMode {
             telemetry.update();
             follower.update();
             updateShooterTelemetry();
+            robot.axonTurretArmL.update();
+            robot.axonTurretArmR.update();
+
 //            autoshoot();
             statePathUpdate();
 
@@ -381,8 +386,8 @@ public class AAARed12farTurretThreeHumanPlayers extends LinearOpMode {
         //  03072026
         //  03072026
         if ((robot.MasterShooterMotorL instanceof DcMotorEx) && (robot.SlaveShooterMotorR instanceof DcMotorEx) ) {
-            robot.shooterL.setVelocity(Math.abs(AAARednearopengateintakegatetwicewithOUTfirstspark.ShooterPIDFConfig.flyWheelIdleTargetSpeed));
-            robot.shooterR.setVelocity(Math.abs(AAARednearopengateintakegatetwicewithOUTfirstspark.ShooterPIDFConfig.flyWheelIdleTargetSpeed));
+            robot.shooterL.setVelocity(Math.abs(ShooterPIDFConfig.flyWheelIdleTargetSpeed));
+            robot.shooterR.setVelocity(Math.abs(ShooterPIDFConfig.flyWheelIdleTargetSpeed));
 
         }
 
@@ -801,6 +806,9 @@ public class AAARed12farTurretThreeHumanPlayers extends LinearOpMode {
         switch (pathState) {
             case DRIVE_START_POS_SHOOT_POS:
                 startShooterIdle();//add idle speed 03122026
+                robot.axonTurretArmL.setTargetRotation(turretshootangle);
+                robot.axonTurretArmR.setTargetRotation(turretshootangle);
+                //adjust turret angle here
                 follower.followPath(driveStartShoot, 0.6, true);
                 setPathState(PathState.DRIVE_TO_SHOOT_WAIT);
                 break;
@@ -968,6 +976,8 @@ public class AAARed12farTurretThreeHumanPlayers extends LinearOpMode {
                 if (autoShootState == AutoShootState.DONE) {
                     follower.followPath(driveOffline, 0.6, true);
                     isShooterAtSpeed = false;
+                    robot.axonTurretArmL.changeTargetRotation(-turretshootangle);
+                    robot.axonTurretArmR.changeTargetRotation(-turretshootangle);
                     setPathState(PathState.DRIVE_OFFLINE);
                 }
                 break;

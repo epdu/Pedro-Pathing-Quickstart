@@ -24,10 +24,10 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 // Limelight
 // 位姿
 
-@Autonomous(name = "AAA RED Far Twelve First spark HumanPlayers HumanPlayers V1 Red9short")
+@Autonomous(name = "AAA RED Far Twelve First spike HumanPlayer HumanPlayer V1 Red9short")
 //three preload and take home twice and one first role, parking
 
-public class AAARed12farTurretFIRSTSPARKTwoHumanPlayers extends LinearOpMode {
+public class  AAARed12farTurretFIRSTSPIKETwoHumanPlayers extends LinearOpMode {
     HardwareQualifier robot = new HardwareQualifier();
     private Limelight3A limelight;
     private volatile boolean isRunning = true;
@@ -58,8 +58,6 @@ public class AAARed12farTurretFIRSTSPARKTwoHumanPlayers extends LinearOpMode {
     //    private static final double Med_SHOOTER_TARGET_RPM = 204;   //1598 white tri a little bit too far//  250RPM---1586.67
     private static final double Med_SHOOTER_TARGET_RPM = 2785;   //1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
     //    private static final double Med_SHOOTER_TARGET_Velocity = 1300;8
-    private static final double Med_SHOOTER_TARGET_Velocity = 1400;
-    //    public static double flyWheelIdleSpeed=Med_SHOOTER_TARGET_Velocity*0.6;//1450   1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
     private static final double Far_SHOOTER_TARGET_RPM = 350;  //  350RPM---2237
     //   private static final double Close_SHOOTER_TARGET_RPM = 800;//  400RPM---2,557.33333333333333
 //    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
@@ -67,6 +65,8 @@ public class AAARed12farTurretFIRSTSPARKTwoHumanPlayers extends LinearOpMode {
     //  1000RPM---6346.67
     //  600RPM---3808
     //  500RPM---3173.3
+    private static final double Med_SHOOTER_TARGET_Velocity = 1400;
+    private static final double turretshootangle=71;
     public float DriveTrains_ReducePOWER=0.75f;
     public float DriveTrains_smoothTurn=0.85f;
     //    public String fieldOrRobotCentric = "robot";
@@ -265,6 +265,8 @@ public class AAARed12farTurretFIRSTSPARKTwoHumanPlayers extends LinearOpMode {
             telemetry.update();
             follower.update();
             updateShooterTelemetry();
+            robot.axonTurretArmL.update();
+            robot.axonTurretArmR.update();
 //            autoshoot();
             statePathUpdate();
 
@@ -381,8 +383,8 @@ public class AAARed12farTurretFIRSTSPARKTwoHumanPlayers extends LinearOpMode {
         //  03072026
         //  03072026
         if ((robot.MasterShooterMotorL instanceof DcMotorEx) && (robot.SlaveShooterMotorR instanceof DcMotorEx) ) {
-            robot.shooterL.setVelocity(Math.abs(AAARednearopengateintakegatetwicewithOUTfirstspark.ShooterPIDFConfig.flyWheelIdleTargetSpeed));
-            robot.shooterR.setVelocity(Math.abs(AAARednearopengateintakegatetwicewithOUTfirstspark.ShooterPIDFConfig.flyWheelIdleTargetSpeed));
+            robot.shooterL.setVelocity(Math.abs(ShooterPIDFConfig.flyWheelIdleTargetSpeed));
+            robot.shooterR.setVelocity(Math.abs(ShooterPIDFConfig.flyWheelIdleTargetSpeed));
 
         }
 
@@ -801,6 +803,8 @@ public class AAARed12farTurretFIRSTSPARKTwoHumanPlayers extends LinearOpMode {
         switch (pathState) {
             case DRIVE_START_POS_SHOOT_POS:
                 startShooterIdle();//add idle speed 03122026
+                robot.axonTurretArmL.setTargetRotation(turretshootangle);
+                robot.axonTurretArmR.setTargetRotation(turretshootangle);
                 follower.followPath(driveStartShoot, 0.6, true);
                 setPathState(PathState.DRIVE_TO_SHOOT_WAIT);
                 break;
@@ -952,6 +956,8 @@ public class AAARed12farTurretFIRSTSPARKTwoHumanPlayers extends LinearOpMode {
                 if (autoShootState == AutoShootState.DONE) {
                     follower.followPath(driveOffline, 0.6, true);
                     isShooterAtSpeed = false;
+                    robot.axonTurretArmL.setTargetRotation(turretshootangle);
+                    robot.axonTurretArmR.setTargetRotation(turretshootangle);
                     setPathState(PathState.DRIVE_OFFLINE);
                 }
                 break;
