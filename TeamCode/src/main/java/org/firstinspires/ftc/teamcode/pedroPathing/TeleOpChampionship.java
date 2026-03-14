@@ -276,7 +276,7 @@ public class TeleOpChampionship extends LinearOpMode {
 
         if (dpadUpHandler.wasPressed()) {   // (dpadUpHandler.wasPressed())
             turretSetpoint = findPosition();
-            changeTargetRotationAngle=Math.toDegrees(turretSetpoint-getPosition());
+            changeTargetRotationAngle=Math.toDegrees(turretSetpoint-getPosition())-2;// overshoot
 //                        robot.axonTurretArmL.setTargetRotation(45);
 //            robot.axonTurretArmR.setTargetRotation(45);
 //            robot.axonTurretArmL.setTargetRotation(Math.toDegrees(turretSetpoint-getPosition()));
