@@ -67,11 +67,11 @@ public class AAARed12nearopengateintakegatetwicewithOUTfirstspike extends Linear
 //    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
 //    private static final double Far_SHOOTER_TARGET_RPM = 2237;  //  350RPM---2237
     ///////////////////////////////
-    private static final double Med_SHOOTER_TARGET_Velocity = 1100;
+    private static final double Med_SHOOTER_TARGET_Velocity = 1050;
     //    public static double flyWheelIdleTargetSpeed=Med_SHOOTER_TARGET_Velocity*0.6;
 //    private static final double Med_SHOOTER_TARGET_Velocity = 1150; //1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
     public float  intakePowerIntake=0.85f;//0.95
-    public float  intakePowerShoot=0.9f;//0.9
+    public float  intakePowerShoot=0.85f;//0.9
     public float DriveTrains_ReducePOWER=0.75f;
     public float DriveTrains_smoothTurn=0.55f;
     //    public String fieldOrRobotCentric = "robot";
@@ -154,7 +154,7 @@ public class AAARed12nearopengateintakegatetwicewithOUTfirstspike extends Linear
         END
     }
     private final Pose startPose = new Pose(127.5,118.75, Math.toRadians(0)); // Start Pose further zone of our robot.
-    private final Pose shootPose = new Pose(92, 92.25, Math.toRadians(45)); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
+    private final Pose shootPose = new Pose(91, 92.25, Math.toRadians(45)); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
     private final Pose scoreEnd = new Pose(92, 92.25, Math.toRadians(0)); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
     private final Pose readyThirdSpikePickupPose = new Pose(92, 86.25, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
     private final Pose readySecondSpikePickupPose = new Pose(92, 62.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
@@ -172,7 +172,7 @@ public class AAARed12nearopengateintakegatetwicewithOUTfirstspike extends Linear
     private final Pose firstSpikePickupPose = new Pose(134, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     private final Pose openGatePickupPose = new Pose(133, 69, Math.toRadians(0));  //63--61
     /// /////////////////////////////////////////
-    private final Pose openGateForPickPickupPose = new Pose(129.0, 66, Math.toRadians(18));// x 130-129.5--129.2 accident closed the gate y 64--64.5//
+    private final Pose openGateForPickPickupPose = new Pose(129.0, 64.5, Math.toRadians(18));// x 130-129.5--129.2 accident closed the gate y 64--64.5//
     //for open gate position, adjust here//64.5
     //increased 2 inches Winston Z: 2/18/26
     private final Pose openGateForPickPickupPoseAdjust = new Pose(130,62,Math.toRadians(26));
@@ -313,6 +313,8 @@ public class AAARed12nearopengateintakegatetwicewithOUTfirstspike extends Linear
 
             case IDLE:
 //                robot.BlockageArm.setPosition(blockageblockTele);
+                robot.HoodArmL.setPosition(0.515);//0.525  a little two high
+                robot.HoodArmR.setPosition(0.515);
                 robot.BlockageArmL.setPosition(blockageblockposition);
                 robot.BlockageArmR.setPosition(blockageblockposition);
 
@@ -737,17 +739,21 @@ public class AAARed12nearopengateintakegatetwicewithOUTfirstspike extends Linear
                 .setLinearHeadingInterpolation(thirdSpikePickupPose.getHeading(), shootPose.getHeading())
                 .build();
         driveReadyOpenGatePickup = follower.pathBuilder()
-                .addPath(new BezierCurve(shootPose, openGateForPickPickupCP,readyOpenGateForPickPickupPose))
-                .setLinearHeadingInterpolation(shootPose.getHeading(), readyOpenGateForPickPickupPose.getHeading())
+                .addPath(new BezierLine(secondSpikePickupPose, readyOpenGatePickupPose))
+                .setLinearHeadingInterpolation(secondSpikePickupPose.getHeading(), readyOpenGatePickupPose.getHeading())
                 .build();
+//        driveReadyOpenGatePickup = follower.pathBuilder()
+//                .addPath(new BezierCurve(shootPose, openGateForPickPickupCP,readyOpenGateForPickPickupPose))
+//                .setLinearHeadingInterpolation(shootPose.getHeading(), readyOpenGateForPickPickupPose.getHeading())
+//                .build();
 
 //        driveReadyOpenGatePickup = follower.pathBuilder()
 //                .addPath(new BezierLine(secondSpikePickupPose, readyOpenGatePickupPose))
 //                .setLinearHeadingInterpolation(secondSpikePickupPose.getHeading(), readyOpenGatePickupPose.getHeading())
 //                .build();
         driveOpenGatePickup = follower.pathBuilder()
-                .addPath(new BezierLine(readyOpenGateForPickPickupPose, openGateForPickPickupPose))
-                .setLinearHeadingInterpolation(readyOpenGateForPickPickupPose.getHeading(), openGateForPickPickupPose.getHeading())
+                .addPath(new BezierLine(readyOpenGatePickupPose, openGatePickupPose))
+                .setLinearHeadingInterpolation(readyOpenGatePickupPose.getHeading(), openGatePickupPose.getHeading())
                 .build();
         driveOpenGatePickupAdjust = follower.pathBuilder()
                 .addPath(new BezierLine(readyOpenGateForPickPickupPose, openGateForPickPickupPoseAdjust))

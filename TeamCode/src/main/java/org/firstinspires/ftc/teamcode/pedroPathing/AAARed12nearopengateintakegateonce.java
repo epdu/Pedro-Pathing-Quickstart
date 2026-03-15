@@ -27,7 +27,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 // 姿态
 // Limelight
 // 位姿
-@Autonomous(name = "AAA RED Near preload.secondspike,shoot,opengate with intake, take 1st spike mark03092026 V1")
+@Autonomous(name = "AAA good RED Near preload.secondspike,shoot,opengate with intake, take 1st spike mark03092026 V1")
 //no enough time to finish all backup 03032026
 //intake second role with open gate , park at  136, 36.25 with three loaded
 //. 3 ARTIFACTS on each SPIKE MARK arranged as follows:
@@ -64,11 +64,11 @@ public class AAARed12nearopengateintakegateonce extends LinearOpMode {
 //    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
 //    private static final double Far_SHOOTER_TARGET_RPM = 2237;  //  350RPM---2237
     ///////////////////////////////
-    private static final double Med_SHOOTER_TARGET_Velocity = 1100;
+    private static final double Med_SHOOTER_TARGET_Velocity = 1050;
 //    public static double flyWheelIdleTargetSpeed=Med_SHOOTER_TARGET_Velocity*0.6;
 //    private static final double Med_SHOOTER_TARGET_Velocity = 1150; //1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
     public float  intakePowerIntake=0.85f;//0.95
-    public float  intakePowerShoot=0.9f;//0.9
+    public float  intakePowerShoot=0.85f;//0.9
     public float DriveTrains_ReducePOWER=0.75f;
     public float DriveTrains_smoothTurn=0.55f;
 //    public String fieldOrRobotCentric = "robot";
@@ -307,6 +307,8 @@ private PathChain driveStartShoot;
         switch (autoShootState) {
 
             case IDLE:
+                robot.HoodArmL.setPosition(0.515);//0.525  a little two high
+                robot.HoodArmR.setPosition(0.515);
 //                robot.BlockageArm.setPosition(blockageblockTele);
                 robot.BlockageArmL.setPosition(blockageblockposition);
                 robot.BlockageArmR.setPosition(blockageblockposition);
