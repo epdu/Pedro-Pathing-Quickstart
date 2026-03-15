@@ -46,9 +46,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 //From LEGION
 // working on turret, and hood check speed fixed
 public class TeleOpChampionshipBlue extends LinearOpMode {
-    private static double Med_SHOOTER_TARGET_SPEED = 1100;  // 1100 is good for near shoot
-    private static final double Far_SHOOTER_TARGET_Velocity = 1400;
-//////////////////////////////////////////////////////////////////////////////////////////////////
+
     public float DriveTrains_ReducePOWER=1.0f;
     public float DriveTrains_smoothTurn=1.0f;
     HardwareQualifier robot = new HardwareQualifier();
@@ -64,8 +62,12 @@ public class TeleOpChampionshipBlue extends LinearOpMode {
 
     boolean PIDFTimerStart=true;
     int controlMode = 1;
-    public float  intakePowerIntake=0.95f;//push blocker too much from 99-90
+    //////////////////////////////////////////////////////////////////////////////////////////////////
+    private static final double Far_SHOOTER_TARGET_Velocity = 1400;
+    private static double Med_SHOOTER_TARGET_SPEED = 1050;  // 1100 is good for near shoot
     public float  intakePowerShoot=0.9f;
+
+    public float  intakePowerIntake=0.95f;//push blocker too much from 99-90
     public float  intakePowerDump=-0.65f;
     public float  intakePowerOff=0.0f;
     public float  ShooterMotorShootFar=0.95f;
@@ -792,7 +794,7 @@ public class TeleOpChampionshipBlue extends LinearOpMode {
         double targetVelocityR = ShooterPIDFConfig.targetSPEED;
         double tolerance = ShooterPIDFConfig.tolerance;
         double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());
-        double targetVelocity = GDTeleOpChampionship.ShooterPIDFConfig.targetRPM;
+//        double targetVelocity = ShooterPIDFConfig.targetRPM;
         double x = follower.getPose().getX();
         double y = follower.getPose().getY();
         double heading = follower.getPose().getHeading();

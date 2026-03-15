@@ -25,7 +25,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-@Autonomous(name = "AAA match one RED Near. open Gate. NO Gate intake. all spikes TWELVE park 03092026 V1")
+@Autonomous(name = "AAA match RED Near. open Gate. NO Gate intake. all spikes TWELVE park 03092026 V1")
 // anyupdate of auto start with this one
 // change name style to be FirstSpike,SecondSpike,ThirdSpike backup 03032026
 // intake second role with open gate , park at  136, 36.25 with three loaded
@@ -63,10 +63,10 @@ public class AAARed12nearopengatenogateintake extends LinearOpMode {
 //    private static final double Med_SHOOTER_TARGET_RPM = 1300;   //1598 white tri a little bit too far//  250RPM---1586.67
 //    private static final double Far_SHOOTER_TARGET_RPM = 2237;  //  350RPM---2237
     ///////////////////////////////
-    private static final double Med_SHOOTER_TARGET_Velocity = 1100;
+    private static final double Med_SHOOTER_TARGET_Velocity = 1050;
     public static double flyWheelIdleSpeed=Med_SHOOTER_TARGET_Velocity*0.6;//1598 white tri a little bit too far//  250RPM---1586.67//150-100 too big
     public float  intakePowerIntake=0.95f;//0.95
-    public float  intakePowerShoot=0.9f;//0.9
+    public float  intakePowerShoot=0.85f;//0.9
     public float DriveTrains_ReducePOWER=0.75f;
     public float DriveTrains_smoothTurn=0.55f;
 //    public String fieldOrRobotCentric = "robot";
@@ -296,6 +296,8 @@ private void saveCurrentPosition() {
 
             case IDLE:
 //                robot.BlockageArm.setPosition(blockageblockTele);
+                robot.HoodArmL.setPosition(0.515);//0.525  a little two high
+                robot.HoodArmR.setPosition(0.515);
                 robot.BlockageArmL.setPosition(blockageblockposition);
                 robot.BlockageArmR.setPosition(blockageblockposition);
                 //switch with blockage case with blockage
@@ -360,8 +362,7 @@ private void startShooter() {
     robot.IntakeMotorL.setPower(0);
     robot.IntakeMotorR.setPower(0);
     /// /////////////////////////////////double check hood angle////////////
-    robot.HoodArmL.setPosition(0.48);
-    robot.HoodArmR.setPosition(0.48);
+
     if (robot.MasterShooterMotorL instanceof DcMotorEx) {
         DcMotorEx shooter = (DcMotorEx) robot.MasterShooterMotorL;
         DcMotorEx shooterR = (DcMotorEx) robot.SlaveShooterMotorR;
@@ -717,14 +718,12 @@ public static class ShooterPIDFConfig {
             case DRIVE_START_POS_SHOOT_POS:
                 follower.followPath(driveStartShoot, 0.7, true);
                 setPathState(PathState.DRIVE_TO_SHOOT_WAIT);
-                saveCurrentPosition();
                 break;
 
             case DRIVE_TO_SHOOT_WAIT:
                 if (!follower.isBusy()) {
                     setPathState(PathState.SHOOT_PRELOAD);
                 }
-                saveCurrentPosition();
                 break;
 
             case SHOOT_PRELOAD:
@@ -734,7 +733,7 @@ public static class ShooterPIDFConfig {
                    isShooterAtSpeed = false;
                    setPathState(PathState.DRIVE_READY_SECOND_SPIKE_PICKUPT_POS);
                     }
-                saveCurrentPosition();
+
                break;
 
             case DRIVE_READY_SECOND_SPIKE_PICKUPT_POS:
@@ -742,7 +741,7 @@ public static class ShooterPIDFConfig {
                     follower.followPath(driveSecondSpikePickup, 0.55, true);
                     setPathState(PathState.SECOND_SPIKE_PICKUP);
                 }
-                saveCurrentPosition();
+
                 break;
 /// /////////////
             case SECOND_SPIKE_PICKUP:
@@ -754,7 +753,7 @@ public static class ShooterPIDFConfig {
                     stopIntake();
                     setPathState(PathState.DRIVE_READY_OPEN_GATE_POS);
                 }
-                saveCurrentPosition();
+
                 break;
 
             case DRIVE_READY_OPEN_GATE_POS:
@@ -762,7 +761,7 @@ public static class ShooterPIDFConfig {
                     follower.followPath(driveOpenGatePickup, 0.55, true);
                     setPathState(PathState.OPEN_GATE);
                 }
-                saveCurrentPosition();
+
                 break;
 
             case OPEN_GATE:
@@ -774,7 +773,7 @@ public static class ShooterPIDFConfig {
 //                    stopIntake();
                     setPathState(PathState.DRIVE_BACK_SECOND_SPIKE_PICKUPT_POS);
                 }
-                saveCurrentPosition();
+
                 break;
 
             case DRIVE_BACK_SECOND_SPIKE_PICKUPT_POS:
@@ -782,7 +781,7 @@ public static class ShooterPIDFConfig {
                     setPathState(PathState.SHOOT_SECOND_SPIKE_PICKUP);
                     autoShootState = AutoShootState.IDLE;
                 }
-                saveCurrentPosition();
+
                 break;
 
             case SHOOT_SECOND_SPIKE_PICKUP:
@@ -792,7 +791,7 @@ public static class ShooterPIDFConfig {
                     isShooterAtSpeed = false;
                     setPathState(PathState.DRIVE_READY_THIRD_SPIKE_PICKUPT_POS);
                 }
-                saveCurrentPosition();
+
                 break;
 /// ///////////////////////////
             case DRIVE_READY_THIRD_SPIKE_PICKUPT_POS:
@@ -800,11 +799,11 @@ public static class ShooterPIDFConfig {
                     follower.followPath(driveThirdSpikePickup, 0.55, true);
                     setPathState(PathState.THIRD_SPIKE_PICKUP);
                 }
-                saveCurrentPosition();
+
                 break;
 
             case THIRD_SPIKE_PICKUP:
-                if (!firstPickupCompleted && pathTimer.getElapsedTimeSeconds() < 1.3) {
+                if (!firstPickupCompleted && pathTimer.getElapsedTimeSeconds() < 1.5) {
             autoIntake();
                 } else {
                     follower.followPath(driveThirdSpikePickupShoot);
@@ -813,7 +812,7 @@ public static class ShooterPIDFConfig {
                     setPathState(PathState.DRIVE_BACK_THIRD_SPIKE_PICKUPT_POS);
                     firstPickupCompleted = true;
                 }
-                saveCurrentPosition();
+
                 break;
 
             case DRIVE_BACK_THIRD_SPIKE_PICKUPT_POS:
@@ -821,7 +820,7 @@ public static class ShooterPIDFConfig {
                     setPathState(PathState.SHOOT_THIRD_SPIKE_PICKUP);
                     autoShootState = AutoShootState.IDLE;
                 }
-                saveCurrentPosition();
+
                 break;
 
             case SHOOT_THIRD_SPIKE_PICKUP:
@@ -831,7 +830,7 @@ public static class ShooterPIDFConfig {
                     isShooterAtSpeed = false;
                     setPathState(PathState.DRIVE_READY_FIRST_SPIKE_PICKUP_POS);
                 }
-                saveCurrentPosition();
+
                 break;
 
             case DRIVE_READY_FIRST_SPIKE_PICKUP_POS:
@@ -839,7 +838,7 @@ public static class ShooterPIDFConfig {
                     follower.followPath(driveFirstSpikePickup, 0.55, true);
                     setPathState(PathState.FIRST_SPIKE_PICKUP);
                 }
-                saveCurrentPosition();
+
                 break;
 
             case FIRST_SPIKE_PICKUP:
@@ -851,7 +850,7 @@ public static class ShooterPIDFConfig {
                     stopIntake();
                     setPathState(PathState.DRIVE_BACK_FIRST_SPIKE_SHOOT_POS);
                 }
-                saveCurrentPosition();
+
                 break;
 
             case DRIVE_BACK_FIRST_SPIKE_SHOOT_POS:
@@ -859,7 +858,7 @@ public static class ShooterPIDFConfig {
                     setPathState(PathState.SHOOT_FIRST_SPIKE_PICKUP);
                     autoShootState = AutoShootState.IDLE;
                 }
-                saveCurrentPosition();
+
                 break;
 
             case SHOOT_FIRST_SPIKE_PICKUP:
@@ -869,14 +868,14 @@ public static class ShooterPIDFConfig {
                     isShooterAtSpeed = false;
                     setPathState(PathState.DRIVE_OFFLINE);
                 }
-                saveCurrentPosition();
+
                 break;
 
             case DRIVE_OFFLINE:
                 if (!follower.isBusy()) {
                     setPathState(PathState.END);
                 }
-                saveCurrentPosition();
+
                 break;
 
 

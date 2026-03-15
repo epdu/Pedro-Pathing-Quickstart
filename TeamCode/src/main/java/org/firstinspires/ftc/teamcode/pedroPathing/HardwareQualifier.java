@@ -22,6 +22,7 @@ public class HardwareQualifier {
     //    //From LEGION
     HardwareMap hwMap =  null;
     public Alliance alliance;
+    public double HoodArmsetPosition=0.51;
     public DcMotorEx rightFrontMotor;
     public DcMotorEx leftFrontMotor;
     public DcMotorEx rightRearMotor;
@@ -161,7 +162,8 @@ public class HardwareQualifier {
 //        BlockageArmL.setDirection(Servo.Direction.REVERSE);
         BlockageArmL.setPosition(0.1);//
 
-        BlockageArmR = hwMap.get(ServoImplEx.class, "BlockageArmR");// expansion  hub port 1
+        BlockageArmR = hwMap.get(ServoImplEx.class, "BlockageArmR");// expansi
+        // on  hub port 1
         BlockageArmR.setPwmRange(new PwmControl.PwmRange(500, 2500));
         BlockageArmR.setDirection(Servo.Direction.REVERSE);
         BlockageArmR.setPosition(0.1);//
@@ -170,12 +172,12 @@ public class HardwareQualifier {
         HoodArmL = hwMap.get(ServoImplEx.class, "HoodArmL");//expansion  hub port 3
         HoodArmL.setPwmRange(new PwmControl.PwmRange(500, 2500));
         HoodArmL.setDirection(Servo.Direction.REVERSE);
-        HoodArmL.setPosition(0.48);
+        HoodArmL.setPosition(HoodArmsetPosition);
 
         HoodArmR = hwMap.get(ServoImplEx.class, "HoodArmR");//expansion  hub port 5
         HoodArmR.setPwmRange(new PwmControl.PwmRange(500, 2500));
 //        HoodArmR.setDirection(Servo.Direction.REVERSE);
-        HoodArmR.setPosition(0.48);
+        HoodArmR.setPosition(HoodArmsetPosition); //0.49 ball is low 0.53 too high
 
 
         // HoodArm = hwMap.get(ServoImplEx.class, "HoodArm");//expansion  hub port 4

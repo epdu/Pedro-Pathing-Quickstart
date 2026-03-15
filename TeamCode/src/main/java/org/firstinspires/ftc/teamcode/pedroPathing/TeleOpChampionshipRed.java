@@ -46,9 +46,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 //From LEGION
 // working on turret, and hood check speed fixed
 public class TeleOpChampionshipRed extends LinearOpMode {
-    private static double Med_SHOOTER_TARGET_SPEED = 1100;  // 1100 is good for near shoot
-    private static final double Far_SHOOTER_TARGET_Velocity = 1400;
-//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
     public float DriveTrains_ReducePOWER=1.0f;
     public float DriveTrains_smoothTurn=1.0f;
     HardwareQualifier robot = new HardwareQualifier();
@@ -64,8 +63,15 @@ public class TeleOpChampionshipRed extends LinearOpMode {
 
     boolean PIDFTimerStart=true;
     int controlMode = 1;
+
+    private static double Med_SHOOTER_TARGET_SPEED = 1100;  // 1100 is good for near shoot
+    private static double Med_SHOOTER_TARGET_SPEED_I = 1050; // 1.2,3
+    private static double Med_SHOOTER_TARGET_SPEED_IV = 1100; //4   1100 is good for near shoot
+    public float  intakePowerShoot=0.85f;
+    public double servoPosition=robot.HoodArmsetPosition;
+    //////////////////////////////////////////////////////////////////////////////////////////////////
+    ///     private static final double Far_SHOOTER_TARGET_Velocity = 1400;
     public float  intakePowerIntake=0.95f;//push blocker too much from 99-90
-    public float  intakePowerShoot=0.9f;
     public float  intakePowerDump=-0.65f;
     public float  intakePowerOff=0.0f;
     public float  ShooterMotorShootFar=0.95f;
@@ -76,7 +82,7 @@ public class TeleOpChampionshipRed extends LinearOpMode {
     public float  ShooterMotorOff=0.0f;
     public static final double blockageblockposition=0.10; //for auto
     public static final double blockagereleaseposition=0.18;
-    public double servoPosition=0.5;
+
     public static final double SERVO_STEP=-0.005;
     public static final double blockageblockTele=0.1; // from .18 -0.1 for tele
     public static final double blockagereleaseTele=0.24;
@@ -100,8 +106,8 @@ public class TeleOpChampionshipRed extends LinearOpMode {
 //    private DriveSubsystem driveSubsystem;
 //    private static TurretSubsystem instance;
     /// ////////////////////////////////////////////////////////////////
-    public static final double HoodArmfarposition=0.3;
-    public static final double HoodArmcloseposition=0.35;
+//    public static final double HoodArmfarposition=0.3;
+//    public static final double HoodArmcloseposition=0.35;
     public static final double HoodArmPositionInit = 0.1;
     public static final double HoodArmPositionCloseShoot = 0.3;
     public static final double HoodArmPositionMedShoot = 0.2;
@@ -221,44 +227,46 @@ public class TeleOpChampionshipRed extends LinearOpMode {
             handleIMUReset();
 //            updateDrivetrain_RobotCentric();
             updateIntake();
-            if (gamepad2.xWasPressed()){
-                far = true;;
+            if (gamepad1.xWasPressed()){
+                far = true;
+                near=false;
             }
-            if (gamepad2.bWasPressed()){
-                near = true;
+            if (gamepad1.aWasPressed()){
+                near=true;
+                far = false;
             }
-
             updateShooter();
             updateAllTelemetry();
             checkShooterVelocity();
             updateLEDs();
 //            updateHood(); //temp stop for PIDF tuning 03052026
-            updateBlockage();
+//            updateBlockage();
+            servoGamepadControl();
 //            updateTuningPIDF();
 //            updateAutoAim();
             dpadUpHandler.update(gamepad1.dpad_up);
             /////////////////////////////////
-            if (gamepad1.xWasPressed()){
-                methods.manualRelocalize(follower);
-            }
-            if (gamepad2.dpad_up){
-                robot.HoodArmL.setPosition(0.48);
-                robot.HoodArmR.setPosition(0.48);
-            }
-            if (gamepad2.dpad_down){
-                robot.HoodArmL.setPosition(0.52);
-                robot.HoodArmR.setPosition(0.52);
-            }
-            if (gamepad2.y){
-                robot.HoodArmL.setPosition(0.5);
-                robot.HoodArmR.setPosition(0.5);
-            }
+//            if (gamepad1.xWasPressed()){
+//                methods.manualRelocalize(follower);
+//            }
+//            if (gamepad2.dpad_up){
+//                robot.HoodArmL.setPosition(0.48);
+//                robot.HoodArmR.setPosition(0.48);
+//            }
+//            if (gamepad2.dpad_down){
+//                robot.HoodArmL.setPosition(0.52);
+//                robot.HoodArmR.setPosition(0.52);
+//            }
+//            if (gamepad2.y){
+//                robot.HoodArmL.setPosition(0.5);
+//                robot.HoodArmR.setPosition(0.5);
+//            }
             /// ////////////////////////////
 //            rightTriggerHandler.update(gamepad1.right_trigger);
             handlePositionReset();
             turretAngle = getPosition();
-            turretupdate();
-            /// ///////angle need these， not power
+//            turretupdate();
+            ///////angle need these， not power
             robot.axonTurretArmL.update();
             robot.axonTurretArmR.update();
 
@@ -508,8 +516,16 @@ public class TeleOpChampionshipRed extends LinearOpMode {
         // 手柄控制发射电机 - 按下右肩键启动射击电机
         if (gamepad1.right_trigger > 0.1 ) {
             // 检查射击电机是否达到目标速度
-            checkShooterVelocity();
-            startShooter();
+            if(far){
+                checkShooterVelocityII();
+                startShooterII();
+            } else if (near){
+                checkShooterVelocityI();
+                startShooterI();
+            }
+
+//            checkShooterVelocity();
+//            startShooter();
 //            if (!robot.MasterShooterMotorL.isBusy()){
 //                startShooter();
 ////                robot.BlockageArm.setPosition(blockagereleaseTele);
@@ -519,7 +535,7 @@ public class TeleOpChampionshipRed extends LinearOpMode {
 //            }
 
         }
-        // 手动射击触发 - 按下A键射击（仅在速度达标时有效）
+
 //        if (gamepad1.right_bumper && isShooterAtSpeed && !fireRequested)
         if (gamepad1.right_bumper) {
             fireRequested = true;
@@ -542,9 +558,9 @@ public class TeleOpChampionshipRed extends LinearOpMode {
             fireRequested = false;
             shooterIsOn= false; //2
         }
-        if (gamepad1.a) {
-            stopintaleandShooter();
-        }
+//        if (gamepad1.a) {
+//            stopintakeandShooter();
+//        }
         // 如果射击电机未运行，确保重置状态
         if (!gamepad1.right_bumper && !robot.MasterShooterMotorL.isBusy()) {
             isShooterAtSpeed = false;
@@ -573,9 +589,11 @@ public class TeleOpChampionshipRed extends LinearOpMode {
         */
 
             public static double targetSPEED = Med_SHOOTER_TARGET_SPEED;
+        public static double targetSPEEDI = Med_SHOOTER_TARGET_SPEED_I;
+        public static double targetSPEEDII = Med_SHOOTER_TARGET_SPEED_IV;
             public static double flyWheelIdleSpeed = Med_SHOOTER_TARGET_SPEED * 0.6;
-            public static double targetSPEEDfar = Far_SHOOTER_TARGET_Velocity;
-            public static double flyWheelIdleSpeedfar = Far_SHOOTER_TARGET_Velocity * 0.6;
+//            public static double targetSPEEDfar = Far_SHOOTER_TARGET_Velocity;
+//            public static double flyWheelIdleSpeedfar = Far_SHOOTER_TARGET_Velocity * 0.6;
 
         public static double tolerance = 0;
         public static double kF_STEP = 0.05;   // 每次按键增加/减少的量
@@ -623,23 +641,23 @@ public class TeleOpChampionshipRed extends LinearOpMode {
     }
 
     ///  //////////////////////////////////////////////////////////////////////////////////////////
-    private void startShooterIdlefar() {
-        robot.IntakeMotorL.setPower(0);
-        robot.IntakeMotorR.setPower(0);
-        // robot.axonTurretArmL.setTargetRotation(0);
-        // robot.axonTurretArmR.setTargetRotation(0);
-        //  03072026
-        //  03072026
-        if ((robot.MasterShooterMotorL instanceof DcMotorEx) && (robot.SlaveShooterMotorR instanceof DcMotorEx) ) {
-            robot.shooterL.setVelocity(Math.abs(ShooterPIDFConfig.flyWheelIdleSpeedfar));
-            robot.shooterR.setVelocity(Math.abs(ShooterPIDFConfig.flyWheelIdleSpeedfar));
-        }
-    }
+//    private void startShooterIdlefar() {
+//        robot.IntakeMotorL.setPower(0);
+//        robot.IntakeMotorR.setPower(0);
+//        // robot.axonTurretArmL.setTargetRotation(0);
+//        // robot.axonTurretArmR.setTargetRotation(0);
+//        //  03072026
+//        //  03072026
+//        if ((robot.MasterShooterMotorL instanceof DcMotorEx) && (robot.SlaveShooterMotorR instanceof DcMotorEx) ) {
+//            robot.shooterL.setVelocity(Math.abs(ShooterPIDFConfig.flyWheelIdleSpeedfar));
+//            robot.shooterR.setVelocity(Math.abs(ShooterPIDFConfig.flyWheelIdleSpeedfar));
+//        }
+//    }
     private void startShooterIdle() {
         robot.IntakeMotorL.setPower(0);
         robot.IntakeMotorR.setPower(0);
-        robot.HoodArmL.setPosition(0.5);
-        robot.HoodArmR.setPosition(0.5);
+//        robot.HoodArmL.setPosition(0.51);
+//        robot.HoodArmR.setPosition(0.51);
         // robot.axonTurretArmL.setTargetRotation(0);
         // robot.axonTurretArmR.setTargetRotation(0);
         //  03072026
@@ -653,8 +671,8 @@ public class TeleOpChampionshipRed extends LinearOpMode {
     private void startShooter() {
         robot.IntakeMotorL.setPower(0);
         robot.IntakeMotorR.setPower(0);
-        robot.HoodArmL.setPosition(0.5);
-        robot.HoodArmR.setPosition(0.5);
+//        robot.HoodArmL.setPosition(0.51);
+//        robot.HoodArmR.setPosition(0.51);
 //        robot.axonTurretArmL.setTargetRotation(0);
 //        robot.axonTurretArmR.setTargetRotation(0);
         //  03072026
@@ -666,44 +684,76 @@ public class TeleOpChampionshipRed extends LinearOpMode {
      telemetry.addData("Shooter status 4", "4");
         }
     }
-    private void startShooterfar() {
+    private void startShooterI() {
         robot.IntakeMotorL.setPower(0);
         robot.IntakeMotorR.setPower(0);
+//        robot.HoodArmL.setPosition(0.51);
+//        robot.HoodArmR.setPosition(0.51);
 //        robot.axonTurretArmL.setTargetRotation(0);
 //        robot.axonTurretArmR.setTargetRotation(0);
         //  03072026
         if ((robot.MasterShooterMotorL instanceof DcMotorEx) && (robot.SlaveShooterMotorR instanceof DcMotorEx) ) {
-            robot.shooterL.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEEDfar));
-            robot.shooterR.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEEDfar));
+            robot.shooterL.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEEDI));
+            robot.shooterR.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEEDI));
             shooterIsOn=true; //4
             shooterIsOnSpeend=true;
             telemetry.addData("Shooter status 4", "4");
         }
     }
+    private void startShooterII() {
+        robot.IntakeMotorL.setPower(0);
+        robot.IntakeMotorR.setPower(0);
+//        robot.HoodArmL.setPosition(0.51);
+//        robot.HoodArmR.setPosition(0.51);
+//        robot.axonTurretArmL.setTargetRotation(0);
+//        robot.axonTurretArmR.setTargetRotation(0);
+        //  03072026
+        if ((robot.MasterShooterMotorL instanceof DcMotorEx) && (robot.SlaveShooterMotorR instanceof DcMotorEx) ) {
+            robot.shooterL.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEEDII));
+            robot.shooterR.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEEDII));
+            shooterIsOn=true; //4
+            shooterIsOnSpeend=true;
+            telemetry.addData("Shooter status 4", "4");
+        }
+    }
+//    private void startShooterfar() {
+//        robot.IntakeMotorL.setPower(0);
+//        robot.IntakeMotorR.setPower(0);
+////        robot.axonTurretArmL.setTargetRotation(0);
+////        robot.axonTurretArmR.setTargetRotation(0);
+//        //  03072026
+//        if ((robot.MasterShooterMotorL instanceof DcMotorEx) && (robot.SlaveShooterMotorR instanceof DcMotorEx) ) {
+//            robot.shooterL.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEEDfar));
+//            robot.shooterR.setVelocity(Math.abs(ShooterPIDFConfig.targetSPEEDfar));
+//            shooterIsOn=true; //4
+//            shooterIsOnSpeend=true;
+//            telemetry.addData("Shooter status 4", "4");
+//        }
+//    }
     /// ///////////////////////////////////////////////////////////////////////////////
     /// /// ///////////need fix
-    private void updateHood() {
-        if (gamepad2.dpad_down) {
-            robot.HoodArmL.setPosition(HoodArmfarposition);
-        }  else if(gamepad2.dpad_up) {
-            robot.HoodArmL.setPosition(HoodArmcloseposition);
-        } // 防止快速连击导致模式快速切换
-
-    }
+//    private void updateHood() {
+//        if (gamepad2.dpad_down) {
+//            robot.HoodArmL.setPosition(HoodArmfarposition);
+//        }  else if(gamepad2.dpad_up) {
+//            robot.HoodArmL.setPosition(HoodArmcloseposition);
+//        } // 防止快速连击导致模式快速切换
+//
+//    }
     /// /////////////////need work
-    private void updateBlockage() {
-        if (gamepad1.dpad_left) {
-//            robot.BlockageArm.setPosition((blockageblockTele));
-            robot.BlockageArmL.setPosition((blockageblockposition));
-            robot.BlockageArmR.setPosition((blockageblockposition));
-        }  else if(gamepad1.dpad_right) {
-//            robot.BlockageArm.setPosition((blockagereleaseTele));
-            robot.BlockageArmL.setPosition((blockagereleaseposition));
-            robot.BlockageArmR.setPosition((blockagereleaseposition));
-
-        } // 防止快速连击导致模式快速切换
-
-    }
+//    private void updateBlockage() {
+//        if (gamepad1.dpad_left) {
+////            robot.BlockageArm.setPosition((blockageblockTele));
+//            robot.BlockageArmL.setPosition((blockageblockposition));
+//            robot.BlockageArmR.setPosition((blockageblockposition));
+//        }  else if(gamepad1.dpad_right) {
+////            robot.BlockageArm.setPosition((blockagereleaseTele));
+//            robot.BlockageArmL.setPosition((blockagereleaseposition));
+//            robot.BlockageArmR.setPosition((blockagereleaseposition));
+//
+//        } // 防止快速连击导致模式快速切换
+//
+//    }
 
 /// ////////////////////////////////////////////////////////////////////////////
 //    private void startShooter() {
@@ -754,8 +804,34 @@ public class TeleOpChampionshipRed extends LinearOpMode {
         }
 
     }
+    private void checkShooterVelocityI() {
 
+        double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());
+        double targetVelocity = ShooterPIDFConfig.targetSPEEDI;
 
+        // 检查是否在容差范围内
+        if (Math.abs(Math.abs(currentVelocity) - targetVelocity) <= toleranceforShoot) {
+            isShooterAtSpeed = true;
+        } else {
+            isShooterAtSpeed = false;
+            fireRequested = false;
+        }
+
+    }
+    private void checkShooterVelocityII() {
+
+        double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());
+        double targetVelocity = ShooterPIDFConfig.targetSPEEDII;
+
+        // 检查是否在容差范围内
+        if (Math.abs(Math.abs(currentVelocity) - targetVelocity) <= toleranceforShoot) {
+            isShooterAtSpeed = true;
+        } else {
+            isShooterAtSpeed = false;
+            fireRequested = false;
+        }
+
+    }
 //    private void checkShooterVelocity() {
 //        if (robot.MasterShooterMotorL.isBusy()) {
 //            double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());
@@ -792,7 +868,7 @@ public class TeleOpChampionshipRed extends LinearOpMode {
         double targetVelocityR = ShooterPIDFConfig.targetSPEED;
         double tolerance = ShooterPIDFConfig.tolerance;
         double currentVelocity = Math.abs(robot.MasterShooterMotorL.getVelocity());
-        double targetVelocity = GDTeleOpChampionship.ShooterPIDFConfig.targetRPM;
+//        double targetVelocity = ShooterPIDFConfig.targetRPM;
         double x = follower.getPose().getX();
         double y = follower.getPose().getY();
         double heading = follower.getPose().getHeading();
@@ -887,15 +963,16 @@ public class TeleOpChampionshipRed extends LinearOpMode {
      * 停止射击电机
      */
     private void stopShooter() {
-        if(far){
-            startShooterIdlefar();
-        }
-        if(near){
-            startShooterIdle();
-        }
+//        if(far){
+//            startShooterIdlefar();
+//        }
+//        if(near){
+//            startShooterIdle();
+//        }
 
 //        robot.MasterShooterMotorL.setVelocity(0);
 //        robot.SlaveShooterMotorR.setPower(0);
+        startShooterIdle();
         robot.IntakeMotorL.setPower(0);
         robot. IntakeMotorR.setPower(0);
         intakeIsOn = false;
@@ -905,12 +982,14 @@ public class TeleOpChampionshipRed extends LinearOpMode {
         shooterIsOnSpeend= false;
     }
 
-    private void stopintaleandShooter() {
+    private void stopintakeandShooter() {
 //        startShooterIdle();
-        robot.MasterShooterMotorL.setVelocity(0);
+        robot.MasterShooterMotorL.setPower(0);
         robot.SlaveShooterMotorR.setPower(0);
+//        robot.MasterShooterMotorL.setVelocity(0);
+//        robot.SlaveShooterMotorR.setPower(0);
         robot.IntakeMotorL.setPower(0);
-        robot. IntakeMotorR.setPower(0);
+        robot.IntakeMotorR.setPower(0);
         intakeIsOn = false;
         isShooterAtSpeed = false;
         fireRequested = false;
@@ -1223,7 +1302,35 @@ public class TeleOpChampionshipRed extends LinearOpMode {
 //        }
 
 ///////////////////End Definition and Initialization of steptestservo()
+//    Begin Definition and Initialization of steptestservo()
+// Begin debugging with a step increment of 0.05  SGC - servoGamepadControl
+        public void servoGamepadControl() {
+            if (gamepad1.dpadLeftWasPressed()) {
+                servoPosition = servoPosition + SERVO_STEP;
+                if (servoPosition >= 1.0) {
+                    servoPosition = 0.99; // 限制最大值
+                }
+                robot.HoodArmL.setPosition(servoPosition);
+                robot.HoodArmR.setPosition(servoPosition);
+                telemetry.addData("Servo Position", servoPosition);
+                telemetry.update();
+                sleep(200);
+            }
+            if (gamepad1.dpadRightWasPressed()) {
+                servoPosition = servoPosition - SERVO_STEP;
+                if (servoPosition <= 0.0) {
+                    servoPosition = 0.01; // 限制最小值
+                }
+                robot.HoodArmL.setPosition(servoPosition);
+                robot.HoodArmR.setPosition(servoPosition);
+                telemetry.addData("Servo Position", servoPosition);
+                telemetry.update();
+                sleep(200);
+            }
 
+//End debugging with a step increment of 0.05
+
+        }
 
 
 
