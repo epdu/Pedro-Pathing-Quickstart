@@ -27,7 +27,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 // 姿态
 // Limelight
 // 位姿
-@Autonomous(name = "AAA RED Near open Gate no intake.shoot. second spike gate intake. first spike 03092026 V1")
+@Autonomous(name = "AAA RED almost ready Near open Gate no intake.shoot. second spike gate intake. first spike 03092026 V1")
 //preload , second spark open gate no intake, shoot ,
 // open gate intake
 // third spark
@@ -161,7 +161,7 @@ public class AAARed12nearopengateintakegatetwicewithOUTfirstspike extends Linear
     private final Pose readyFirstSpikePickupPose = new Pose(92, 36.25, Math.toRadians(0)); // GPP Lowest (Third Set) of Artifacts from the Spike Mark.
     private final Pose readyOpenGatePickupPose = new Pose(124.5,67.5,Math.toRadians(0)); // 63--64  PGP Middle (Second Set) of Artifacts from the Spike Mark.
     /// //////////////////////////////////
-    private final Pose readyOpenGateForPickPickupPose = new Pose(123.5,66,Math.toRadians(18));
+    private final Pose readyOpenGateForPickPickupPose = new Pose(124.5,67.5,Math.toRadians(18));
     private final Pose thirdSpikePickupPose = new Pose(127, 86.25, Math.toRadians(0)); // PPG  Highest (First Set) of Artifacts from the Spike Mark.
     private final Pose secondSpikePickupPose = new Pose(133, 62.25, Math.toRadians(0)); // PGP Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose secondSpikePickupCP = new Pose(72, 76, Math.toRadians(0));
@@ -739,8 +739,8 @@ public class AAARed12nearopengateintakegatetwicewithOUTfirstspike extends Linear
                 .setLinearHeadingInterpolation(thirdSpikePickupPose.getHeading(), shootPose.getHeading())
                 .build();
         driveReadyOpenGatePickup = follower.pathBuilder()
-                .addPath(new BezierLine(secondSpikePickupPose, readyOpenGatePickupPose))
-                .setLinearHeadingInterpolation(secondSpikePickupPose.getHeading(), readyOpenGatePickupPose.getHeading())
+                .addPath(new BezierCurve(shootPose, openGateForPickPickupCP,readyOpenGateForPickPickupPose))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), readyOpenGateForPickPickupPose.getHeading())
                 .build();
 //        driveReadyOpenGatePickup = follower.pathBuilder()
 //                .addPath(new BezierCurve(shootPose, openGateForPickPickupCP,readyOpenGateForPickPickupPose))
@@ -752,9 +752,10 @@ public class AAARed12nearopengateintakegatetwicewithOUTfirstspike extends Linear
 //                .setLinearHeadingInterpolation(secondSpikePickupPose.getHeading(), readyOpenGatePickupPose.getHeading())
 //                .build();
         driveOpenGatePickup = follower.pathBuilder()
-                .addPath(new BezierLine(readyOpenGatePickupPose, openGatePickupPose))
-                .setLinearHeadingInterpolation(readyOpenGatePickupPose.getHeading(), openGatePickupPose.getHeading())
+                .addPath(new BezierLine(readyOpenGateForPickPickupPose, openGateForPickPickupPose))
+                .setLinearHeadingInterpolation(readyOpenGateForPickPickupPose.getHeading(), openGateForPickPickupPose.getHeading())
                 .build();
+
         driveOpenGatePickupAdjust = follower.pathBuilder()
                 .addPath(new BezierLine(readyOpenGateForPickPickupPose, openGateForPickPickupPoseAdjust))
                 .setLinearHeadingInterpolation(readyOpenGateForPickPickupPose.getHeading(), openGateForPickPickupPoseAdjust.getHeading())
